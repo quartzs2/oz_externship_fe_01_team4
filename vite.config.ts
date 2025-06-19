@@ -13,6 +13,7 @@ export default defineConfig({
       '@lib': resolve(__dirname, 'src/lib'),
       '@pages': resolve(__dirname, 'src/pages'),
       '@customType': resolve(__dirname, 'src/types'),
+      '@utils': resolve(__dirname, 'src/utils'),
     },
   },
   plugins: [react(), tailwindcss()],
