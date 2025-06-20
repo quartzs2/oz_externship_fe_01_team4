@@ -17,11 +17,17 @@ export default function Header({ user }: HeaderProfile) {
   }
 
   return (
-    <div className="w-full h-[80px] bg-[#F3EEFF] flex justify-end items-center pr-12">
-      <img src={loginUser.profileUrl} alt="profile icon" className="w-[26px]" />
-      <div className="text-[var(--color-primary-600)] text-[18px] ml-2">
-        {loginUser.name} 님
+    <header>
+      <div className="w-full h-[80px] bg-[#F3EEFF] flex justify-end items-center pr-12">
+        <img
+          src={loginUser.profileUrl}
+          alt="profile icon"
+          className="w-[26px]"
+        />
+        <div className="text-primary-600 text-[18px] ml-2">
+          {loginUser.name} 님
+        </div>
       </div>
-    </div>
+    </header>
   )
 }
