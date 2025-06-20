@@ -1,13 +1,16 @@
+import Header from '@components/Header'
 import { Outlet } from 'react-router'
 
 const Layout = () => {
   return (
-    <>
-      {/* 컴포넌트 넣어주세요 */}
-      <main>
+    <div className="flex h-screen">
+      {/* 사이드바 */}
+      <aside className="h-full"></aside>
+      <main className="flex-col flex-1">
+        <Header />
         <Outlet />
       </main>
-    </>
+    </div>
   )
 }
 export default Layout
