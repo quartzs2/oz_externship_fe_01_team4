@@ -3,11 +3,11 @@ import { Outlet } from 'react-router'
 
 const Layout = () => {
   return (
-    <div className="flex h-screen">
-      {/* 사이드바 */}
-      <aside className="h-full"></aside>
-      <main className="flex-col flex-1">
+    <div className="flex flex-col flex-1">
+      <header>
         <Header />
+      </header>
+      <main className="flex-1">
         <Outlet />
       </main>
     </div>
