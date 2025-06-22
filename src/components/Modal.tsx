@@ -1,9 +1,11 @@
+import Icon from '@components/Icon'
 import Portal from '@components/Portal'
 import { PORTAL_TARGET_ID } from '@constants/portalTargetId'
 import { Z_INDEX_DEFINE } from '@constants/zIndexDefine'
 import { useModalStore } from '@store/modalStore'
 import { cn } from '@utils/cn'
 import { useEffect, type ReactNode } from 'react'
+import CloseIcon from '@assets/icons/modal/close.svg?react'
 
 type ModalProps = {
   modalId: string
@@ -51,11 +53,13 @@ const Modal = ({
       <div
         className={cn(
           'fixed inset-0',
-          'w-screen h-screen',
-          'flex justify-center items-center',
-          `z-[${currentZIndex}]`,
+          'h-screen w-screen',
+          'flex items-center justify-center',
           { 'bg-black/20': isBackgroundDimmed }
         )}
+        style={{
+          zIndex: currentZIndex,
+        }}
         onClick={() => {
           if (isTopModal) {
             onClose()
@@ -64,7 +68,7 @@ const Modal = ({
         }}
       >
         <div
-          className={cn('bg-white p-5 rounded-[6px] relative', className)}
+          className={cn('relative rounded-[6px] bg-white p-5', className)}
           onClick={(e) => e.stopPropagation()}
         >
           {children}
@@ -73,7 +77,7 @@ const Modal = ({
               onClick={onClose}
               className="absolute top-2.5 right-2.5 p-1 text-gray-500 hover:text-gray-700"
             >
-              X{/* TODO: 아이콘으로 수정 필요 */}
+              <Icon icon={CloseIcon} size={24} />
             </button>
           )}
         </div>
