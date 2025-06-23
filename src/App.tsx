@@ -1,4 +1,5 @@
 import './App.css'
+import { Toaster } from 'react-hot-toast'
 
 import { Routes, Route } from 'react-router'
 
@@ -13,13 +14,17 @@ function App() {
   ]
 
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        {ROUTES.map((route) => (
-          <Route key={route.path} {...route} />
-        ))}
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route element={<Layout />}>
+          {ROUTES.map((route) => (
+            <Route key={route.path} {...route} />
+          ))}
+        </Route>
+      </Routes>
+
+      <Toaster position="top-right" />
+    </>
   )
 }
 
