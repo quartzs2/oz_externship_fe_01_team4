@@ -1,4 +1,5 @@
 import type { TableHeader, TableRowData } from '@customType/table'
+import { cn } from '@utils/cn'
 
 type Props = {
   data: TableRowData
@@ -38,9 +39,10 @@ export default function TableRow({
             if (header.dataKey === 'deploy' && isDeploy) {
               return (
                 <button
-                  className={`rounded-[5px] px-4 py-1.5 text-white ${
+                  className={cn(
+                    'rounded-[5px] px-4 py-1.5 text-white',
                     isDeployStatus ? 'bg-[#aadfb1]' : 'bg-[#5EB669]'
-                  }`}
+                  )}
                 >
                   {isDeployStatus ? '배포중' : '배포'}
                 </button>
