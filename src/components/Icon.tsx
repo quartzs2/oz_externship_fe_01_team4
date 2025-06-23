@@ -3,16 +3,18 @@ import { cn } from '@utils/cn'
 
 export default function Icon({
   icon: ImgIcon,
-  size = 20,
+  size = 18,
   color = 'text-primary-600',
   className,
-  classNameIcon,
+  iconClassName,
 }: IconProps) {
   return (
-    <div className={cn(`flex items-center justify-center`, className)}>
+    <div className={cn(`flex items-center justify-center`, className)} style={{
+          width: `${size}px`,
+          height:`${size}px`,
+        }}>
       <ImgIcon
-        className={cn(color, classNameIcon)}
-        style={{ width: `${size}px`, height: `${size}px` }}
+        className={cn(color, iconClassName)}
       />
     </div>
   )

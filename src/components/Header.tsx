@@ -1,4 +1,4 @@
-import Profile from '@assets/Profile.svg'
+import Profile from '@assets/icons/profile.svg'
 import type { User } from '@customType/user'
 
 type HeaderProps = {

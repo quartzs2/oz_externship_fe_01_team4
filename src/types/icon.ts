@@ -4,8 +4,8 @@ export type SvgIconComponent = ComponentType<SVGProps<SVGSVGElement>>
 
 export type IconProps = {
   icon: SvgIconComponent
-  size?: number | string
+  size?: number
   color?: string
   className?: string
-  classNameIcon?: string
+  iconClassName?: string
 }
