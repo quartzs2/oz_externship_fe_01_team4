@@ -12,9 +12,11 @@ export default function SideBarMenu({ menuData }: Menu) {
   return (
     <aside>
       <div className="border border-[#ececec] h-full max-w-[261px]">
-        <h1 className="text-2xl text-grey-500 font-semibold border-b border-[#F3EEFF] py-7 px-8">
-          오즈코딩스쿨 관리자
-        </h1>
+        <div className="border-b border-[#F3EEFF] h-[80px] px-8 flex items-center">
+          <h1 className="text-2xl text-grey-500 font-semibold">
+            오즈코딩스쿨 관리자
+          </h1>
+        </div>
         <ul>
           {menuData.map((menu) => (
             <SideBarMenuItem

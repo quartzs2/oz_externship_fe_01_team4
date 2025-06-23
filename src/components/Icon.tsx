@@ -3,16 +3,23 @@ import { cn } from '@utils/cn'
 
 export default function Icon({
   icon: ImgIcon,
-  size = 20,
+  width = 18,
+  height = 18,
   color = 'text-primary-600',
   className,
-  classNameIcon,
+  IconClassName,
 }: IconProps) {
+  const formatSizeValue = (value: number | string) =>
+    typeof value === 'number' ? `${value}px` : value
+
   return (
     <div className={cn(`flex items-center justify-center`, className)}>
       <ImgIcon
-        className={cn(color, classNameIcon)}
-        style={{ width: `${size}px`, height: `${size}px` }}
+        className={cn(color, IconClassName)}
+        style={{
+          width: formatSizeValue(width),
+          height: formatSizeValue(height),
+        }}
       />
     </div>
   )
