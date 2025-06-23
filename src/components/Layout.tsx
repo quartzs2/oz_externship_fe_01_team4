@@ -1,5 +1,5 @@
 import Header from '@components/Header'
-import { menuData } from '@components/Sidebar/menuData'
+import { menuData } from '@constants/menuData'
 import SideBarMenu from '@components/Sidebar/SideBarMenu'
 import { Outlet } from 'react-router'
 

@@ -20,15 +20,15 @@ export default function SideBarMenuItem({ menu, isOpen, onToggle }: MenuProps) {
       <button
         className={cn(
           'text-primary-600 text-[18px] cursor-pointer flex items-center justify-between gap-2 py-5 px-8 w-full',
-          isOpen ? 'bg-[#EDE6FFB0]' : ''
+          {'bg-[#EDE6FFB0]' : isOpen}
         )}
         onClick={onToggle}
       >
-        <div className="flex gap-2">
-          <Icon icon={menu.menuIcon} className="w-[22px]" width={24} />
+        <div className="flex gap-2 items-center">
+          <Icon icon={menu.menuIcon} className="w-[22px]" size={24} />
           <span className="text-primary-600 text-[18px]">{menu.mainMenu}</span>
         </div>
-        <Icon icon={isOpen ? DownIcon : UpIcon} width={12} />
+        <Icon icon={isOpen ? DownIcon : UpIcon} size={12} />
       </button>
       {isOpen && (
         <ul>
