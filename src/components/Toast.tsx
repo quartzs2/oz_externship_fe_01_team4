@@ -7,7 +7,7 @@ import {
   WHITE_BG_STYLES,
   translucentBgMap,
 } from '@constants/ToastConstant'
-import { iconMap, type ToastStyle, type ToastType } from '@constants/IconMap'
+import { iconMap, type ToastStyle, type ToastType } from '@constants/iconMap'
 import { closeIconMap } from '@constants/CloseIconMap'
 import { typeConfig } from '@constants/ToastTypeConfig'
 
