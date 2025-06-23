@@ -1,4 +1,5 @@
 import type { TableHeader } from '@customType/table'
+import { SORT_ORDER, type SortOrder } from '@hooks/dataTable/useSort'
 
 type Props = {
   headers: TableHeader[]
@@ -6,7 +7,7 @@ type Props = {
   isAllChecked: boolean
   sortKeys: string[]
   sortKey: string | null
-  sortOrder: 'asc' | 'desc'
+  sortOrder: SortOrder
   onSort: (key: string) => void
   onToggleAll: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
@@ -42,7 +43,7 @@ export default function TableHeader({
               <span>{header.text}</span>
               {sortKeys.includes(header.dataKey) && (
                 <button onClick={() => onSort(header.dataKey)}>
-                  {sortKey === header.dataKey && sortOrder === 'desc'
+                  {sortKey === header.dataKey && sortOrder === SORT_ORDER.DESC
                     ? '▼'
                     : '▲'}
                 </button>
