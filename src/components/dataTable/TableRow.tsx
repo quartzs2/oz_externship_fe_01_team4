@@ -1,5 +1,6 @@
 import type { TableHeader, TableRowData } from '@customType/table'
 import { cn } from '@utils/cn'
+import { useState } from 'react'
 
 type Props = {
   data: TableRowData
@@ -22,6 +23,15 @@ export default function TableRow({
   isDeploySwitch,
   isDeployStatus,
 }: Props) {
+  const [deployStatus, setDeployStatus] = useState(isDeployStatus)
+
+  const handleDeploy = () => {
+    setDeployStatus(true)
+  }
+  const toggleSwitch = () => {
+    setDeployStatus((prev) => !prev)
+  }
+
   return (
     <tr className="h-[50px] border-b border-gray-200 text-center hover:bg-gray-50">
       {isCheckBox && (
@@ -40,11 +50,14 @@ export default function TableRow({
               return (
                 <button
                   className={cn(
-                    'rounded-[5px] px-4 py-1.5 text-white',
-                    isDeployStatus ? 'bg-[#aadfb1]' : 'bg-[#5EB669]'
+                    'text-bold rounded-[5px] px-4 py-1 font-bold',
+                    deployStatus
+                      ? 'bg-[#edffef] text-[#5EB669]'
+                      : 'bg-[#5EB669] text-[white]'
                   )}
+                  onClick={handleDeploy}
                 >
-                  {isDeployStatus ? '배포중' : '배포'}
+                  {deployStatus ? '배포중' : '배포'}
                 </button>
               )
             }
@@ -54,7 +67,8 @@ export default function TableRow({
                 <label className="relative inline-flex cursor-pointer items-center">
                   <input
                     type="checkbox"
-                    checked={isDeployStatus}
+                    checked={deployStatus}
+                    onChange={toggleSwitch}
                     className="peer sr-only"
                   />
                   <div className="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-[#5EB669] peer-focus:ring-2 peer-focus:ring-[#5EB669] peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
