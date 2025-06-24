@@ -5,7 +5,7 @@ import CloseGreenIcon from '@assets/icons/toast/close_green.svg?react'
 import CloseRedIcon from '@assets/icons/toast/close_red.svg?react'
 import CloseYellowIcon from '@assets/icons/toast/close_yellow.svg?react'
 
-import type { ToastType, ToastStyle } from './IconMap'
+import type { ToastType, ToastStyle } from '@constants/IconMap'
 import type { SvgIconComponent } from '@customType/icon'
 
 export const closeIconMap: Record<
