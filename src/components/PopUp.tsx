@@ -7,35 +7,55 @@ import WarningIcon from '@assets/icons/popup/error.svg?react'
 import ErrorIcon from '@assets/icons/popup/deleteConfirm.svg?react'
 import { POP_UP_TYPE, type PopUpType } from '@constants/popUp'
 import { PADDING_SIZE } from '@constants/modal'
+import type { ReactNode } from 'react'
+
+const CIRCLE_TOP_HEIGHT = 37 - PADDING_SIZE.DEFAULT
+
+const Title = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="pt-[14px] text-[18px] font-semibold text-grey-600">
+      {children}
+    </div>
+  )
+}
+
+const Description = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="pt-[14px] text-center text-[14px] break-keep whitespace-pre-line text-grey-500">
+      {children}
+    </div>
+  )
+}
+
+const Buttons = ({ children }: { children: React.ReactNode }) => (
+  <div className="absolute bottom-[24px] flex w-full justify-center gap-x-[6px] pt-4">
+    {children}
+  </div>
+)
 
 type PopUpProps = {
   isOpen: boolean
   onClose: () => void
   type: PopUpType
+  children: ReactNode
 }
 
 const POP_UP_CONFIG = {
   [POP_UP_TYPE.SUCCESS]: {
-    title: '게시글 수정이 정상적으로 완료되었습니다.',
-    description: '리스트에서 변경사항이 잘 적용되었는지 확인해보세요.',
     icon: SuccessIcon,
     iconBgColor: 'rgba(124,53,217,0.1)',
   },
   [POP_UP_TYPE.ERROR]: {
-    title: '게시글 수정 중 오류가 발생하였습니다.',
-    description: '해당 오류가 지속적으로 발생하는 경우\n관리자에게 문의하세요.',
     icon: WarningIcon,
     iconBgColor: 'rgba(246,168,24,0.21)',
   },
   [POP_UP_TYPE.DELETE_CONFIRM]: {
-    title: '해당 댓글을 정말 삭제하시겠습니까?',
-    description: '댓글을 삭제하면 다시 되돌릴 수 없습니다.',
     icon: ErrorIcon,
     iconBgColor: 'rgba(204,10,10,0.12)',
   },
 }
 
-const PopUp = ({ isOpen, onClose, type }: PopUpProps) => {
+const PopUp = ({ isOpen, onClose, type, children }: PopUpProps) => {
   const config = POP_UP_CONFIG[type]
 
   if (!config) {
@@ -56,20 +76,18 @@ const PopUp = ({ isOpen, onClose, type }: PopUpProps) => {
         )}
         style={{
           backgroundColor: config.iconBgColor,
-          marginTop: `${37 - PADDING_SIZE.DEFAULT}px`,
+          marginTop: `${CIRCLE_TOP_HEIGHT}px`,
         }}
       >
         <Icon icon={config.icon} size={42} />
       </div>
-      <div className="pt-[14px] text-[18px] font-semibold text-grey-600">
-        {config.title}
-      </div>
-      <div className="pt-[14px] text-center text-[14px] break-keep whitespace-pre-line text-grey-500">
-        {config.description}
-      </div>
-      {/* TODO: Button 들어갈 위치*/}
+      {children}
     </Modal>
   )
 }
+
+PopUp.Title = Title
+PopUp.Description = Description
+PopUp.Buttons = Buttons
 
 export default PopUp
