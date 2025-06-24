@@ -6,6 +6,7 @@ import { useModalStore } from '@store/modalStore'
 import { cn } from '@utils/cn'
 import { useEffect, type ReactNode } from 'react'
 import CloseIcon from '@assets/icons/modal/close.svg?react'
+import { PADDING_SIZE } from '@constants/modal'
 
 type ModalProps = {
   modalId: string
@@ -14,7 +15,9 @@ type ModalProps = {
   children: ReactNode
   className?: string
   hasCloseButton?: boolean
+  closeButtonOffset?: number
   isBackgroundDimmed?: boolean
+  paddingSize?: number
 }
 
 const Modal = ({
@@ -24,9 +27,12 @@ const Modal = ({
   children,
   className,
   hasCloseButton = true,
+  closeButtonOffset,
   isBackgroundDimmed = true,
+  paddingSize = PADDING_SIZE.DEFAULT,
 }: ModalProps) => {
   const { openModal, closeModal, openModals, getTopModal } = useModalStore()
+  const closeButtonPosition = closeButtonOffset ?? paddingSize
 
   useEffect(() => {
     if (isOpen) {
@@ -68,14 +74,24 @@ const Modal = ({
         }}
       >
         <div
-          className={cn('relative rounded-[6px] bg-white p-5', className)}
+          className={cn(
+            'modal-shadow relative flex flex-col rounded-[6px] bg-white',
+            className
+          )}
+          style={{
+            padding: `${paddingSize}px`,
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           {children}
           {hasCloseButton && (
             <button
               onClick={onClose}
-              className="absolute top-2.5 right-2.5 p-1 text-gray-500 hover:text-gray-700"
+              className="absolute cursor-pointer"
+              style={{
+                top: `${closeButtonPosition}px`,
+                right: `${closeButtonPosition}px`,
+              }}
             >
               <Icon icon={CloseIcon} size={24} />
             </button>

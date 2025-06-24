@@ -21,29 +21,32 @@
 }
 
 @font-face {
-	font-family: 'Pretendard Variable';
-	font-weight: 45 920;
-	font-style: normal;
-	font-display: swap;
+  font-family: 'Pretendard Variable';
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
   src: url('./assets/fonts/PretendardVariable.woff2') format('woff2-variations');
 }
 
+:root {
+  --tw-modal-shadow: 1px 1px 7px 0px rgba(0, 0, 0, 0.25);
+}
 
 body {
   font-family:
-    "Pretendard Variable",
+    'Pretendard Variable',
     Pretendard,
     -apple-system,
     BlinkMacSystemFont,
     system-ui,
     Roboto,
-    "Helvetica Neue",
-    "Segoe UI",
-    "Apple SD Gothic Neo",
-    "Noto Sans KR",
-    "Malgun Gothic",
-    "Apple Color Emoji",
-    "Segoe UI Emoji",
-    "Segoe UI Symbol",
+    'Helvetica Neue',
+    'Segoe UI',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'Malgun Gothic',
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
     sans-serif;
 }
