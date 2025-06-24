@@ -1,6 +1,5 @@
 import TableHeader from '@components/dataTable/TableHeader'
 import TableRow from '@components/dataTable/TableRow'
-import { useSort } from '@hooks/dataTable/useSort'
 import { useSelection } from '@hooks/dataTable/useSelection'
 import type { DataTableProps } from '@customType/table'
 
@@ -10,15 +9,15 @@ export default function DataTable({
   isCheckBox,
   isDeploy,
   isDeploySwitch,
-  isDeployStatus,
   sortKeys = [],
+  sortKey,
+  sortOrder,
+  sortByKey,
 }: DataTableProps) {
-  const { sortedData, sortKey, sortOrder, sortByKey } = useSort(tableItem)
-
   const { checkedItems, toggleItem, toggleAll, isAllChecked } = useSelection()
 
   // 빈 행 개수 계산
-  const emptyCount = 10 - sortedData.length
+  const emptyCount = 10 - tableItem.length
 
   return (
     <div className="overflow-x-auto">
@@ -30,16 +29,16 @@ export default function DataTable({
           sortKey={sortKey}
           sortOrder={sortOrder}
           onSort={sortByKey}
-          isAllChecked={isAllChecked(sortedData.map((i) => String(i.id)))}
+          isAllChecked={isAllChecked(tableItem.map((i) => String(i.id)))}
           onToggleAll={(e) =>
             toggleAll(
-              sortedData.map((i) => String(i.id)),
+              tableItem.map((i) => String(i.id)),
               e.target.checked
             )
           }
         />
         <tbody>
-          {sortedData.map((item) => (
+          {tableItem.map((item) => (
             <TableRow
               key={item.id}
               data={item}
@@ -49,7 +48,6 @@ export default function DataTable({
               onToggle={(checked) => toggleItem(String(item.id), checked)}
               isDeploy={isDeploy}
               isDeploySwitch={isDeploySwitch}
-              isDeployStatus={isDeployStatus}
             />
           ))}
 
