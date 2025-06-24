@@ -1,3 +1,5 @@
+import ErrorIcon from "@assets/icons/input/error.svg?react"
+import Icon from "@components/Icon";
 import { cn } from "@utils/cn";
 import React from "react";
 
@@ -11,7 +13,9 @@ type InputProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
-  className?: string;
+  labelClassName?: string;
+  inputClassName?: string;
+  wrapClassName?: string;
 };
 
 const Input = ({
@@ -23,14 +27,22 @@ const Input = ({
   value,
   onChange,
   error,
-  className
+  labelClassName,
+  inputClassName,
+  wrapClassName
 }: InputProps) => {
   
   return (
-    <div className="flex items-center">
-      {label && <label htmlFor={id} className="text-[14px]">{label}</label>}
+    <div className={cn('flex items-center', wrapClassName)}>
+      {label && (
+        <label htmlFor={id} className={cn('text-[14px]', labelClassName)}>
+          {label}
+        </label>
+    )}
 
-      <div className={cn('flex items-center w-[300px] h-[36px] rounded-[3px] pl-[12px] pr-[9px] py-[10px] text-[14px] bg-white border-1 border-[#AAA]', {'border-[#FDA29B]': error}, className)}>
+      <div className={cn(
+        'flex items-center w-[300px] h-[36px] rounded-[3px] pl-[12px] pr-[9px] py-[10px] text-[14px] bg-white border-1 border-[#AAA]',
+        {'border-[#FDA29B]': error}, inputClassName)}>
 
         <input 
           id={id}
@@ -42,7 +54,7 @@ const Input = ({
           className="w-full placeholder-[#AAA] outline-none"
         />
 
-        {error && <span className="w-[16px] h-[16px] text-[#FDA29B] text-center">!</span>}
+        {error && <Icon icon={ErrorIcon} size={16}/>}
 
       </div>
     </div>
