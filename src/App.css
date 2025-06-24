@@ -21,10 +21,17 @@
 }
 
 @font-face {
+<<<<<<< HEAD
   font-family: 'Pretendard Variable';
   font-weight: 45 920;
   font-style: normal;
   font-display: swap;
+=======
+	font-family: 'Pretendard Variable';
+	font-weight: 45 920;
+	font-style: normal;
+	font-display: swap;
+>>>>>>> cc7caec (style: 폰트 경로 public에서 assets으로 이동(#36))
   src: url('./assets/fonts/PretendardVariable.woff2') format('woff2-variations');
 }
 
