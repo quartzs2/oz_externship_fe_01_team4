@@ -24,10 +24,12 @@ export function useSort(initialData: TableRowData[]) {
       if (typeof valA === 'number' && typeof valB === 'number') {
         return sortOrder === SORT_ORDER.ASC ? valA - valB : valB - valA
       }
+
       return sortOrder === SORT_ORDER.ASC
         ? String(valA).localeCompare(String(valB), undefined, { numeric: true })
         : String(valB).localeCompare(String(valA), undefined, { numeric: true })
     })
+
     return sorted
   }, [initialData, sortKey, sortOrder])
 
