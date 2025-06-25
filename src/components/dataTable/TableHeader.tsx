@@ -22,6 +22,10 @@ export default function TableHeader({
   isAllChecked,
   onToggleAll,
 }: Props) {
+  const SORT_ICON = {
+    ASC: '▲',
+    DESC: '▼',
+  }
   return (
     <thead className="h-[50px] bg-[#F7F7F7]">
       <tr>
@@ -44,8 +48,8 @@ export default function TableHeader({
               {sortKeys.includes(header.dataKey) && (
                 <button onClick={() => onSort(header.dataKey)}>
                   {sortKey === header.dataKey && sortOrder === SORT_ORDER.DESC
-                    ? '▼'
-                    : '▲'}
+                    ? SORT_ICON.DESC
+                    : SORT_ICON.ASC}
                 </button>
               )}
             </div>
