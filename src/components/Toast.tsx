@@ -12,7 +12,7 @@ import {
   type ToastStyle,
   type ToastType,
 } from '@constants/toast/toastIconMap'
-import { closeIconMap } from '@constants/toast/colseIconMap'
+import { closeIconMap } from '@constants/toast/closeIconMap'
 import { typeConfig } from '@constants/toast/toastTypeConfig'
 
 export type CustomToastProps = {
