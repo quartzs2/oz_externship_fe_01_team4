@@ -15,4 +15,8 @@ export const DEFAULT_BUTTON_VARIANT = 'VARIANT1';
 } as const;
 
 export const DEFAULT_BUTTON_VARIANT = 'REGISTER';
+<<<<<<< HEAD
 >>>>>>> d81f284 (feat: 버튼 구현(#17))
+=======
+>>>>>>> c805994 (feat: 버튼 구현(#17))
+>>>>>>> ca1202b (feat: 버튼 구현(#17))
