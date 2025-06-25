@@ -1,3 +1,5 @@
+import type { SortOrder } from '@hooks/dataTable/useSort'
+
 export type TableRowData = {
   id: number // string 제거
   [key: string]: string | number
@@ -17,6 +19,9 @@ export type DataTableProps = {
   isDeploy?: boolean
   isDeployStatus?: boolean
   isDeploySwitch?: boolean
+  sortKey: string | null
+  sortOrder: SortOrder
+  sortByKey: (key: string) => void
 }
 
 export type Pagination = {
