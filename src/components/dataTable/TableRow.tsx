@@ -23,6 +23,27 @@ export default function TableRow({
   isDeployStatus,
   isTime,
 }: Props) {
+  const DATA_KEYS = {
+    DEPLOY: 'deploy',
+    DEPLOY_SWITCH: 'deploySwitch',
+    CREATED_AT: 'created_at',
+    UPDATED_AT: 'updated_at',
+    TYPE: 'type',
+    ROLE: 'role',
+  } as const
+
+  const CATEGORY_TYPE = {
+    LARGE: '대',
+    MEDIUM: '중',
+    SMALL: '소',
+  } as const
+
+  const USER_ROLE = {
+    ADMIN: 'ADMIN',
+    STAFF: 'STAFF',
+    STUDENT: 'STUDENT',
+  }
+
   const [deployStatus, setDeployStatus] = useState(isDeployStatus)
 
   const handleDeploy = () => {
@@ -61,19 +82,22 @@ export default function TableRow({
             const value = data[header.dataKey]
 
             // 공백 대시 처리
-            if (
-              (value === undefined ||
-                value === null ||
-                (Array.isArray(value) && value.length === 0) ||
-                value === '') &&
-              header.dataKey !== 'deploy' && // deploy인 경우는 무시
-              header.dataKey !== 'deploySwitch' // deploySwitch인 경우도 무시
-            ) {
+            const isValueEmpty =
+              value === undefined ||
+              value === null ||
+              value === '' ||
+              (Array.isArray(value) && value.length === 0)
+
+            const isNotIgnoredKey =
+              header.dataKey !== DATA_KEYS.DEPLOY &&
+              header.dataKey !== DATA_KEYS.DEPLOY_SWITCH
+
+            if (isValueEmpty && isNotIgnoredKey) {
               return '-'
             }
 
             switch (header.dataKey) {
-              case 'deploy':
+              case DATA_KEYS.DEPLOY:
                 return (
                   <button
                     className={cn(
@@ -84,7 +108,7 @@ export default function TableRow({
                     배포
                   </button>
                 )
-              case 'deploySwitch':
+              case DATA_KEYS.DEPLOY_SWITCH:
                 return (
                   <label className="relative inline-flex cursor-pointer items-center">
                     <input
@@ -93,24 +117,32 @@ export default function TableRow({
                       onChange={toggleSwitch}
                       className="peer sr-only"
                     />
-                    <div className="peer h-6 w-11 rounded-full bg-[#DDDDDD] peer-checked:bg-[#5EB669] peer-focus:ring-2 peer-focus:ring-[#5EB669] peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-[#F5F5F5] after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-[#F5F5F5]"></div>
+                    <div
+                      className={cn(
+                        `peer peer-checked:bg-[#5EB669] peer-focus:ring-2 peer-focus:ring-[#5EB669] peer-focus:outline-none`,
+                        `peer-checked:after:translate-x-full peer-checked:after:border-[#F5F5F5]`,
+                        `after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full`,
+                        `after:border after:border-[#F5F5F5] after:bg-white after:transition-all after:content-['']`,
+                        `h-6 w-11 rounded-full bg-[#DDDDDD]`
+                      )}
+                    ></div>
                   </label>
                 )
-              case 'type':
+              case DATA_KEYS.TYPE:
                 switch (value) {
-                  case '대':
+                  case CATEGORY_TYPE.LARGE:
                     return (
                       <div className="mx-auto w-[30%] rounded-[5px] bg-[#522193] py-1 font-bold text-[#F7F7F7]">
                         대분류
                       </div>
                     )
-                  case '중':
+                  case CATEGORY_TYPE.MEDIUM:
                     return (
                       <div className="mx-auto w-[30%] rounded-[5px] bg-[#d7cbf7] py-1 font-bold text-[#522193]">
                         중분류
                       </div>
                     )
-                  case '소':
+                  case CATEGORY_TYPE.SMALL:
                     return (
                       <div className="mx-auto w-[30%] rounded-[5px] bg-[#f2effd] py-1 font-bold text-[#522193]">
                         소분류
@@ -119,21 +151,21 @@ export default function TableRow({
                   default:
                     return value
                 }
-              case 'role':
+              case DATA_KEYS.ROLE:
                 switch (value) {
-                  case 'ADMIN':
+                  case USER_ROLE.ADMIN:
                     return (
                       <div className="mx-auto w-[30%] rounded-[5px] bg-[#522193] py-1 font-bold text-[#F7F7F7]">
                         Admin
                       </div>
                     )
-                  case 'STUDENT':
+                  case USER_ROLE.STUDENT:
                     return (
                       <div className="mx-auto w-[30%] rounded-[5px] bg-[#d7cbf7] py-1 font-bold text-[#522193]">
                         Student
                       </div>
                     )
-                  case 'STAFF':
+                  case USER_ROLE.STAFF:
                     return (
                       <div className="mx-auto w-[30%] rounded-[5px] bg-[#f2effd] py-1 font-bold text-[#522193]">
                         Staff
@@ -142,8 +174,8 @@ export default function TableRow({
                   default:
                     return value
                 }
-              case 'created_at':
-              case 'updated_at':
+              case DATA_KEYS.CREATED_AT:
+              case DATA_KEYS.UPDATED_AT:
                 return formatIsoToDotDateTime(String(value))
               default:
                 return value
