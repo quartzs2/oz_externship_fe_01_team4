@@ -1,36 +1,34 @@
-import React from 'react'
+import { BUTTON_VARIANTS, DEFAULT_BUTTON_VARIANT } from "@constants/button";
+import { cn } from "@utils/cn"
 
+
+type ButtonVariant = keyof typeof BUTTON_VARIANTS;
 
 type ButtonProps = {
-  children: React.ReactNode
-  onClick?: () => void
-  disabled?: boolean
-  variant?: 'register' | 'delete' | 'cancel'
-  className?: string
-}
-
-const baseStyle = 'px-4 py-2 rounded font-semibold focus:outline-none '
-
-const variantStyles = {
-  register: 'bg-blue-500 hover:bg-blue-600 text-white',
-  delete: 'bg-red-500 hover:bg-red-600 text-white',
-  cancel: 'bg-gray-300 hover:bg-gray-400 text-black',
-}
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  variant?: ButtonVariant; 
+  className?: string;
+};
 
 const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
   disabled = false,
-  variant = 'register',
-  className = '',
+  variant = DEFAULT_BUTTON_VARIANT, 
+  className
 }) => {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${baseStyle} ${variantStyles[variant]} ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
-      } ${className}`}
+      className={cn(
+        'px-4 py-2 rounded font-semibold focus:outline-none absolute w-[55px] h-[36px]',
+        BUTTON_VARIANTS[variant],
+        {'opacity-50 cursor-not-allowed' : disabled},
+        className
+      )}
     >
       {children}
     </button>
