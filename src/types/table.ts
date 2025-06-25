@@ -2,7 +2,7 @@ import type { SortOrder } from '@hooks/dataTable/useSort'
 
 export type TableRowData = {
   id: number // string 제거
-  [key: string]: string | number
+  [key: string]: string | number | string[] | null // 타입추가
 }
 
 export type TableHeader = {
@@ -22,6 +22,7 @@ export type DataTableProps = {
   sortKey: string | null
   sortOrder: SortOrder
   sortByKey: (key: string) => void
+  isTime: boolean
 }
 
 export type Pagination = {
