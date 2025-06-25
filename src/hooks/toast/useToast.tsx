@@ -1,6 +1,6 @@
 import { toast } from 'react-hot-toast'
 import { CustomToast } from '@components/Toast'
-import type { ToastStyle, ToastType } from '@constants/iconMap'
+import type { ToastStyle, ToastType } from '@constants/toast/toastIconMap'
 
 type ShowToastOptions = {
   message: string
@@ -15,6 +15,7 @@ type ShowToastOptions = {
 }
 
 export const useCustomToast = () => {
+  // showToast 함수는 내부적으로만 사용됩니다.
   const showToast = ({
     message,
     type = 'default',
@@ -47,7 +48,6 @@ export const useCustomToast = () => {
   }
 
   return {
-    show: showToast,
     success: (message: string, options: Partial<ShowToastOptions> = {}) =>
       showToast({ message, type: 'success', ...options }),
     error: (message: string, options: Partial<ShowToastOptions> = {}) =>

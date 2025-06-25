@@ -1,4 +1,4 @@
-import { type ToastType } from '@constants/toastIconMap'
+import { type ToastType } from '@constants/toast/toastIconMap'
 
 export const TOAST_CONSTANTS = {
   DEFAULT_TYPE: 'default',

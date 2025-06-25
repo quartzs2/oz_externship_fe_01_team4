@@ -6,10 +6,14 @@ import {
   TOAST_CONSTANTS,
   WHITE_BG_STYLES,
   translucentBgMap,
-} from '@constants/ToastConstant'
-import { iconMap, type ToastStyle, type ToastType } from '@constants/iconMap'
-import { closeIconMap } from '@constants/CloseIconMap'
-import { typeConfig } from '@constants/ToastTypeConfig'
+} from '@constants/toast/toastConstants'
+import {
+  iconMap,
+  type ToastStyle,
+  type ToastType,
+} from '@constants/toast/toastIconMap'
+import { closeIconMap } from '@constants/toast/colseIconMap'
+import { typeConfig } from '@constants/toast/toastTypeConfig'
 
 export type CustomToastProps = {
   id: string
