@@ -19,7 +19,6 @@ type InputProps = {
 };
 
 const Input = ({
-  label,
   id,
   type = 'text',
   name,
@@ -27,36 +26,25 @@ const Input = ({
   value,
   onChange,
   error,
-  labelClassName,
   inputClassName,
-  wrapClassName
 }: InputProps) => {
   
   return (
-    <div className={cn('flex items-center', wrapClassName)}>
-      {label && (
-        <label htmlFor={id} className={cn('text-[14px]', labelClassName)}>
-          {label}
-        </label>
-    )}
+    <div className={cn(
+      'flex items-center w-[300px] h-[36px] rounded-[3px] pl-[12px] pr-[9px] py-[10px] text-[14px] bg-white border-1 border-[#AAA]',
+      {'border-[#FDA29B]': error}, inputClassName)}>
 
-      <div className={cn(
-        'flex items-center w-[300px] h-[36px] rounded-[3px] pl-[12px] pr-[9px] py-[10px] text-[14px] bg-white border-1 border-[#AAA]',
-        {'border-[#FDA29B]': error}, inputClassName)}>
+      <input 
+        id={id}
+        type={type}
+        name={name}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="w-full placeholder-[#AAA] outline-none"
+      />
 
-        <input 
-          id={id}
-          type={type}
-          name={name}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          className="w-full placeholder-[#AAA] outline-none"
-        />
-
-        {error && <Icon icon={ErrorIcon} size={16}/>}
-
-      </div>
+      {error && <Icon icon={ErrorIcon} size={16}/>}
     </div>
   );
 }
