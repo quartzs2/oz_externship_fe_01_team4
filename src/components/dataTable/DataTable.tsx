@@ -13,15 +13,17 @@ export default function DataTable({
   sortKey,
   sortOrder,
   sortByKey,
+  isTime,
 }: DataTableProps) {
   const { checkedItems, toggleItem, toggleAll, isAllChecked } = useSelection()
 
   // 빈 행 개수 계산
-  const emptyCount = 10 - tableItem.length
+  const emptyRow = 10
+  const emptyCount = emptyRow - tableItem.length
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full table-fixed border border-gray-300 text-left text-sm text-gray-700">
+      <table className="min-w-full table-fixed border-t-1 border-[#DDDDDD] text-left text-sm">
         <TableHeader
           headers={headerData}
           isCheckBox={isCheckBox}
@@ -48,17 +50,18 @@ export default function DataTable({
               onToggle={(checked) => toggleItem(String(item.id), checked)}
               isDeploy={isDeploy}
               isDeploySwitch={isDeploySwitch}
+              isTime={isTime}
             />
           ))}
 
           {/* 빈 행 */}
           {Array.from({ length: emptyCount }).map((_, idx) => (
             <tr key={`empty-${idx}`} className="h-[50px]">
-              {isCheckBox && <td className="w-12 border-b border-gray-200" />}
+              {isCheckBox && <td className="w-12 border-b border-[#DDDDDD]" />}
               {headerData.map((_, colIdx) => (
                 <td
                   key={colIdx}
-                  className="w-[150px] border-b border-gray-200"
+                  className="w-[150px] border-b border-[#DDDDDD]"
                 />
               ))}
             </tr>

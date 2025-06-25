@@ -23,10 +23,10 @@ export default function TableHeader({
   onToggleAll,
 }: Props) {
   return (
-    <thead className="h-[50px] bg-gray-100">
+    <thead className="h-[50px] bg-[#F7F7F7]">
       <tr>
         {isCheckBox && (
-          <th className="w-12 border-b border-gray-300 p-2 text-center">
+          <th className="w-12 border-y border-[#DDDDDD] p-2 text-center">
             <input
               type="checkbox"
               checked={isAllChecked}
@@ -37,7 +37,7 @@ export default function TableHeader({
         {headers.map((header) => (
           <th
             key={header.dataKey}
-            className="border-b border-gray-300 p-2 text-center"
+            className="border-b border-[#DDDDDD] p-2 text-center"
           >
             <div className="flex items-center justify-center gap-1">
               <span>{header.text}</span>
