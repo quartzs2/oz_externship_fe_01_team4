@@ -5,7 +5,6 @@ import React from "react";
 
 // input 컴포넌트 props 타입 정의
 type InputProps = {
-  label?: string;
   id: string;
   type?: string;
   name: string;
@@ -13,9 +12,7 @@ type InputProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
-  labelClassName?: string;
   inputClassName?: string;
-  wrapClassName?: string;
 };
 
 const Input = ({
