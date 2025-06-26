@@ -37,10 +37,10 @@ export const menuData: MenuItem[] = [
     menuIcon: TestIcon,
     mainMenu: '쪽지시험 관리',
     subMenu: [
-      { name: '쪽지시험 관리', path: '' },
-      { name: '배포 내역 관리', path: '' },
-      { name: '응시 내역 관리', path: '' },
-      { name: '쪽지시험 대시보드', path: '' },
+      { name: '쪽지시험 관리', path: '/quizzes' },
+      { name: '배포 내역 관리', path: '/quizzes/deployments' },
+      { name: '응시 내역 관리', path: '/quizzes/submissions' },
+      { name: '쪽지시험 대시보드', path: '/quizzes/dashboard' },
     ],
   },
 ]

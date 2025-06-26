@@ -6,10 +6,20 @@ import { Routes, Route } from 'react-router'
 import Layout from '@components/Layout'
 import Main from '@pages/Main'
 import NotFound from '@pages/NotFound'
+import Quizzes from '@pages/quizzes/quizzes'
+import Deployments from '@pages/quizzes/Deployments'
+import Submissions from '@pages/quizzes/Submissions'
+import Dashboard from '@pages/quizzes/Dashboard'
 
 function App() {
   const ROUTES = [
     { element: <Main />, path: '/' },
+    // Quiz
+    { element: <Quizzes />, path: '/quizzes' },
+    { element: <Deployments />, path: '/quizzes/deployments' },
+    { element: <Submissions />, path: '/quizzes/submissions' },
+    { element: <Dashboard />, path: '/quizzes/dashboard' },
+    // Not Found
     { element: <NotFound />, path: '*' },
   ]
 
