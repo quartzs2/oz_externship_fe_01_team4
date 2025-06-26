@@ -17,7 +17,7 @@ const FormRow = ({
   children,
 }: FormRowProps) => {
   return (
-    <div className="inline-flex h-[50px] items-center border-t border-[#DDD]">
+    <div className="inline-flex min-h-[50px] items-center border-t border-[#DDD]">
       <Label
         htmlFor={htmlFor}
         labelText={labelText}
