@@ -1,5 +1,5 @@
 import { cn } from '@utils/cn'
-// 수정 뭐했는지 체크
+
 type LabelProps = {
   htmlFor: string
   labelText: string

@@ -9,7 +9,6 @@ type FormRowProps = {
   children: React.ReactNode
 }
 
-// 보더 없이 pr??
 const FormRow = ({
   labelText,
   htmlFor,
