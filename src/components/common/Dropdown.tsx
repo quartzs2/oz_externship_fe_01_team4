@@ -1,5 +1,6 @@
 import ArrowIcon from '@assets/icons/input/arrow.svg?react'
 import CheckIcon from '@assets/icons/input/check.svg?react'
+import { Z_INDEX_DEFINE } from '@constants/zIndexDefine'
 import { cn } from '@utils/cn'
 import { useState } from 'react'
 
@@ -16,7 +17,6 @@ type DropdownProps = {
   options: Option[]
   placeholder?: string
   wrapClassName?: string
-  buttonClassName?: string
 }
 
 const Dropdown = ({
@@ -27,7 +27,6 @@ const Dropdown = ({
   options,
   placeholder,
   wrapClassName,
-  buttonClassName,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -42,23 +41,21 @@ const Dropdown = ({
     options[0].label
 
   return (
-    <div className={cn('flex w-[300px] flex-col gap-[2px]', wrapClassName)}>
+    <div className={cn('relative flex w-[300px] flex-col', wrapClassName)}>
       <button
         id={id}
         name={name}
         value={value}
         onClick={() => setIsOpen((prev) => !prev)}
-        className={cn(
-          'flex h-[36px] w-full cursor-pointer items-center justify-between rounded-[4px] border-1 border-[#DDD] bg-white py-[10px] pr-[10px] pl-[12px] outline-none',
-          buttonClassName
-        )}
+        className="flex h-[36px] w-full cursor-pointer items-center justify-between rounded-[4px] border-1 border-[#DDD] bg-white py-[10px] pr-[10px] pl-[12px] outline-none"
       >
         <span className="text-[14px] text-[#666]">{selectedLabel}</span>
         <ArrowIcon width={12} height={16} />
       </button>
 
       {isOpen && (
-        <ul className="custom-scroll custom-shadow flex max-h-[175px] w-[300px] cursor-pointer flex-col overflow-visible overflow-y-auto rounded-[3px] border-1 border-[#DDD] bg-white text-[16px] font-[500] text-[#666]">
+        <ul className="custom-scroll custom-shadow absolute top-full left-0 flex max-h-[175px] w-full translate-y-[2px] cursor-pointer flex-col overflow-visible overflow-y-auto rounded-[3px] border-1 border-[#DDD] bg-white text-[16px] font-[500] text-[#666]"
+        style={{zIndex: Z_INDEX_DEFINE.MODAL}}>
           {options.map((op) => {
             const isSelected = op.value === value
 
