@@ -1,5 +1,5 @@
 import Profile from '@assets/icons/profile.svg'
-import type { User } from '@customType/user'
+import type { User } from '@custom-types/user'
 
 type HeaderProps = {
   user?: User

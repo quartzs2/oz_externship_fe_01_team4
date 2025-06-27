@@ -1,5 +1,5 @@
 import ErrorIcon from '@assets/icons/input/error.svg?react'
-import Icon from '@components/Icon'
+import Icon from '@components/common/Icon'
 import { cn } from '@utils/cn'
 import React from 'react'
 

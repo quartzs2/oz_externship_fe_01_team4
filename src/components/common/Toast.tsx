@@ -1,6 +1,6 @@
 import { toast } from 'react-hot-toast'
 
-import Icon from '@components/Icon'
+import Icon from '@components/common/Icon'
 import { cn } from '@utils/cn'
 import {
   TOAST_CONSTANTS,

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import type { UsePaginationProps } from '@customType/table'
+import type { UsePaginationProps } from '@custom-types/table'
 
 export function usePagination<T>({ item, count }: UsePaginationProps<T>) {
   const [currentPage, setCurrentPage] = useState(1)

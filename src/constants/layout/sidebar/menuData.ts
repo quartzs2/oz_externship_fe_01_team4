@@ -1,4 +1,4 @@
-import type { MenuItem } from '@customType/menu'
+import type { MenuItem } from '@custom-types/menu'
 import UserIcon from '@assets/icons/sidebar/user.svg?react'
 import QnaIcon from '@assets/icons/sidebar/qna.svg?react'
 import CommunityIcon from '@assets/icons/sidebar/community.svg?react'
