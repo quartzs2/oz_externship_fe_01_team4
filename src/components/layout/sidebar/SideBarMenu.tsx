@@ -1,5 +1,5 @@
-import SideBarMenuItem from '@components/Sidebar/SideBarMenuItem'
-import type { MenuItem } from '@customType/menu'
+import SideBarMenuItem from '@components/layout/sidebar/SideBarMenuItem'
+import type { MenuItem } from '@custom-types/menu'
 import { useState } from 'react'
 
 type Menu = {
@@ -11,9 +11,9 @@ export default function SideBarMenu({ menuData }: Menu) {
 
   return (
     <aside>
-      <div className="border border-[#ececec] h-full max-w-[261px]">
-        <div className="border-b border-[#F3EEFF] h-[80px] px-8 flex items-center">
-          <h1 className="text-2xl text-grey-500 font-semibold">
+      <div className="h-full max-w-[261px] border border-[#ececec]">
+        <div className="flex h-[80px] items-center border-b border-[#F3EEFF] px-8">
+          <h1 className="text-2xl font-semibold text-grey-500">
             오즈코딩스쿨 관리자
           </h1>
         </div>

@@ -1,5 +1,5 @@
-import type { TableHeader } from '@customType/table'
-import { SORT_ORDER, type SortOrder } from '@hooks/dataTable/useSort'
+import type { TableHeader } from '@custom-types/table'
+import { SORT_ORDER, type SortOrder } from '@hooks/data-table/useSort'
 
 type Props = {
   headers: TableHeader[]

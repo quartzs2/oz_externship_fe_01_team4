@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast'
 
 import { Routes, Route } from 'react-router'
 
-import Layout from '@components/Layout'
+import Layout from '@components/layout/Layout'
 import Main from '@pages/Main'
 import NotFound from '@pages/NotFound'
 import Quizzes from '@pages/quizzes/Quizzes'
