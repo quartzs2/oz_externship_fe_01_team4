@@ -1,12 +1,12 @@
-import Icon from '@components/Icon'
-import Portal from '@components/Portal'
-import { PORTAL_TARGET_ID } from '@constants/portalTargetId'
+import Icon from '@components/common/Icon'
+import Portal from '@components/common/Portal'
+import { PORTAL_TARGET_ID } from '@constants/portal/portalTargetId'
 import { Z_INDEX_DEFINE } from '@constants/zIndexDefine'
 import { useModalStore } from '@store/modalStore'
 import { cn } from '@utils/cn'
 import { useEffect, type ReactNode } from 'react'
 import CloseIcon from '@assets/icons/modal/close.svg?react'
-import { PADDING_SIZE } from '@constants/modal'
+import { PADDING_SIZE } from '@constants/modal/modal'
 
 type ModalProps = {
   modalId: string

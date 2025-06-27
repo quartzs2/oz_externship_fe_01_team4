@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import type { TableRowData } from '@customType/table'
+import type { TableRowData } from '@custom-types/table'
 
 export const SORT_ORDER = {
   ASC: 'asc',

@@ -1,5 +1,5 @@
-import Icon from '@components/Icon'
-import type { MenuItem } from '@customType/menu'
+import Icon from '@components/common/Icon'
+import type { MenuItem } from '@custom-types/menu'
 import UpIcon from '@assets/icons/sidebar/up.svg?react'
 import DownIcon from '@assets/icons/sidebar/down.svg?react'
 import { cn } from '@utils/cn'
@@ -19,14 +19,14 @@ export default function SideBarMenuItem({ menu, isOpen, onToggle }: MenuProps) {
     <li key={menu.mainMenu} className="w-full">
       <button
         className={cn(
-          'text-primary-600 text-[18px] cursor-pointer flex items-center justify-between gap-2 py-5 px-8 w-full',
-          {'bg-[#EDE6FFB0]' : isOpen}
+          'flex w-full cursor-pointer items-center justify-between gap-2 px-8 py-5 text-[18px] text-primary-600',
+          { 'bg-[#EDE6FFB0]': isOpen }
         )}
         onClick={onToggle}
       >
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           <Icon icon={menu.menuIcon} className="w-[22px]" size={24} />
-          <span className="text-primary-600 text-[18px]">{menu.mainMenu}</span>
+          <span className="text-[18px] text-primary-600">{menu.mainMenu}</span>
         </div>
         <Icon icon={isOpen ? DownIcon : UpIcon} size={12} />
       </button>
@@ -37,7 +37,7 @@ export default function SideBarMenuItem({ menu, isOpen, onToggle }: MenuProps) {
               <Link to={el.path}>
                 <button
                   className={cn(
-                    'px-10 text-sm cursor-pointer py-3',
+                    'cursor-pointer px-10 py-3 text-sm',
                     selectedMenu === el.name
                       ? 'text-primary-600'
                       : 'text-grey-500'

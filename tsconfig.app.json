@@ -14,7 +14,7 @@
       "@hooks/*": ["./src/hooks/*"],
       "@lib/*": ["./src/lib/*"],
       "@pages/*": ["./src/pages/*"],
-      "@customType/*": ["./src/types/*"],
+      "@custom-types/*": ["./src/types/*"],
       "@utils/*": ["./src/utils/*"],
       "@constants/*": ["./src/constants/*"],
       "@store/*": ["./src/store/*"]

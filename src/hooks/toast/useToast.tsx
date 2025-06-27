@@ -1,5 +1,5 @@
 import { toast } from 'react-hot-toast'
-import { CustomToast } from '@components/Toast'
+import { CustomToast } from '@components/common/Toast'
 import type { ToastStyle, ToastType } from '@constants/toast/toastIconMap'
 
 type ShowToastOptions = {
