@@ -43,10 +43,14 @@ const Dropdown = ({
   return (
     <div className={cn('relative flex w-[300px] flex-col', wrapClassName)}>
       <button
+        type="button"
         id={id}
         name={name}
         value={value}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={(e) => {
+          e.stopPropagation()
+          setIsOpen((prev) => !prev)
+        }}
         className="flex h-[36px] w-full cursor-pointer items-center justify-between rounded-[4px] border-1 border-[#DDD] bg-white py-[10px] pr-[10px] pl-[12px] outline-none"
       >
         <span className="text-[14px] text-[#666]">{selectedLabel}</span>
