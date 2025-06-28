@@ -1,0 +1,25 @@
+name: Check if develop is up-to-date
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  check-develop-latest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if PR branch is up-to-date with develop
+        run: |
+          if git merge-base --is-ancestor origin/develop HEAD; then
+            echo "✅ PR branch is up-to-date with develop."
+            exit 0
+          else
+            echo "❌ PR branch is not up-to-date. Please merge the latest changes from develop."
+            exit 1
+          fi
