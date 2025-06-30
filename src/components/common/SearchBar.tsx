@@ -1,4 +1,4 @@
-import Button from '@components/common/Button'
+import Button from '@components/Button'
 import Input from '@components/common/Input'
 import { useState } from 'react'
 
@@ -8,21 +8,15 @@ type SearchBarProps = {
 }
 
 const SearchBar = ({ onSearch, placeholder }: SearchBarProps) => {
-  const [input, setInput] = useState('')
+  const [keyword, setKeyword] = useState('')
 
-  const handleSearch = () => {
-    onSearch(input.trim())
-    setInput('')
-  }
+  const handleSearch = () => onSearch(keyword.trim())
 
   return (
     <div className="inline-flex items-center gap-[10px]">
       <Input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') handleSearch()
-        }}
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value)}
         placeholder={placeholder}
         wrapClassName="w-[250px]"
       />
@@ -30,8 +24,8 @@ const SearchBar = ({ onSearch, placeholder }: SearchBarProps) => {
       <Button
         children="조회"
         onClick={handleSearch}
-        variant="VARIANT6"
-        className="w-[70px]"
+        variant="VARIANT2"
+        className="w-[70px] text-[14px]"
       />
     </div>
   )
