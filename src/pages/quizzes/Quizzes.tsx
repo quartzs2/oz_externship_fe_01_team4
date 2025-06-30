@@ -5,12 +5,12 @@ import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
 import { useSort } from '@hooks/data-table/useSort'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { usePagination } from '@hooks/data-table/usePagination'
 import Dropdown from '@components/common/Dropdown'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
-import axios from 'axios'
+// import axios from 'axios'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -21,31 +21,158 @@ const TableHeaderItem = [
   { text: '응시 수', dataKey: 'submission_count' },
   { text: '등록 일시', dataKey: 'created_at' },
   { text: '수정 일시', dataKey: 'updated_at' },
-  // { text: '', dataKey: 'deploy' },
+  { text: '', dataKey: 'deploy' },
 ]
+
+const item = {
+  count: 2,
+  next: null,
+  previous: null,
+  results: [
+    {
+      id: 1,
+      title: '파이썬 기초 쪽지시험',
+      subject_name: 'Python',
+      question_count: 10,
+      submission_count: 45,
+      created_at: '2025-06-01T12:00:00',
+      updated_at: '2025-06-10T15:30:00',
+    },
+    {
+      id: 2,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 3,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 4,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 6,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 7,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 8,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 9,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 10,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 11,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 12,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 13,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 14,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+  ],
+}
 
 const SortItem = ['title'] // 정렬할 데이터 지정
 
 // 쪽지시험 관리
 const Quizzes = () => {
-  const [quizData, setQuizData] = useState<[]>([])
+  // const [quizData, setQuizData] = useState<[]>([])
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        'http://54.180.237.77/api/v1/admin/tests/'
-      )
-      setQuizData(response.data.results)
-    } catch (error) {
-      console.error('에러 발생:', error)
-    }
-  }
+  // const API = 'http://54.180.237.77/api/v1/admin/tests/'
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(API)
+  //     setQuizData(response.data.results)
+  //   } catch (error) {
+  //     console.error('에러 발생:', error)
+  //   }
+  // }
 
-  const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizData)
+  // useEffect(() => {
+  //   fetchData()
+  // }, [])
+
+  const [dummySearch, setDummySearch] = useState('')
+
+  const { sortedData, sortByKey, sortKey, sortOrder } = useSort(item.results)
 
   const { currentPage, totalPages, paginatedData, goPrev, goNext } =
     usePagination({
@@ -152,14 +279,14 @@ const Quizzes = () => {
           id="search"
           name="search"
           type="text"
-          // value={}
+          value={dummySearch}
+          onChange={(e) => setDummySearch(e.target.value)}
           placeholder="검색어를 입력하세요."
-          // onChange={(e) => setTitle(e.target.value)}
           wrapClassName="mb-2"
         />
-        <Button variant="VARIANT1">조회</Button>
+        <Button variant="VARIANT6">조회</Button>
         <div className="ml-auto flex">
-          <Button>🔍️ 과정별 필터링</Button>
+          <Button variant="VARIANT7">🔍️ 과정별 필터링</Button>
         </div>
       </div>
 

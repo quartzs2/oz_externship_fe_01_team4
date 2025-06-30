@@ -93,7 +93,11 @@ export default function TableRow({
 
             switch (header.dataKey) {
               case DATA_KEYS.DEPLOY:
-                return <Button onClick={handleDeploy}>배포</Button>
+                return (
+                  <Button variant="VARIANT5" onClick={handleDeploy}>
+                    배포
+                  </Button>
+                )
               case DATA_KEYS.DEPLOY_SWITCH:
                 return (
                   <label className="relative inline-flex cursor-pointer items-center">

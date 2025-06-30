@@ -26,7 +26,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'h-[36px] w-[55px] rounded-[3px] px-4 py-2',
+        'rounded-[3px]',
         'font-normal',
         'cursor-pointer',
         BUTTON_VARIANTS[variant],
