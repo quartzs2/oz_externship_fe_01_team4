@@ -3,7 +3,7 @@ import CheckIcon from '@assets/icons/input/check.svg?react'
 import { Z_INDEX_DEFINE } from '@constants/zIndexDefine'
 import { cn } from '@utils/cn'
 import { useState } from 'react'
-
+// onChange 함수 인자값 value: string -> selected: Option로 변경 (상위 컴포넌트에서 Option 객체의 label과 value 모두 사용하기 위해서)
 type Option = {
   label: string
   value: string
@@ -13,7 +13,7 @@ type DropdownProps = {
   id: string
   name: string
   value: string
-  onChange: (value: string) => void
+  onChange: (selected: Option) => void
   options: Option[]
   placeholder?: string
   wrapClassName?: string
@@ -30,7 +30,7 @@ const Dropdown = ({
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleSelect = (selected: string) => {
+  const handleSelect = (selected: Option) => {
     onChange(selected)
     setIsOpen(false)
   }
@@ -62,7 +62,7 @@ const Dropdown = ({
             return (
               <li
                 key={op.value}
-                onClick={() => handleSelect(op.value)}
+                onClick={() => handleSelect(op)}
                 className={cn('flex justify-between px-[14px] py-[10px]', {
                   'bg-[#f2effd]': isSelected,
                 })}

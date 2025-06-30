@@ -5,9 +5,9 @@ import React from 'react'
 
 // input 컴포넌트 props 타입 정의
 type InputProps = {
-  id: string
+  id?: string
   type?: string
-  name: string
+  name?: string
   placeholder?: string
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
