@@ -10,7 +10,6 @@ import { usePagination } from '@hooks/data-table/usePagination'
 import Dropdown from '@components/common/Dropdown'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
-// import axios from 'axios'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -23,7 +22,6 @@ const TableHeaderItem = [
   { text: '수정 일시', dataKey: 'updated_at' },
   { text: '', dataKey: 'deploy' },
 ]
-
 const item = {
   count: 2,
   next: null,
@@ -47,105 +45,6 @@ const item = {
       created_at: '2025-06-05T09:00:00',
       updated_at: '2025-06-10T10:20:00',
     },
-    {
-      id: 3,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 4,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 6,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 7,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 8,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 9,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 10,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 11,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 12,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 13,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
-    {
-      id: 14,
-      title: 'Django 기초 쪽지시험',
-      subject_name: 'Django',
-      question_count: 8,
-      submission_count: 37,
-      created_at: '2025-06-05T09:00:00',
-      updated_at: '2025-06-10T10:20:00',
-    },
   ],
 }
 
@@ -153,23 +52,6 @@ const SortItem = ['title'] // 정렬할 데이터 지정
 
 // 쪽지시험 관리
 const Quizzes = () => {
-  // const [quizData, setQuizData] = useState<[]>([])
-
-  // const API = 'http://54.180.237.77/api/v1/admin/tests/'
-
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await axios.get(API)
-  //     setQuizData(response.data.results)
-  //   } catch (error) {
-  //     console.error('에러 발생:', error)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchData()
-  // }, [])
-
   const [dummySearch, setDummySearch] = useState('')
 
   const { sortedData, sortByKey, sortKey, sortOrder } = useSort(item.results)
@@ -263,6 +145,7 @@ const Quizzes = () => {
       value: String(subject.id),
     })),
   ]
+
   return (
     <div className="mx-6 my-7">
       <p className="mb-2 text-[18px] font-[600]">쪽지시험 조회</p>
