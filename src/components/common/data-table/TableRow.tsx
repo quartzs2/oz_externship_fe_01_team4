@@ -1,3 +1,4 @@
+import Button from '@components/common/Button'
 import type { TableHeader, TableRowData } from '@custom-types/table'
 import { cn } from '@utils/cn'
 import { useState } from 'react'
@@ -8,8 +9,6 @@ type Props = {
   isCheckBox?: boolean
   isChecked: boolean
   onToggle: (checked: boolean) => void
-  isDeploy?: boolean
-  isDeploySwitch?: boolean
   isDeployStatus?: boolean
   isTime?: boolean
 }
@@ -42,7 +41,7 @@ export default function TableRow({
     ADMIN: 'ADMIN',
     STAFF: 'STAFF',
     STUDENT: 'STUDENT',
-  }
+  } as const
 
   const [deployStatus, setDeployStatus] = useState(isDeployStatus)
 
@@ -53,16 +52,12 @@ export default function TableRow({
     setDeployStatus((prev) => !prev)
   }
 
-  const formatIsoToDotDateTime = (isoString: string) => {
-    const cleaned = isoString.replace('Z', '') // 끝에 Z 제거
-    const [date, time] = cleaned.split('T') // '2025-06-01', '12:00:00'
-    const formattedDate = date.replace(/-/g, '.') // '2025.06.01'
+  const formatIsoToDotDateTime = (isoString: string, isTime: boolean) => {
+    const [date, timePart] = isoString.split('T') // 날짜, 시간 분리
+    const formattedDate = date.replace(/-/g, '.')
+    const time = timePart?.split('.')[0] ?? '' // 소수점 이하 제거
 
-    if (isTime) {
-      return `${formattedDate} ${time}`
-    } else {
-      return `${formattedDate}`
-    }
+    return isTime ? `${formattedDate} ${time}` : `${formattedDate}`
   }
 
   return (
@@ -99,14 +94,9 @@ export default function TableRow({
             switch (header.dataKey) {
               case DATA_KEYS.DEPLOY:
                 return (
-                  <button
-                    className={cn(
-                      'text-bold rounded-[5px] bg-[#5EB669] px-4 py-1 font-bold text-[#F7F7F7]'
-                    )}
-                    onClick={handleDeploy}
-                  >
+                  <Button variant="VARIANT5" onClick={handleDeploy}>
                     배포
-                  </button>
+                  </Button>
                 )
               case DATA_KEYS.DEPLOY_SWITCH:
                 return (
@@ -176,7 +166,7 @@ export default function TableRow({
                 }
               case DATA_KEYS.CREATED_AT:
               case DATA_KEYS.UPDATED_AT:
-                return formatIsoToDotDateTime(String(value))
+                return formatIsoToDotDateTime(String(value), isTime ?? false)
               default:
                 return value
             }

@@ -1,5 +1,436 @@
+import Modal from '@components/common/Modal'
+import Input from '@components/common/Input'
+import FormRow from '@components/common/FormRow'
+import Button from '@components/common/Button'
+import DataTable from '@components/common/data-table/DataTable'
+import Pagination from '@components/common/data-table/Pagination'
+import { useSort } from '@hooks/data-table/useSort'
+import { useState } from 'react'
+import { usePagination } from '@hooks/data-table/usePagination'
+import Dropdown from '@components/common/Dropdown'
+import { useCustomToast } from '@hooks/toast/useToast'
+import { cn } from '@utils/cn'
+// import axios from 'axios'
+
+// 표제목 상수화
+const TableHeaderItem = [
+  { text: 'ID', dataKey: 'id' },
+  { text: '제목', dataKey: 'title' },
+  { text: '과목명', dataKey: 'subject_name' },
+  { text: '총 문제 수', dataKey: 'question_count' },
+  { text: '응시 수', dataKey: 'submission_count' },
+  { text: '등록 일시', dataKey: 'created_at' },
+  { text: '수정 일시', dataKey: 'updated_at' },
+  { text: '', dataKey: 'deploy' },
+]
+
+const item = {
+  count: 2,
+  next: null,
+  previous: null,
+  results: [
+    {
+      id: 1,
+      title: '파이썬 기초 쪽지시험',
+      subject_name: 'Python',
+      question_count: 10,
+      submission_count: 45,
+      created_at: '2025-06-01T12:00:00',
+      updated_at: '2025-06-10T15:30:00',
+    },
+    {
+      id: 2,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 3,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 4,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 6,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 7,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 8,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 9,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 10,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 11,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 12,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 13,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+    {
+      id: 14,
+      title: 'Django 기초 쪽지시험',
+      subject_name: 'Django',
+      question_count: 8,
+      submission_count: 37,
+      created_at: '2025-06-05T09:00:00',
+      updated_at: '2025-06-10T10:20:00',
+    },
+  ],
+}
+
+const SortItem = ['title'] // 정렬할 데이터 지정
+
 // 쪽지시험 관리
 const Quizzes = () => {
-  return <div>Quizzes</div>
+  // const [quizData, setQuizData] = useState<[]>([])
+
+  // const API = 'http://54.180.237.77/api/v1/admin/tests/'
+
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(API)
+  //     setQuizData(response.data.results)
+  //   } catch (error) {
+  //     console.error('에러 발생:', error)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchData()
+  // }, [])
+
+  const [dummySearch, setDummySearch] = useState('')
+
+  const { sortedData, sortByKey, sortKey, sortOrder } = useSort(item.results)
+
+  const { currentPage, totalPages, paginatedData, goPrev, goNext } =
+    usePagination({
+      item: sortedData, // <--- 기존 item 대신 sortedData를 넘겨줌
+      count: 10,
+    })
+
+  const toast = useCustomToast()
+
+  const [isTitle, setIsTitle] = useState(true)
+  const [isSelectedSubject, setIsSelectedSubject] = useState(true)
+  const [isImageFile, setIsImageFile] = useState(true)
+
+  const handleSubmit = () => {
+    let isValid = true
+
+    setIsTitle(true)
+    setIsSelectedSubject(true)
+
+    if (!title.trim()) {
+      setIsTitle(false)
+      isValid = false
+    }
+
+    if (!selectedSubject) {
+      setIsSelectedSubject(false)
+      isValid = false
+    }
+
+    if (!file) {
+      setIsImageFile(false)
+      isValid = false
+    }
+
+    if (!isValid) return
+
+    setIsOpen(false)
+    resetForm()
+    setIsTitle(true)
+    setIsSelectedSubject(true)
+
+    toast.success('성공적으로 쪽지시험이 생성되었습니다.', {
+      style: 'style4',
+      duration: 5000,
+      hasActionButton: false,
+      actionLabel: '확인',
+      hasCloseButton: true,
+      hasIcon: true,
+    })
+  }
+
+  const [isOpen, setIsOpen] = useState(false)
+
+  const openModal = () => {
+    setIsOpen(true)
+  }
+
+  const resetForm = () => {
+    setTitle('')
+    setSelectedSubject('')
+    setIsTitle(true)
+    setIsSelectedSubject(true)
+    setIsImageFile(true)
+    setPreview(null)
+    setFile(null)
+  }
+
+  const [selectedSubject, setSelectedSubject] = useState<string>('')
+  const [title, setTitle] = useState('')
+
+  const [preview, setPreview] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null)
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0]
+    if (selectedFile) {
+      setFile(selectedFile)
+      const imageUrl = URL.createObjectURL(selectedFile)
+      setPreview(imageUrl)
+    }
+  }
+
+  //드롭다운 옵션 상수화
+  const options = [
+    { label: '과목을 선택하세요', value: '' },
+    ...paginatedData.map((subject) => ({
+      label: String(subject.title ?? ''),
+      value: String(subject.id),
+    })),
+  ]
+  return (
+    <div className="mx-6 my-7">
+      <p className="mb-2 text-[18px] font-[600]">쪽지시험 조회</p>
+      <p className="mb-2 text-[14px] font-[600]">
+        현재 선택된 과정은
+        <span className="text-[#522193]">
+          웹 개발 초격차 프론트엔드 부트캠프
+        </span>
+        입니다.
+      </p>
+      <div className="flex gap-2">
+        {/*검색기능 구현 예정*/}
+        <Input
+          id="search"
+          name="search"
+          type="text"
+          value={dummySearch}
+          onChange={(e) => setDummySearch(e.target.value)}
+          placeholder="검색어를 입력하세요."
+          wrapClassName="mb-2"
+        />
+        <Button variant="VARIANT6">조회</Button>
+        <div className="ml-auto flex">
+          <Button variant="VARIANT7">🔍️ 과정별 필터링</Button>
+        </div>
+      </div>
+
+      <DataTable
+        headerData={TableHeaderItem} // 표제목,열 개수
+        tableItem={paginatedData} // 페이지네이션된 데이터 전달
+        isCheckBox={false} // 체크박스 여부
+        sortKeys={SortItem} // 정렬할 데이터 지정
+        sortKey={sortKey} // 현재 정렬 키 전달
+        sortOrder={sortOrder} // 현재 정렬 방향 전달
+        sortByKey={sortByKey} // 정렬 함수 전달
+        isTime // 시간 표시 여부
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        goPrev={goPrev}
+        goNext={goNext}
+      />
+      <div className="flex justify-end">
+        <Button onClick={openModal}>생성</Button>
+      </div>
+      <Modal
+        modalId="example-modal"
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false)
+          resetForm()
+          setIsTitle(true)
+          setIsSelectedSubject(true)
+        }}
+        paddingSize={32}
+        isBackgroundDimmed
+        closeButtonOffset={16}
+      >
+        <h1 className="mb-[53px] text-xl font-bold">쪽지시험 등록</h1>
+
+        <div className="flex flex-col">
+          {/* 제목 */}
+          <FormRow htmlFor="title" labelText="제목" labelClassName="h-[50px]">
+            <div className="flex w-full items-center gap-2">
+              <Input
+                id="title"
+                name="title"
+                type="text"
+                value={title}
+                placeholder="제목을 입력하세요."
+                onChange={(e) => {
+                  setTitle(e.target.value)
+                  setIsTitle(true)
+                }}
+              />
+              {!isTitle && (
+                <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
+                  제목 입력 필수
+                </p>
+              )}
+            </div>
+          </FormRow>
+
+          {/* 과목 */}
+          <FormRow htmlFor="subject" labelText="과목" labelClassName="h-[50px]">
+            <div className="flex w-full items-center gap-2">
+              <Dropdown
+                id="subject"
+                name="subject"
+                value={selectedSubject}
+                onChange={(val) => {
+                  setSelectedSubject(val)
+                  setIsSelectedSubject(true)
+                }}
+                options={options}
+              />
+              {!isSelectedSubject && (
+                <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
+                  과목 선택 필수
+                </p>
+              )}
+            </div>
+          </FormRow>
+          {/* 로고 업로드 */}
+          <FormRow
+            htmlFor="logo"
+            labelText="로고 등록"
+            labelClassName="h-[191px] border-b border-[#DDDDDD]"
+            valueClassName="h-[191px] border-b border-[#DDDDDD]"
+          >
+            <div
+              className={cn(
+                `mt-4 h-[132px] w-[146px] overflow-hidden border border-[#DDD] bg-[#F7F7F7]`,
+                `flex items-center justify-center`
+              )}
+            >
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="미리보기"
+                  className="max-h-[96px] max-w-[96px] object-contain"
+                />
+              ) : (
+                <span className="text-sm">미리보기 없음</span>
+              )}
+            </div>
+
+            <div className="mt-1 ml-4 flex items-center gap-5">
+              <p className="text-[10px] whitespace-nowrap text-[#666666]">
+                96 x 96 사이즈로 등록하세요.
+              </p>
+              <p className="max-w-[150px] truncate text-sm underline">
+                {file && file.name}
+              </p>
+              {!isImageFile && (
+                <p className="text-sm text-[#CC0A0A]">
+                  로고 업로드를 해주세요.
+                </p>
+              )}
+              <label className="cursor-pointer rounded border border-[#DDDDDD] bg-white px-3 py-1 text-sm">
+                파일 첨부
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    handleFileChange(e)
+                    setIsImageFile(true)
+                  }}
+                />
+              </label>
+            </div>
+          </FormRow>
+
+          {/* 버튼 */}
+          <div className="mt-[38px] flex justify-end">
+            <Button
+              onClick={() => {
+                handleSubmit()
+              }}
+            >
+              생성
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  )
 }
 export default Quizzes
