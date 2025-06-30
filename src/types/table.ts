@@ -1,4 +1,4 @@
-import type { SortOrder } from '@hooks/dataTable/useSort'
+import type { SortOrder } from '@hooks/data-table/useSort'
 
 export type TableRowData = {
   id: number // string 제거

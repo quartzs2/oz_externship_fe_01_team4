@@ -1,12 +1,12 @@
-import Modal from '@components/Modal'
-import Icon from '@components/Icon'
+import Modal from '@components/common/Modal'
+import Icon from '@components/common/Icon'
 import { cn } from '@utils/cn'
 
 import SuccessIcon from '@assets/icons/popup/success.svg?react'
 import WarningIcon from '@assets/icons/popup/error.svg?react'
 import ErrorIcon from '@assets/icons/popup/deleteConfirm.svg?react'
-import { POP_UP_TYPE, type PopUpType } from '@constants/popUp'
-import { PADDING_SIZE } from '@constants/modal'
+import { POP_UP_TYPE, type PopUpType } from '@constants/popup/popUp'
+import { PADDING_SIZE } from '@constants/modal/modal'
 import type { ReactNode } from 'react'
 
 const CIRCLE_TOP_HEIGHT = 37 - PADDING_SIZE.DEFAULT

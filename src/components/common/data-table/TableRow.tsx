@@ -1,5 +1,4 @@
-import Button from '@components/Button'
-import type { TableHeader, TableRowData } from '@customType/table'
+import type { TableHeader, TableRowData } from '@custom-types/table'
 import { cn } from '@utils/cn'
 import { useState } from 'react'
 
