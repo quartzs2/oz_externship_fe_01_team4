@@ -13,6 +13,7 @@ type InputProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   error?: string
   wrapClassName?: string
+  min?: number
 }
 
 const Input = ({
@@ -24,6 +25,7 @@ const Input = ({
   onChange,
   error,
   wrapClassName,
+  min,
 }: InputProps) => {
   return (
     <div
@@ -40,6 +42,7 @@ const Input = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        min={min}
         className="w-full placeholder-[#666] outline-none"
       />
 
