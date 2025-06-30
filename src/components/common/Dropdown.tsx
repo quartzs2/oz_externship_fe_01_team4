@@ -3,7 +3,7 @@ import CheckIcon from '@assets/icons/input/check.svg?react'
 import { Z_INDEX_DEFINE } from '@constants/zIndexDefine'
 import { cn } from '@utils/cn'
 import { useState } from 'react'
-// onChange 함수 인자값 value: string -> selected: Option로 변경 (상위 컴포넌트에서 Option 객체의 label과 value 모두 사용하기 위해서)
+
 type Option = {
   label: string
   value: string
@@ -54,8 +54,10 @@ const Dropdown = ({
       </button>
 
       {isOpen && (
-        <ul className="custom-scroll custom-shadow absolute top-full left-0 flex max-h-[175px] w-full translate-y-[2px] cursor-pointer flex-col overflow-visible overflow-y-auto rounded-[3px] border-1 border-[#DDD] bg-white text-[16px] font-[500] text-[#666]"
-        style={{zIndex: Z_INDEX_DEFINE.MODAL}}>
+        <ul
+          className="custom-scroll custom-shadow absolute top-full left-0 flex max-h-[175px] w-full translate-y-[2px] cursor-pointer flex-col overflow-visible overflow-y-auto rounded-[3px] border-1 border-[#DDD] bg-white text-[16px] font-[500] text-[#666]"
+          style={{ zIndex: Z_INDEX_DEFINE.MODAL }}
+        >
           {options.map((op) => {
             const isSelected = op.value === value
 
