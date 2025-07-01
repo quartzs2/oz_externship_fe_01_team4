@@ -11,6 +11,7 @@ type InputProps = {
   placeholder?: string
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
   error?: string
   wrapClassName?: string
   min?: number
@@ -23,6 +24,7 @@ const Input = ({
   placeholder,
   value,
   onChange,
+  onKeyDown,
   error,
   wrapClassName,
   min,
@@ -42,6 +44,7 @@ const Input = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        onKeyDown={onKeyDown}
         min={min}
         className="w-full placeholder-[#666] outline-none"
       />

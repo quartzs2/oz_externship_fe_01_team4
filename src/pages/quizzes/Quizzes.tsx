@@ -1,15 +1,20 @@
-import Modal from '@components/common/Modal'
-import Input from '@components/common/Input'
-import FormRow from '@components/common/FormRow'
+import FilterIcon from '@assets/icons/search.svg?react'
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
-import { useSort } from '@hooks/data-table/useSort'
-import { useState } from 'react'
-import { usePagination } from '@hooks/data-table/usePagination'
 import Dropdown from '@components/common/Dropdown'
+import FormRow from '@components/common/FormRow'
+import Icon from '@components/common/Icon'
+import Input from '@components/common/Input'
+import Label from '@components/common/Label'
+import Modal from '@components/common/Modal'
+import SearchBar from '@components/common/SearchBar'
+import { usePagination } from '@hooks/data-table/usePagination'
+import { useSort } from '@hooks/data-table/useSort'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
+import { useEffect, useState } from 'react'
+// import axios from 'axios'
 
 // 표제목 상수화;
 const TableHeaderItem = [
@@ -27,21 +32,106 @@ const TableHeaderItem = [
 const quizData = [
   {
     id: 1,
+    title: 'HTML 쪽지시험',
+    subject_name: 'HTML',
+    question_count: 0,
+    submission_count: 0,
+    created_at: '2025-07-01T05:11:15.236Z',
+    updated_at: '2025-07-01T05:11:15.236Z',
   },
+  {
+    id: 2,
+    title: 'Python 쪽지시험',
+    subject_name: 'Python',
+    question_count: 0,
+    submission_count: 0,
+    created_at: '2025-08-01T05:11:15.236Z',
+    updated_at: '2025-08-01T05:11:15.236Z',
+  },
+]
+
+const subjects = [
+  {
+    id: 1,
+    title: 'HTML',
+    number_of_days: 4,
+    number_of_hours: 16,
+    course_name: '웹 개발 초격차 프론트엔드 부트캠프',
+    status: true,
+    created_at: '2025-06-23T10:30:00Z',
+    updated_at: '2025-06-23T10:30:00Z',
+  },
+  {
+    id: 2,
+    title: 'Python',
+    number_of_days: 3,
+    number_of_hours: 12,
+    course_name: '웹 개발 초격차 백엔드 부트캠프',
+    status: false,
+    created_at: '2025-06-23T11:00:00Z',
+    updated_at: '2025-06-23T11:00:00Z',
+  },
+]
+
+const courseOptions = [
+  { label: '과정을 선택하세요', value: '' },
+  ...subjects.map((subject) => ({
+    label: subject.course_name,
+    value: subject.title,
+  })),
+]
+
+//드롭다운 옵션 상수화
+const subjectOptions = [
+  { label: '과목을 선택하세요', value: '' },
+  ...subjects.map((subject) => ({
+    label: String(subject.title ?? ''),
+    value: String(subject.id),
+  })),
 ]
 
 const SortItem = ['title'] // 정렬할 데이터 지정
 
 // 쪽지시험 관리
 const Quizzes = () => {
-  const [dummySearch, setDummySearch] = useState('')
+  // const [dummySearch, setDummySearch] = useState('')
 
   const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizData)
 
+  const [searchKeyword, setSearchKeyword] = useState('') // 현재 검색어 저장
+
+  const [selectedCourse, setSelectedCourse] = useState(courseOptions[0])
+
+  const [filteredData, setFilteredData] = useState(sortedData) // 화면에 최종 표시할 필터링된 데이터 (기본값: 정렬된 데이터 전체)
+
   const { currentPage, totalPages, paginatedData, goToPage } = usePagination({
-    item: sortedData, // <--- 기존 item 대신 sortedData를 넘겨줌
+    item: filteredData, // <--- 기존 item 대신 sortedData를 넘겨줌 -> filteredData로 변경
     count: 10,
   })
+
+  useEffect(() => {
+    let tempData = sortedData // 현재 정렬된 데이터 복사
+
+    // 과정별 필터링
+    if (selectedCourse.value) {
+      tempData = tempData.filter(
+        (quiz) => quiz.subject_name === selectedCourse.value
+      )
+    }
+
+    // 검색창에 입력된 키워드와 일치하는 이름을 가진 쪽지시험 또는 키워드와 매칭되는 과목의 쪽지시험들 검색 기능
+    if (searchKeyword) {
+      const keyword = searchKeyword.toLowerCase()
+      tempData = tempData.filter(
+        (quiz) =>
+          (typeof quiz.title === 'string' &&
+            quiz.title.toLowerCase().includes(keyword)) ||
+          (typeof quiz.subject_name === 'string' &&
+            quiz.subject_name.toLowerCase().includes(keyword))
+      )
+    }
+    setFilteredData(tempData)
+  }, [sortedData, searchKeyword, selectedCourse])
 
   const toast = useCustomToast()
 
@@ -60,7 +150,7 @@ const Quizzes = () => {
       isValid = false
     }
 
-    if (!selectedSubject) {
+    if (!selectedSubject.value) {
       setIsSelectedSubject(false)
       isValid = false
     }
@@ -87,6 +177,15 @@ const Quizzes = () => {
     })
   }
 
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+
+  const openFilterModal = () => {
+    setIsFilterModalOpen(true)
+  }
+  const closeFilterModal = () => {
+    setIsFilterModalOpen(false)
+  }
+
   const [isOpen, setIsOpen] = useState(false)
 
   const openModal = () => {
@@ -95,7 +194,7 @@ const Quizzes = () => {
 
   const resetForm = () => {
     setTitle('')
-    setSelectedSubject('')
+    setSelectedSubject(subjectOptions[0])
     setIsTitle(true)
     setIsSelectedSubject(true)
     setIsImageFile(true)
@@ -103,7 +202,7 @@ const Quizzes = () => {
     setFile(null)
   }
 
-  const [selectedSubject, setSelectedSubject] = useState<string>('')
+  const [selectedSubject, setSelectedSubject] = useState(subjectOptions[0])
   const [title, setTitle] = useState('')
 
   const [preview, setPreview] = useState<string | null>(null)
@@ -118,41 +217,60 @@ const Quizzes = () => {
     }
   }
 
-  //드롭다운 옵션 상수화
-  const options = [
-    { label: '과목을 선택하세요', value: '' },
-    ...paginatedData.map((subject) => ({
-      label: String(subject.title ?? ''),
-      value: String(subject.id),
-    })),
-  ]
-
   return (
     <div className="mx-6 my-7">
-      <p className="mb-2 text-[18px] font-[600]">쪽지시험 조회</p>
-      <p className="mb-2 text-[14px] font-[600]">
-        현재 선택된 과정은
-        <span className="text-[#522193]">
-          웹 개발 초격차 프론트엔드 부트캠프
-        </span>
-        입니다.
-      </p>
-      <div className="flex gap-2">
-        {/*검색기능 구현 예정*/}
-        <Input
-          id="search"
-          name="search"
-          type="text"
-          value={dummySearch}
-          onChange={(e) => setDummySearch(e.target.value)}
+      {/* p태그 -> h2 태그로 변경 */}
+      <h2 className="mb-[26px] text-[18px] font-[600]">쪽지시험 조회</h2>
+      <div className="mb-[18px] flex justify-between">
+        <SearchBar
+          onSearch={(keyword) => setSearchKeyword(keyword)}
           placeholder="검색어를 입력하세요."
-          wrapClassName="mb-2"
         />
-        <Button variant="VARIANT6">조회</Button>
-        <div className="ml-auto flex">
-          <Button variant="VARIANT7">🔍️ 과정별 필터링</Button>
-        </div>
+        <Button
+          onClick={openFilterModal}
+          variant="VARIANT7"
+          className="flex items-center justify-between pr-[19px] pl-[12px]"
+        >
+          <Icon icon={FilterIcon} />
+          과정별 필터링
+        </Button>
       </div>
+      <Modal
+        modalId="quizzes-course-filter-modal"
+        isOpen={isFilterModalOpen}
+        onClose={closeFilterModal}
+        className="w-[458px]"
+        paddingSize={30}
+      >
+        <Label
+          htmlFor="course"
+          labelText="과정별 필터링"
+          className="mb-[10px] bg-white p-0 text-[18px] font-[600]"
+        />
+        <p className="mb-[20px] text-[14px]">
+          필터를 적용할 카테고리를 선택해주세요.
+        </p>
+        <Dropdown
+          id="course"
+          name="course"
+          onChange={setSelectedCourse}
+          value={selectedCourse.value}
+          options={courseOptions}
+          wrapClassName='w-[360px] mb-auto'
+        />
+        {selectedCourse.value && (
+          <p className="mb-[36px] text-[14px] text-[#222]">
+            현재 선택된 과정은{' '}
+            <span className="font-[600] text-[#522193]">
+              {selectedCourse.label}
+            </span>{' '}
+            입니다.
+          </p>
+        )}
+        <Button onClick={closeFilterModal} className="self-end">
+          조회
+        </Button>
+      </Modal>
 
       <DataTable
         headerData={TableHeaderItem} // 표제목,열 개수
@@ -217,12 +335,9 @@ const Quizzes = () => {
               <Dropdown
                 id="subject"
                 name="subject"
-                value={selectedSubject}
-                onChange={(val) => {
-                  setSelectedSubject(val)
-                  setIsSelectedSubject(true)
-                }}
-                options={options}
+                value={selectedSubject.value}
+                onChange={setSelectedSubject}
+                options={subjectOptions}
               />
               {!isSelectedSubject && (
                 <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
