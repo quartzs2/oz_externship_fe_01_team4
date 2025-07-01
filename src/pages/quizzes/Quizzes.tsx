@@ -9,6 +9,7 @@ import Input from '@components/common/Input'
 import Label from '@components/common/Label'
 import Modal from '@components/common/Modal'
 import SearchBar from '@components/common/SearchBar'
+import type { TableRowData } from '@custom-types/table'
 import { usePagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
 import { useCustomToast } from '@hooks/toast/useToast'
@@ -94,7 +95,7 @@ const SortItem = ['title'] // 정렬할 데이터 지정
 
 // 쪽지시험 관리
 const Quizzes = () => {
-  // const [dummySearch, setDummySearch] = useState('')
+  // const [dummySearch, setDummySearch] = useState('') build 에러로 주석 처리
 
   const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizData)
 
@@ -110,7 +111,7 @@ const Quizzes = () => {
   })
 
   useEffect(() => {
-    let tempData = sortedData // 현재 정렬된 데이터 복사
+    let tempData = [...sortedData] // 현재 정렬된 데이터 복사
 
     // 과정별 필터링
     if (selectedCourse.value) {
@@ -118,18 +119,23 @@ const Quizzes = () => {
         (quiz) => quiz.subject_name === selectedCourse.value
       )
     }
+    // 쪽지시험 또는 과목 검색 필터링
+    const filterByKeyword = (quiz: TableRowData) => {
+      if (!searchKeyword) return true
 
-    // 검색창에 입력된 키워드와 일치하는 이름을 가진 쪽지시험 또는 키워드와 매칭되는 과목의 쪽지시험들 검색 기능
-    if (searchKeyword) {
       const keyword = searchKeyword.toLowerCase()
-      tempData = tempData.filter(
-        (quiz) =>
-          (typeof quiz.title === 'string' &&
-            quiz.title.toLowerCase().includes(keyword)) ||
-          (typeof quiz.subject_name === 'string' &&
-            quiz.subject_name.toLowerCase().includes(keyword))
-      )
+      const titleMatches =
+        typeof quiz.title === 'string' &&
+        quiz.title.toLowerCase().includes(keyword)
+      const subjectMatches =
+        typeof quiz.subject_name === 'string' &&
+        quiz.subject_name.toLowerCase().includes(keyword)
+
+      return titleMatches || subjectMatches
     }
+
+    tempData = tempData.filter(filterByKeyword)
+
     setFilteredData(tempData)
   }, [sortedData, searchKeyword, selectedCourse])
 
@@ -219,8 +225,7 @@ const Quizzes = () => {
 
   return (
     <div className="mx-6 my-7">
-      {/* p태그 -> h2 태그로 변경 */}
-      <h2 className="mb-[26px] text-[18px] font-[600]">쪽지시험 조회</h2>
+      <h2 className="mb-[26px] text-[18px] font-semibold">쪽지시험 조회</h2>
       <div className="mb-[18px] flex justify-between">
         <SearchBar
           onSearch={(keyword) => setSearchKeyword(keyword)}
@@ -228,10 +233,10 @@ const Quizzes = () => {
         />
         <Button
           onClick={openFilterModal}
-          variant="VARIANT7"
-          className="flex items-center justify-between pr-[19px] pl-[12px]"
+          variant="VARIANT8"
+          className="pr-[20px]"
         >
-          <Icon icon={FilterIcon} />
+          <Icon icon={FilterIcon} size={16} />
           과정별 필터링
         </Button>
       </div>
@@ -239,13 +244,13 @@ const Quizzes = () => {
         modalId="quizzes-course-filter-modal"
         isOpen={isFilterModalOpen}
         onClose={closeFilterModal}
-        className="w-[458px]"
+        className="h-[276px] w-[458px]"
         paddingSize={30}
       >
         <Label
           htmlFor="course"
           labelText="과정별 필터링"
-          className="mb-[10px] bg-white p-0 text-[18px] font-[600]"
+          className="mb-[10px] h-[22px] bg-white p-0 text-[18px] font-semibold"
         />
         <p className="mb-[20px] text-[14px]">
           필터를 적용할 카테고리를 선택해주세요.
