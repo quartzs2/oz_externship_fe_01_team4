@@ -21,8 +21,13 @@ const SearchBar = ({ onSearch, placeholder }: SearchBarProps) => {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') handleSearch()}
+<<<<<<< HEAD         
+          if (e.key === 'Enter') handleSearch()
+        }}
+=======
+        if (e.key === 'Enter') handleSearch()}
         }
+>>>>>>> 0f48f5ba8188a768f1925aae90a5ff820b14bfb3
         placeholder={placeholder}
         wrapClassName="w-[250px]"
       />
@@ -30,8 +35,13 @@ const SearchBar = ({ onSearch, placeholder }: SearchBarProps) => {
       <Button
         children="조회"
         onClick={handleSearch}
+<<<<<<< HEAD
+        variant="VARIANT6"
+        className="w-[70px]"
+=======
         variant="VARIANT2"
         className="w-[70px] text-[14px]"
+>>>>>>> 0f48f5ba8188a768f1925aae90a5ff820b14bfb3
       />
     </div>
   )
