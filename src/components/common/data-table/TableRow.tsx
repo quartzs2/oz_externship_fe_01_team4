@@ -14,6 +14,7 @@ type Props = {
   renderMap?: {
     [key: string]: (value: unknown, rowData: TableRowData) => React.ReactNode
   }
+  onDeployClick?: (data: TableRowData) => void
 }
 
 export default function TableRow({
@@ -24,6 +25,7 @@ export default function TableRow({
   onToggle,
   isTime,
   renderMap,
+  onDeployClick,
 }: Props) {
   const DATA_KEYS = {
     DEPLOY: 'deploy',
@@ -53,7 +55,7 @@ export default function TableRow({
   const [deployStatus, setDeployStatus] = useState<boolean>(!!data.deploySwitch)
 
   const handleDeploy = () => {
-    setDeployStatus(true)
+    onDeployClick?.(data)
   }
   const toggleSwitch = () => {
     setDeployStatus((prev) => !prev)

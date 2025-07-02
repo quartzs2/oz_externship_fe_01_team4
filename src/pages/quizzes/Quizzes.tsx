@@ -17,6 +17,10 @@ import { cn } from '@utils/cn'
 import axios from 'axios'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
+import ScheduleModal from '@components/create-schedule/ScheduleModal'
+import { useScheduleStore } from '@store/create-schedule/scheduleStore'
+import quizAPI from '@api/quizAPI'
+import type { SchedulePayload } from '@custom-types/createSchedule'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -52,6 +56,57 @@ const Quizzes = () => {
   const [error, setError] = useState<Error | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+
+  const { isModalOpen, selectedQuiz, openScheduleModal, closeScheduleModal } =
+    useScheduleStore()
+
+  const coursesData = [
+    { id: 1, name: '웹 개발 초급자 프론트엔드 부트캠프' },
+    { id: 2, name: 'AI 백엔드 심화과정' },
+  ]
+
+  const generationsData = [
+    { id: 8, name: '8기' },
+    { id: 9, name: '9기' },
+    { id: 10, name: '10기' },
+  ]
+
+  // 배포 버튼 클릭 핸들러 추가
+  const handleOnclick = (quizData: TableRowData) => {
+    openScheduleModal({
+      test_id: Number(quizData.id),
+      test_title: String(quizData.title),
+      subject_title: String(quizData.subject_name),
+    })
+  }
+
+  // 스케줄 제출 핸들러 추가
+  const handleScheduleSubmit = async (payload: SchedulePayload) => {
+    await quizAPI.setDeploySchedule(payload)
+  }
+  // API 추후 수정 예정
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [quizzesRes, subjectsRes] = await axios.all([
+          api.get('/tests/'),
+          api.get('/subjects/'),
+        ])
+        setQuizzes(quizzesRes.data.results)
+        setSubjects(subjectsRes.data.results)
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err)
+        } else {
+          console.error('알 수 없는 에러:', err)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   // 드롭다운 옵션
   const courseOptions = useMemo(() => {
@@ -332,6 +387,7 @@ const Quizzes = () => {
         sortOrder={sortOrder} // 현재 정렬 방향 전달
         sortByKey={sortByKey} // 정렬 함수 전달
         isTime // 시간 표시 여부
+        onDeployClick={handleOnclick} // 배포 버튼 클릭 핸들러
       />
 
       <div className="mt-[80px] flex justify-center">
@@ -344,7 +400,17 @@ const Quizzes = () => {
         </div>
         <Button onClick={openModal}>생성</Button>
       </div>
-
+      {/* 스케줄 배포 모달 */}
+      <ScheduleModal
+        isOpen={isModalOpen}
+        onClose={closeScheduleModal}
+        test_id={selectedQuiz?.test_id || 0}
+        test_title={selectedQuiz?.test_title || ''}
+        subject_title={selectedQuiz?.subject_title || ''}
+        courses={coursesData}
+        generations={generationsData}
+        onSubmit={handleScheduleSubmit}
+      />
       <Modal
         modalId="example-modal"
         isOpen={isOpen}
