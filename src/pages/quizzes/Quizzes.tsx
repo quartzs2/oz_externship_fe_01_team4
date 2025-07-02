@@ -14,10 +14,10 @@ import { usePagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
+import axios from 'axios'
 import { useEffect, useState } from 'react'
-// import axios from 'axios'
 
-// 표제목 상수화;
+// 표제목 상수화
 const TableHeaderItem = [
   { text: 'ID', dataKey: 'id' },
   { text: '제목', dataKey: 'title' },
@@ -29,97 +29,85 @@ const TableHeaderItem = [
   { text: '', dataKey: 'deploy' },
 ]
 
-// 에러 방지용 임시 데이터
-const quizData = [
-  {
-    id: 1,
-    title: 'HTML 쪽지시험',
-    subject_name: 'HTML',
-    question_count: 0,
-    submission_count: 0,
-    created_at: '2025-07-01T05:11:15.236Z',
-    updated_at: '2025-07-01T05:11:15.236Z',
+// 공통 config(baseURL, headers) 선언 (추후 수정 예정)
+const api = axios.create({
+  baseURL: 'http://54.180.237.77/api/v1/admin',
+  headers: {
+    'Content-Type': 'application/json',
+    // Authorization: `Bearer ${access_token}`,
   },
-  {
-    id: 2,
-    title: 'Python 쪽지시험',
-    subject_name: 'Python',
-    question_count: 0,
-    submission_count: 0,
-    created_at: '2025-08-01T05:11:15.236Z',
-    updated_at: '2025-08-01T05:11:15.236Z',
-  },
-]
-
-const subjects = [
-  {
-    id: 1,
-    title: 'Python',
-    number_of_days: 4,
-    number_of_hours: 16,
-    course_name: '웹 개발 초격차 프론트엔드 부트캠프',
-    status: true,
-    created_at: '2025-06-23T10:30:00Z',
-    updated_at: '2025-06-23T10:30:00Z',
-  },
-  {
-    id: 2,
-    title: 'Django',
-    number_of_days: 3,
-    number_of_hours: 12,
-    course_name: '웹 개발 초격차 백엔드 부트캠프',
-    status: false,
-    created_at: '2025-06-23T11:00:00Z',
-    updated_at: '2025-06-23T11:00:00Z',
-  },
-]
-
-const courseOptions = [
-  { label: '과정을 선택하세요', value: '' },
-  ...subjects.map((subject) => ({
-    label: subject.course_name,
-    value: subject.title,
-  })),
-]
-
-//드롭다운 옵션 상수화
-const subjectOptions = [
-  { label: '과목을 선택하세요', value: '' },
-  ...subjects.map((subject) => ({
-    label: String(subject.title ?? ''),
-    value: String(subject.id),
-  })),
-]
-
+})
 const SortItem = ['title'] // 정렬할 데이터 지정
 
 // 쪽지시험 관리
 const Quizzes = () => {
-  // const [dummySearch, setDummySearch] = useState('') build 에러로 주석 처리
+  const [quizzes, setQuizzes] = useState<TableRowData[]>([])
+  const [subjects, setSubjects] = useState<TableRowData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
-  const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizData)
+  // API 추후 수정 예정
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [quizzesRes, subjectsRes] = await axios.all([
+          api.get('/tests/'),
+          api.get('/subjects/'),
+        ])
+        setQuizzes(quizzesRes.data.results)
+        setSubjects(subjectsRes.data.results)
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err)
+        } else {
+          console.error('알 수 없는 에러:', err)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const [searchKeyword, setSearchKeyword] = useState('') // 현재 검색어 저장
+    fetchData()
+  }, [])
 
+  // 드롭다운 옵션
+  const courseOptions = [
+    { label: '과정을 선택하세요', value: '' },
+    ...Array.from(
+      new Map(
+        subjects.map((subject) => [
+          subject.course_name,
+          {
+            label: String(subject.course_name),
+            value: String(subject.title),
+          },
+        ])
+      ).values()
+    ),
+  ]
+
+  const subjectOptions = [
+    { label: '과목을 선택하세요', value: '' },
+    ...subjects.map((subject) => ({
+      label: String(subject.title ?? ''),
+      value: String(subject.id),
+    })),
+  ]
+
+  // 정렬, 검색, 필터, 페이지 state
+  const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizzes)
+  const [searchKeyword, setSearchKeyword] = useState('')
   const [selectedCourse, setSelectedCourse] = useState(courseOptions[0])
-
   const [filteredData, setFilteredData] = useState(sortedData) // 화면에 최종 표시할 필터링된 데이터 (기본값: 정렬된 데이터 전체)
-
   const { currentPage, totalPages, paginatedData, goToPage } = usePagination({
     item: filteredData, // <--- 기존 item 대신 sortedData를 넘겨줌 -> filteredData로 변경
     count: 10,
   })
 
+  // 쪽지시험 또는 과목 검색 필터링
   useEffect(() => {
     let tempData = [...sortedData] // 현재 정렬된 데이터 복사
 
-    // 과정별 필터링
-    if (selectedCourse.value) {
-      tempData = tempData.filter(
-        (quiz) => quiz.subject_name === selectedCourse.value
-      )
-    }
-    // 쪽지시험 또는 과목 검색 필터링
     const filterByKeyword = (quiz: TableRowData) => {
       if (!searchKeyword) return true
 
@@ -137,7 +125,7 @@ const Quizzes = () => {
     tempData = tempData.filter(filterByKeyword)
 
     setFilteredData(tempData)
-  }, [sortedData, searchKeyword, selectedCourse])
+  }, [sortedData, searchKeyword])
 
   const toast = useCustomToast()
 
@@ -185,11 +173,19 @@ const Quizzes = () => {
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
 
-  const openFilterModal = () => {
-    setIsFilterModalOpen(true)
-  }
-  const closeFilterModal = () => {
+  const handleFilterApply = () => {
     setIsFilterModalOpen(false)
+
+    let tempData = [...sortedData]
+
+    // 과정별 필터링
+    if (selectedCourse.value) {
+      tempData = tempData.filter(
+        (quiz) => quiz.subject_name === selectedCourse.value
+      )
+    }
+
+    setFilteredData(tempData)
   }
 
   const [isOpen, setIsOpen] = useState(false)
@@ -223,8 +219,11 @@ const Quizzes = () => {
     }
   }
 
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>에러가 발생했습니다: {error.message}</div>
+
   return (
-    <div className="mx-6 my-7">
+    <div className="w-[1600px] p-[30px]">
       <h2 className="mb-[26px] text-[18px] font-semibold">쪽지시험 조회</h2>
       <div className="mb-[17px] flex justify-between">
         <SearchBar
@@ -232,7 +231,7 @@ const Quizzes = () => {
           placeholder="검색어를 입력하세요."
         />
         <Button
-          onClick={openFilterModal}
+          onClick={() => setIsFilterModalOpen(true)}
           variant="VARIANT8"
           className="pr-[20px]"
         >
@@ -240,10 +239,11 @@ const Quizzes = () => {
           과정별 필터링
         </Button>
       </div>
+
       <Modal
         modalId="quizzes-course-filter-modal"
         isOpen={isFilterModalOpen}
-        onClose={closeFilterModal}
+        onClose={() => setIsFilterModalOpen(false)}
         className="h-[276px] w-[458px]"
         paddingSize={30}
       >
@@ -272,7 +272,7 @@ const Quizzes = () => {
             입니다.
           </p>
         )}
-        <Button onClick={closeFilterModal} className="self-end">
+        <Button onClick={handleFilterApply} className="self-end">
           조회
         </Button>
       </Modal>
@@ -287,15 +287,18 @@ const Quizzes = () => {
         sortByKey={sortByKey} // 정렬 함수 전달
         isTime // 시간 표시 여부
       />
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        goToPage={goToPage}
-      />
 
-      <div className="flex justify-end">
+      <div className="mt-[80px] flex justify-center">
+        <div className="flex flex-1 justify-center">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            goToPage={goToPage}
+          />
+        </div>
         <Button onClick={openModal}>생성</Button>
       </div>
+
       <Modal
         modalId="example-modal"
         isOpen={isOpen}
