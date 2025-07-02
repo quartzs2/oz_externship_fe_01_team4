@@ -11,7 +11,7 @@ export default function SideBarMenu({ menuData }: Menu) {
 
   return (
     <aside>
-      <div className="h-full max-w-[261px] border border-[#ececec]">
+      <div className="h-full w-[260px] border border-[#ececec]">
         <div className="flex h-[80px] items-center border-b border-[#F3EEFF] px-8">
           <h1 className="text-2xl font-semibold text-grey-500">
             오즈코딩스쿨 관리자

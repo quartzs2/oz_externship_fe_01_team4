@@ -9,8 +9,10 @@ const Layout = () => {
       <SideBarMenu menuData={menuData} />
       <div className="flex flex-1 flex-col">
         <Header />
-        <main className="flex-1">
-          <Outlet />
+        <main className="flex-1 bg-[#f9f9f9] px-6 py-12">
+          <div className="flex flex-col bg-white">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
