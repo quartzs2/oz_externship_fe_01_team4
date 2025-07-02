@@ -9,10 +9,7 @@ import Input from '@components/common/Input'
 import Label from '@components/common/Label'
 import Modal from '@components/common/Modal'
 import SearchBar from '@components/common/SearchBar'
-<<<<<<< HEAD
 import type { TableRowData } from '@custom-types/table'
-=======
->>>>>>> 0f48f5ba8188a768f1925aae90a5ff820b14bfb3
 import { usePagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
 import { useCustomToast } from '@hooks/toast/useToast'
@@ -57,7 +54,7 @@ const quizData = [
 const subjects = [
   {
     id: 1,
-    title: 'HTML',
+    title: 'Python',
     number_of_days: 4,
     number_of_hours: 16,
     course_name: '웹 개발 초격차 프론트엔드 부트캠프',
@@ -67,7 +64,7 @@ const subjects = [
   },
   {
     id: 2,
-    title: 'Python',
+    title: 'Django',
     number_of_days: 3,
     number_of_hours: 12,
     course_name: '웹 개발 초격차 백엔드 부트캠프',
@@ -94,36 +91,13 @@ const subjectOptions = [
   })),
 ]
 
-const subjects = [
-  {
-    id: 1,
-    title: 'Python',
-    number_of_days: 4,
-    number_of_hours: 16,
-    course_name: '웹 개발 초격차 프론트엔드 부트캠프',
-    status: true,
-    created_at: '2025-06-23T10:30:00Z',
-    updated_at: '2025-06-23T10:30:00Z',
-  },
-  {
-    id: 2,
-    title: 'Django',
-    number_of_days: 3,
-    number_of_hours: 12,
-    course_name: '웹 개발 초격차 백엔드 부트캠프',
-    status: false,
-    created_at: '2025-06-23T11:00:00Z',
-    updated_at: '2025-06-23T11:00:00Z',
-  },
-]
-
 const SortItem = ['title'] // 정렬할 데이터 지정
 
 // 쪽지시험 관리
 const Quizzes = () => {
   // const [dummySearch, setDummySearch] = useState('') build 에러로 주석 처리
 
-  const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizData) // 데이터 정렬 훅
+  const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizData)
 
   const [searchKeyword, setSearchKeyword] = useState('') // 현재 검색어 저장
 
@@ -145,7 +119,7 @@ const Quizzes = () => {
         (quiz) => quiz.subject_name === selectedCourse.value
       )
     }
-     // 쪽지시험 또는 과목 검색 필터링
+    // 쪽지시험 또는 과목 검색 필터링
     const filterByKeyword = (quiz: TableRowData) => {
       if (!searchKeyword) return true
 
@@ -161,18 +135,9 @@ const Quizzes = () => {
     }
 
     tempData = tempData.filter(filterByKeyword)
-    
+
     setFilteredData(tempData)
   }, [sortedData, searchKeyword, selectedCourse])
-
-  //드롭다운 옵션 상수화
-  const options = [
-    { label: '과목을 선택하세요', value: '' },
-    ...paginatedData.map((subject) => ({
-      label: String(subject.title ?? ''),
-      value: String(subject.id),
-    })),
-  ]
 
   const toast = useCustomToast()
 
@@ -261,7 +226,7 @@ const Quizzes = () => {
   return (
     <div className="mx-6 my-7">
       <h2 className="mb-[26px] text-[18px] font-semibold">쪽지시험 조회</h2>
-      <div className="mb-[18px] flex justify-between">
+      <div className="mb-[17px] flex justify-between">
         <SearchBar
           onSearch={(keyword) => setSearchKeyword(keyword)}
           placeholder="검색어를 입력하세요."
@@ -377,7 +342,7 @@ const Quizzes = () => {
                 name="subject"
                 value={selectedSubject.value}
                 onChange={setSelectedSubject}
-                options={options}
+                options={subjectOptions}
               />
               {!isSelectedSubject && (
                 <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
