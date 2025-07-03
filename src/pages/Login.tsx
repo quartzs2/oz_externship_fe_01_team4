@@ -1,14 +1,26 @@
 import Logo from '@assets/ozcoding_logo_black.svg'
 import Button from '@components/common/Button'
 import { cn } from '@utils/cn'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router'
 
 const Login = () => {
+  const navigate = useNavigate()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   // 버튼 비활성화 여부
   const isDisabled = !email || !password
+
+  // API 추후 수정
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+
+    // API 추후 연결
+
+    if (!isDisabled) navigate('/main')
+  }
 
   return (
     <div className="flex h-screen">
@@ -21,7 +33,7 @@ const Login = () => {
             <span className="text-[#522193]">admin 계정</span>을 통해 로그인을
             진행해주세요.
           </p>
-          <form className="w-[328px] space-y-[12px]">
+          <form onSubmit={handleSubmit} className="w-[328px] space-y-[12px]">
             <input
               type="email"
               value={email}
