@@ -13,7 +13,7 @@ type DropdownProps = {
   id: string
   name: string
   value: string
-  onChange: (value: string) => void
+  onChange: (selected: Option) => void
   options: Option[]
   placeholder?: string
   wrapClassName?: string
@@ -30,7 +30,7 @@ const Dropdown = ({
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleSelect = (selected: string) => {
+  const handleSelect = (selected: Option) => {
     onChange(selected)
     setIsOpen(false)
   }
@@ -54,15 +54,17 @@ const Dropdown = ({
       </button>
 
       {isOpen && (
-        <ul className="custom-scroll custom-shadow absolute top-full left-0 flex max-h-[175px] w-full translate-y-[2px] cursor-pointer flex-col overflow-visible overflow-y-auto rounded-[3px] border-1 border-[#DDD] bg-white text-[16px] font-[500] text-[#666]"
-        style={{zIndex: Z_INDEX_DEFINE.MODAL}}>
+        <ul
+          className="custom-scroll custom-shadow absolute top-full left-0 flex max-h-[175px] w-full translate-y-[2px] cursor-pointer flex-col overflow-visible overflow-y-auto rounded-[3px] border-1 border-[#DDD] bg-white text-[16px] font-[500] text-[#666]"
+          style={{ zIndex: Z_INDEX_DEFINE.MODAL }}
+        >
           {options.map((op) => {
             const isSelected = op.value === value
 
             return (
               <li
                 key={op.value}
-                onClick={() => handleSelect(op.value)}
+                onClick={() => handleSelect(op)}
                 className={cn('flex justify-between px-[14px] py-[10px]', {
                   'bg-[#f2effd]': isSelected,
                 })}
