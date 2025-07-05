@@ -21,7 +21,7 @@ const ScoreSelector = ({ className }: ScoreSelectorProps) => {
         id="score"
         name="score"
         value={score}
-        onChange={setScore}
+        onChange={(selected) => setScore(selected.value)}
         options={scoreOptions}
         wrapClassName="w-[70px] h-[30px] mt-[12px]"
       />

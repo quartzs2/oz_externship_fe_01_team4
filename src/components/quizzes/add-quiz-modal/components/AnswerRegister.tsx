@@ -1,5 +1,5 @@
 import { cn } from '@utils/cn'
-import CustomCheckbox from '@components/quizzes/add-quiz-modal/components/CustomCheckbox'
+import CustomCheckbox from '@components/quizzes/add-quiz-modal/components/common/CustomCheckbox'
 import { useState } from 'react'
 
 type AnswerProps = {

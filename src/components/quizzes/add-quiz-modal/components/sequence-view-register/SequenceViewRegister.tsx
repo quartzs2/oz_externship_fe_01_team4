@@ -1,10 +1,10 @@
+import { cn } from '@utils/cn'
 import AddIcon from '@assets/icons/quizzes/add-quiz-modal/add.svg?react'
 import Icon from '@components/common/Icon'
-import BlankQuestionOption from '@components/quizzes/add-quiz-modal/components/BlankQuestionOption'
-import { cn } from '@utils/cn'
 import { useState } from 'react'
+import QuestionSequenceOption from '@components/quizzes/add-quiz-modal/components/sequence-view-register/QuestionSequenceOption'
 
-type BlankAnswerRegisterProps = {
+type SequenceViewRegisterProps = {
   className?: string
 }
 
@@ -14,13 +14,13 @@ type Option = {
   isCorrect: boolean
 }
 
-const BlankAnswerRegister = ({ className }: BlankAnswerRegisterProps) => {
+const SequenceViewRegister = ({ className }: SequenceViewRegisterProps) => {
   const [options, setOptions] = useState<Option[]>([
     { id: Date.now(), text: '', isCorrect: true },
   ])
 
   // 보기 텍스트 변경 핸들러
-  const handleOptionTextChange = (id: number, text: string) => {
+  const handleTextChange = (id: number, text: string) => {
     setOptions((prevOptions) =>
       prevOptions.map((option) =>
         option.id === id ? { ...option, text } : option
@@ -50,13 +50,14 @@ const BlankAnswerRegister = ({ className }: BlankAnswerRegisterProps) => {
   return (
     <div className={cn('flex flex-col', className)}>
       <div className="text-[14px] font-semibold text-[#222222]">
-        빈칸 답안 등록
+        순서 보기 등록
       </div>
       <div className="mt-[6px] text-[10px] text-[#666666]">
         <div>
-          빈칸 채우기 문제 유형은 최대 5개까지 보기를 등록할 수 있습니다.
+          다지선다형 순서 정렬 문제 유형은 최대 5개까지 보기를 등록할 수
+          있습니다.
         </div>
-        <div>체크박스를 체크하여 등록해주세요.</div>
+        <div>우측 드롭다운을 사용하여 순서를 정렬해주세요.</div>
       </div>
       <div className="relative mt-[8px] min-h-[210px] rounded-[4px] bg-[#F7F7F7] px-[12px] pt-[24px]">
         {/* 추가하기 버튼 */}
@@ -73,18 +74,22 @@ const BlankAnswerRegister = ({ className }: BlankAnswerRegisterProps) => {
         {/* 보기 목록 렌더링 */}
         <div className="flex flex-col gap-y-[12px]">
           {options.map((option, index) => (
-            <BlankQuestionOption
+            <QuestionSequenceOption
               key={option.id}
               option={option}
               index={index}
-              onTextChange={handleOptionTextChange}
+              onTextChange={handleTextChange}
+              totalOptionsCount={options.length}
               onDelete={handleDeleteOption}
-              isDeletable={options.length > 1} // 보기가 1개 초과일 때만 삭제 가능
+              isDeletable={options.length > 2} // 보기가 2개 초과일 때만 삭제 가능
             />
           ))}
         </div>
       </div>
+      <div className="mt-[7px] text-[10px] text-[#666666]">
+        * 보기는 최소 2개 이상 등록해야 합니다.
+      </div>
     </div>
   )
 }
-export default BlankAnswerRegister
+export default SequenceViewRegister

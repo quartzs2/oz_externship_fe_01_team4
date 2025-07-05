@@ -9,6 +9,7 @@ import Input from '@components/common/Input'
 import Label from '@components/common/Label'
 import Modal from '@components/common/Modal'
 import SearchBar from '@components/common/SearchBar'
+import AddQuizModal from '@components/quizzes/add-quiz-modal/AddQuizModal'
 import type { TableRowData } from '@custom-types/table'
 import { usePagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
@@ -189,9 +190,18 @@ const Quizzes = () => {
   }
 
   const [isOpen, setIsOpen] = useState(false)
+  const [isAddQuizModalOpen, setIsAddQuizModalOpen] = useState(false)
 
   const openModal = () => {
     setIsOpen(true)
+  }
+
+  const openAddQuizModal = () => {
+    setIsAddQuizModalOpen(true)
+  }
+
+  const closeAddQuizModal = () => {
+    setIsAddQuizModalOpen(false)
   }
 
   const resetForm = () => {
@@ -297,6 +307,8 @@ const Quizzes = () => {
           />
         </div>
         <Button onClick={openModal}>생성</Button>
+        <Button onClick={openAddQuizModal}>addQuizModal 띄우기</Button>
+        {/* 나중에 수정 */}
       </div>
 
       <Modal
@@ -417,6 +429,7 @@ const Quizzes = () => {
           </div>
         </div>
       </Modal>
+      <AddQuizModal isOpen={isAddQuizModalOpen} onClose={closeAddQuizModal} />
     </div>
   )
 }

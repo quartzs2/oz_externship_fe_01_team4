@@ -1,58 +1,38 @@
 import AddIcon from '@assets/icons/quizzes/add-quiz-modal/add.svg?react'
 import Icon from '@components/common/Icon'
-import QuestionOption from '@components/quizzes/add-quiz-modal/components/QuestionOption'
+import QuestionOption from '@components/quizzes/add-quiz-modal/components/question-options-editor/QuestionOption'
 import { cn } from '@utils/cn'
-import { useState } from 'react'
-
-type Option = {
-  id: number
-  text: string
-  isCorrect: boolean
-}
+import { useFieldArray, useFormContext } from 'react-hook-form'
 
 type QuestionOptionsEditorProps = {
   className?: string
 }
 
 const QuestionOptionsEditor = ({ className }: QuestionOptionsEditorProps) => {
-  const [options, setOptions] = useState<Option[]>([
-    { id: Date.now(), text: '', isCorrect: true },
-  ])
+  const { control, register, watch } = useFormContext()
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'options', // 폼 데이터의 'options' 배열과 연결
+  })
 
-  // 보기 텍스트 변경 핸들러
-  const handleTextChange = (id: number, text: string) => {
-    setOptions((prevOptions) =>
-      prevOptions.map((option) =>
-        option.id === id ? { ...option, text } : option
-      )
-    )
-  }
+  const optionsValue = watch('options')
 
-  // 정답 체크 변경 핸들러
-  const handleCorrectChange = (id: number, isCorrect: boolean) => {
-    setOptions((prevOptions) =>
-      prevOptions.map((option) =>
-        option.id === id ? { ...option, isCorrect } : option
-      )
-    )
+  // 초기 옵션 설정 (최소 1개)
+  if (fields.length === 0) {
+    append({ text: '', isCorrect: false })
   }
 
   // 보기 추가 핸들러
   const handleAddOption = () => {
-    // 최대 5개까지만 추가
-    if (options.length < 5) {
-      const newOption = { id: Date.now(), text: '', isCorrect: false }
-      setOptions([...options, newOption])
+    if (fields.length < 5) {
+      append({ text: '', isCorrect: false })
     }
   }
 
   // 보기 삭제 핸들러
-  const handleDeleteOption = (id: number) => {
-    // 최소 1개의 보기는 유지
-    if (options.length > 1) {
-      setOptions((prevOptions) =>
-        prevOptions.filter((option) => option.id !== id)
-      )
+  const handleDeleteOption = (index: number) => {
+    if (fields.length > 1) {
+      remove(index)
     }
   }
 
@@ -68,11 +48,21 @@ const QuestionOptionsEditor = ({ className }: QuestionOptionsEditorProps) => {
         <div>정답 보기는 체크박스를 체크하여 등록해주세요.</div>
       </div>
       <div className="relative mt-[8px] min-h-[210px] rounded-[4px] bg-[#F7F7F7] px-[12px] pt-[24px]">
+        {/* 유효성 검사 전용 input(hidden) */}
+        <input
+          type="hidden"
+          {...register('options_validation', {
+            validate: () =>
+              optionsValue?.some(
+                (option: { isCorrect: boolean }) => option.isCorrect
+              ) || '최소 1개 이상의 정답을 체크해야 합니다.',
+          })}
+        />
         {/* 추가하기 버튼 */}
         <button
           type="button"
           onClick={handleAddOption}
-          disabled={options.length >= 5} // 5개 이상이면 비활성화
+          disabled={fields.length >= 5} // 5개 이상이면 비활성화
           className="absolute top-[-18px] right-0 flex h-[12px] cursor-pointer items-center gap-[2px] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Icon icon={AddIcon} size={12} />
@@ -81,15 +71,13 @@ const QuestionOptionsEditor = ({ className }: QuestionOptionsEditorProps) => {
 
         {/* 보기 목록 렌더링 */}
         <div className="flex flex-col gap-y-[12px]">
-          {options.map((option, index) => (
+          {fields.map((field, index) => (
             <QuestionOption
-              key={option.id}
-              option={option}
+              key={field.id} // useFieldArray에서 제공하는 id 사용
+              option={field as { id: string; text: string; isCorrect: boolean }}
               index={index}
-              onTextChange={handleTextChange}
-              onCorrectChange={handleCorrectChange}
-              onDelete={handleDeleteOption}
-              isDeletable={options.length > 1} // 보기가 1개 초과일 때만 삭제 가능
+              onDelete={() => handleDeleteOption(index)}
+              isDeletable={fields.length > 1} // 보기가 1개 초과일 때만 삭제 가능
             />
           ))}
         </div>
