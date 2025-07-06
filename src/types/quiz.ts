@@ -15,6 +15,14 @@ export type QuizOption = {
 }
 
 /**
+ * [순서 정렬형] 문제의 보기 하나에 대한 타입입니다.
+ */
+export type OrderFormOption = {
+  text: string
+  order: string
+}
+
+/**
  * [다지선다형] 페이지의 폼 전체 데이터 구조입니다.
  */
 export type MultipleChoiceFormValues = {
@@ -54,7 +62,7 @@ export type FillInTheBlanksFormValues = {
 export type SortByOrderFormValues = {
   type: 'sort-by-order'
   question: string
-  options: QuizOption[] // 순서 정렬 보기
+  options: OrderFormOption[]
   score: string
   solution: string // Tiptap 에디터 콘텐츠
 }

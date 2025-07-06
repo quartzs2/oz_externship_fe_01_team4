@@ -1,49 +1,42 @@
-import { cn } from '@utils/cn'
 import AddIcon from '@assets/icons/quizzes/add-quiz-modal/add.svg?react'
 import Icon from '@components/common/Icon'
-import { useState } from 'react'
 import QuestionSequenceOption from '@components/quizzes/add-quiz-modal/components/sequence-view-register/QuestionSequenceOption'
+import { cn } from '@utils/cn'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 
 type SequenceViewRegisterProps = {
   className?: string
 }
 
-type Option = {
-  id: number
-  text: string
-  isCorrect: boolean
-}
-
 const SequenceViewRegister = ({ className }: SequenceViewRegisterProps) => {
-  const [options, setOptions] = useState<Option[]>([
-    { id: Date.now(), text: '', isCorrect: true },
-  ])
+  const { control } = useFormContext()
 
-  // 보기 텍스트 변경 핸들러
-  const handleTextChange = (id: number, text: string) => {
-    setOptions((prevOptions) =>
-      prevOptions.map((option) =>
-        option.id === id ? { ...option, text } : option
-      )
-    )
-  }
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'options',
+    rules: {
+      minLength: {
+        value: 2,
+        message: '보기는 최소 2개 이상 등록해야 합니다.',
+      },
+      maxLength: {
+        value: 5,
+        message: '보기는 최대 5개까지 등록할 수 있습니다.',
+      },
+    },
+  })
 
   // 보기 추가 핸들러
   const handleAddOption = () => {
-    // 최대 5개까지만 추가
-    if (options.length < 5) {
-      const newOption = { id: Date.now(), text: '', isCorrect: false }
-      setOptions([...options, newOption])
+    if (fields.length < 5) {
+      append({ text: '', order: String(fields.length + 1) })
     }
   }
 
   // 보기 삭제 핸들러
-  const handleDeleteOption = (id: number) => {
-    // 최소 1개의 보기는 유지
-    if (options.length > 1) {
-      setOptions((prevOptions) =>
-        prevOptions.filter((option) => option.id !== id)
-      )
+  const handleDeleteOption = (index: number) => {
+    if (fields.length > 2) {
+      remove(index)
     }
   }
 
@@ -64,7 +57,7 @@ const SequenceViewRegister = ({ className }: SequenceViewRegisterProps) => {
         <button
           type="button"
           onClick={handleAddOption}
-          disabled={options.length >= 5} // 5개 이상이면 비활성화
+          disabled={fields.length >= 5}
           className="absolute top-[-18px] right-0 flex h-[12px] cursor-pointer items-center gap-[2px] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Icon icon={AddIcon} size={12} />
@@ -73,15 +66,13 @@ const SequenceViewRegister = ({ className }: SequenceViewRegisterProps) => {
 
         {/* 보기 목록 렌더링 */}
         <div className="flex flex-col gap-y-[12px]">
-          {options.map((option, index) => (
+          {fields.map((field, index) => (
             <QuestionSequenceOption
-              key={option.id}
-              option={option}
+              key={field.id}
               index={index}
-              onTextChange={handleTextChange}
-              totalOptionsCount={options.length}
-              onDelete={handleDeleteOption}
-              isDeletable={options.length > 2} // 보기가 2개 초과일 때만 삭제 가능
+              totalOptionsCount={fields.length}
+              onDelete={() => handleDeleteOption(index)}
+              isDeletable={fields.length > 2}
             />
           ))}
         </div>

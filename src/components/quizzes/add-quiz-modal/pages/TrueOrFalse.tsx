@@ -77,7 +77,6 @@ const TrueOrFalse = ({
       type: 'true-or-false',
     }
 
-    console.log(newQuiz)
     setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
   }
 
