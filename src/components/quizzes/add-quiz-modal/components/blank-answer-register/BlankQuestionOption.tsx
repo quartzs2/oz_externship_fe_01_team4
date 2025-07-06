@@ -1,29 +1,23 @@
-import Icon from '@components/common/Icon'
 import DeleteIcon from '@assets/icons/quizzes/add-quiz-modal/delete.svg?react'
+import Icon from '@components/common/Icon'
+import type { FillInTheBlanksFormValues } from '@custom-types/quiz'
 import { cn } from '@utils/cn'
-
-type Option = {
-  id: number
-  text: string
-  isCorrect: boolean
-}
+import { useFormContext } from 'react-hook-form'
 
 type BlankQuestionOptionProps = {
-  option: Option
   index: number
-  onTextChange: (id: number, text: string) => void
-  onDelete: (id: number) => void
+  onDelete: () => void
   isDeletable: boolean
 }
 
 const BlankQuestionOption = ({
-  option,
   index,
-  onTextChange,
   onDelete,
   isDeletable,
 }: BlankQuestionOptionProps) => {
-  const optionLabel = String.fromCharCode(65 + index) // A, B, C, D...
+  const { register } = useFormContext<FillInTheBlanksFormValues>()
+
+  const optionLabel = String.fromCharCode(65 + index)
 
   return (
     <div className="flex items-center">
@@ -32,8 +26,9 @@ const BlankQuestionOption = ({
       </div>
       <input
         type="text"
-        value={option.text}
-        onChange={(e) => onTextChange(option.id, e.target.value)}
+        {...register(`options.${index}.text`, {
+          required: '답안을 입력해주세요.',
+        })}
         className={cn(
           'h-[30px] w-full',
           'border border-[#DDDDDD] bg-white text-[12px] text-[#666666]',
@@ -42,14 +37,13 @@ const BlankQuestionOption = ({
         placeholder="답안을 입력해주세요."
       />
 
-      <button onClick={() => onDelete(option.id)} disabled={!isDeletable}>
+      <button type="button" onClick={onDelete} disabled={!isDeletable}>
         <Icon
           icon={DeleteIcon}
           size={12}
-          className={cn(
-            'mr-[25px] ml-[20px]',
-            { 'cursor-not-allowed opacity-50': !isDeletable } // 삭제 불가능할 때 스타일
-          )}
+          className={cn('mr-[25px] ml-[20px]', {
+            'cursor-not-allowed opacity-50': !isDeletable,
+          })}
         />
       </button>
     </div>

@@ -1,13 +1,29 @@
 import Button from '@components/common/Button'
 import PopUp from '@components/common/PopUp'
+import type {
+  ValidateFunctionProps,
+  ValidateFunctionReturn,
+} from '@components/quizzes/add-quiz-modal/AddQuizModal'
 import BlankAnswerRegister from '@components/quizzes/add-quiz-modal/components/blank-answer-register/BlankAnswerRegister'
 import PassageInput from '@components/quizzes/add-quiz-modal/components/PassageInput'
 import QuestionInput from '@components/quizzes/add-quiz-modal/components/QuestionInput'
 import ScoreSelector from '@components/quizzes/add-quiz-modal/components/ScoreSelector'
 import SolutionInput from '@components/quizzes/add-quiz-modal/components/SolutionInput'
 import { POP_UP_TYPE } from '@constants/popup/popUp'
-import type { FormHandle, FillInTheBlanksFormValues } from '@custom-types/quiz'
-import { useImperativeHandle, useState, type Ref } from 'react'
+import type {
+  FillInTheBlanksFormValues,
+  FormHandle,
+  QuizFormTypes,
+} from '@custom-types/quiz'
+import findFirstErrorMessage from '@utils/findFirstErrorMessage'
+import {
+  type Dispatch,
+  type ReactNode,
+  type Ref,
+  type SetStateAction,
+  useImperativeHandle,
+  useState,
+} from 'react'
 import {
   FormProvider,
   useForm,
@@ -17,30 +33,63 @@ import {
 
 type FillInTheBlanksProps = {
   ref: Ref<FormHandle>
+  validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
+  setQuizzes: Dispatch<SetStateAction<QuizFormTypes[]>>
 }
 
-const FillInTheBlanks = ({ ref }: FillInTheBlanksProps) => {
+const FillInTheBlanks = ({
+  ref,
+  validateFunction,
+  setQuizzes,
+}: FillInTheBlanksProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
-  const [popupMessage, setPopupMessage] = useState('')
+  const [popupTitle, setPopupTitle] = useState<ReactNode>('')
+  const [popupDescription, setPopupDescription] = useState<ReactNode>('')
 
-  const methods = useForm<FillInTheBlanksFormValues>({
+  const methods = useForm<Omit<FillInTheBlanksFormValues, 'type'>>({
     mode: 'onSubmit',
     defaultValues: {
       question: '',
       passage: '',
-      options: [{ text: '', isCorrect: true }],
+      options: [{ text: '', order: 'A' }],
       score: '1',
       solution: '',
     },
   })
 
-  const onSubmit: SubmitHandler<FillInTheBlanksFormValues> = (data) => {
-    console.log(data)
-    // TODO: 문제 추가
+  const onSubmit: SubmitHandler<Omit<FillInTheBlanksFormValues, 'type'>> = (
+    data
+  ) => {
+    const { isError, PopupTitle, PopupDetail } = validateFunction({
+      QuizScore: Number(data.score),
+    })
+
+    if (isError && PopupTitle && PopupDetail) {
+      setPopupTitle(PopupTitle)
+      setPopupDescription(PopupDetail)
+      setIsPopupOpen(true)
+      return
+    }
+
+    const newQuiz: FillInTheBlanksFormValues = {
+      ...data,
+      type: 'fill-in-the-blanks',
+    }
+
+    setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
   }
 
   const onError = (errors: FieldErrors<FillInTheBlanksFormValues>) => {
-    // TODO: 에러 표시
+    const errorEntries = Object.values(errors)
+
+    if (errorEntries.length === 0) {
+      setPopupTitle('오류가 발생했습니다.')
+      setIsPopupOpen(true)
+      return
+    }
+
+    const firstErrorMessage = findFirstErrorMessage(errorEntries[0])
+    setPopupTitle(firstErrorMessage || '오류가 발생했습니다.')
     setIsPopupOpen(true)
   }
 
@@ -68,7 +117,8 @@ const FillInTheBlanks = ({ ref }: FillInTheBlanksProps) => {
         onClose={() => setIsPopupOpen(false)}
         type={POP_UP_TYPE.DELETE_CONFIRM}
       >
-        <PopUp.Description>{popupMessage}</PopUp.Description>
+        <PopUp.Title>{popupTitle}</PopUp.Title>
+        <PopUp.Description>{popupDescription}</PopUp.Description>
         <PopUp.Buttons>
           <Button onClick={() => setIsPopupOpen(false)}>확인</Button>
         </PopUp.Buttons>

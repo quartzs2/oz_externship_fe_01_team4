@@ -1,49 +1,36 @@
 import AddIcon from '@assets/icons/quizzes/add-quiz-modal/add.svg?react'
 import Icon from '@components/common/Icon'
 import BlankQuestionOption from '@components/quizzes/add-quiz-modal/components/blank-answer-register/BlankQuestionOption'
+import type { FillInTheBlanksFormValues } from '@custom-types/quiz'
 import { cn } from '@utils/cn'
-import { useState } from 'react'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 
 type BlankAnswerRegisterProps = {
   className?: string
 }
 
-type Option = {
-  id: number
-  text: string
-  isCorrect: boolean
-}
-
 const BlankAnswerRegister = ({ className }: BlankAnswerRegisterProps) => {
-  const [options, setOptions] = useState<Option[]>([
-    { id: Date.now(), text: '', isCorrect: true },
-  ])
+  const { control } = useFormContext<FillInTheBlanksFormValues>()
 
-  // 보기 텍스트 변경 핸들러
-  const handleOptionTextChange = (id: number, text: string) => {
-    setOptions((prevOptions) =>
-      prevOptions.map((option) =>
-        option.id === id ? { ...option, text } : option
-      )
-    )
-  }
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'options',
+  })
 
   // 보기 추가 핸들러
   const handleAddOption = () => {
-    // 최대 5개까지만 추가
-    if (options.length < 5) {
-      const newOption = { id: Date.now(), text: '', isCorrect: false }
-      setOptions([...options, newOption])
+    if (fields.length < 5) {
+      append({
+        text: '',
+        order: String.fromCharCode(65 + fields.length),
+      })
     }
   }
 
   // 보기 삭제 핸들러
-  const handleDeleteOption = (id: number) => {
-    // 최소 1개의 보기는 유지
-    if (options.length > 1) {
-      setOptions((prevOptions) =>
-        prevOptions.filter((option) => option.id !== id)
-      )
+  const handleDeleteOption = (index: number) => {
+    if (fields.length > 1) {
+      remove(index)
     }
   }
 
@@ -63,7 +50,7 @@ const BlankAnswerRegister = ({ className }: BlankAnswerRegisterProps) => {
         <button
           type="button"
           onClick={handleAddOption}
-          disabled={options.length >= 5} // 5개 이상이면 비활성화
+          disabled={fields.length >= 5} // 5개 이상이면 비활성화
           className="absolute top-[-18px] right-0 flex h-[12px] cursor-pointer items-center gap-[2px] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Icon icon={AddIcon} size={12} />
@@ -72,14 +59,12 @@ const BlankAnswerRegister = ({ className }: BlankAnswerRegisterProps) => {
 
         {/* 보기 목록 렌더링 */}
         <div className="flex flex-col gap-y-[12px]">
-          {options.map((option, index) => (
+          {fields.map((field, index) => (
             <BlankQuestionOption
-              key={option.id}
-              option={option}
+              key={field.id}
               index={index}
-              onTextChange={handleOptionTextChange}
-              onDelete={handleDeleteOption}
-              isDeletable={options.length > 1} // 보기가 1개 초과일 때만 삭제 가능
+              onDelete={() => handleDeleteOption(index)}
+              isDeletable={fields.length > 1} // 보기가 1개 초과일 때만 삭제 가능
             />
           ))}
         </div>
@@ -87,4 +72,5 @@ const BlankAnswerRegister = ({ className }: BlankAnswerRegisterProps) => {
     </div>
   )
 }
+
 export default BlankAnswerRegister

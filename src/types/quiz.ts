@@ -23,6 +23,14 @@ export type OrderFormOption = {
 }
 
 /**
+ * [빈칸 채우기형] 문제의 보기 하나에 대한 타입입니다.
+ */
+export type BlankFormOption = {
+  text: string
+  order: string // A, B, ..
+}
+
+/**
  * [다지선다형] 페이지의 폼 전체 데이터 구조입니다.
  */
 export type MultipleChoiceFormValues = {
@@ -30,7 +38,7 @@ export type MultipleChoiceFormValues = {
   question: string
   options: QuizOption[]
   score: string
-  solution: string // Tiptap 에디터 콘텐츠
+  solution: string
 }
 
 /**
@@ -39,9 +47,9 @@ export type MultipleChoiceFormValues = {
 export type SubjectiveShortAnswerFormValues = {
   type: 'subjective-short-answer'
   question: string
-  answer: string // 주관식 답안
+  answer: string // 답안
   score: string
-  solution: string // Tiptap 에디터 콘텐츠
+  solution: string // 해설
 }
 
 /**
@@ -51,9 +59,9 @@ export type FillInTheBlanksFormValues = {
   type: 'fill-in-the-blanks'
   question: string
   passage: string // 지문
-  options: QuizOption[] // 빈칸 답안 보기
+  options: BlankFormOption[]
   score: string
-  solution: string // Tiptap 에디터 콘텐츠
+  solution: string
 }
 
 /**
@@ -64,7 +72,7 @@ export type SortByOrderFormValues = {
   question: string
   options: OrderFormOption[]
   score: string
-  solution: string // Tiptap 에디터 콘텐츠
+  solution: string
 }
 
 /**
@@ -75,7 +83,7 @@ export type TrueOrFalseFormValues = {
   question: string
   options: QuizOption[] // O, X 두 가지 옵션
   score: string
-  solution: string // Tiptap 에디터 콘텐츠
+  solution: string
 }
 
 /**
