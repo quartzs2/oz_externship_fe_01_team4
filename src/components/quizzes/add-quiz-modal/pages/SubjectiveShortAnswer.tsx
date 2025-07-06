@@ -1,5 +1,9 @@
 import Button from '@components/common/Button'
 import PopUp from '@components/common/PopUp'
+import type {
+  ValidateFunctionProps,
+  ValidateFunctionReturn,
+} from '@components/quizzes/add-quiz-modal/AddQuizModal'
 import AnswerInput from '@components/quizzes/add-quiz-modal/components/AnswerInput'
 import QuestionInput from '@components/quizzes/add-quiz-modal/components/QuestionInput'
 import ScoreSelector from '@components/quizzes/add-quiz-modal/components/ScoreSelector'
@@ -7,9 +11,18 @@ import SolutionInput from '@components/quizzes/add-quiz-modal/components/Solutio
 import { POP_UP_TYPE } from '@constants/popup/popUp'
 import type {
   FormHandle,
+  QuizFormTypes,
   SubjectiveShortAnswerFormValues,
 } from '@custom-types/quiz'
-import { useImperativeHandle, useState, type Ref } from 'react'
+import findFirstErrorMessage from '@utils/findFirstErrorMessage'
+import {
+  type ReactNode,
+  useImperativeHandle,
+  useState,
+  type Ref,
+  type Dispatch,
+  type SetStateAction,
+} from 'react'
 import {
   FormProvider,
   useForm,
@@ -19,13 +32,20 @@ import {
 
 type SubjectiveShortAnswerProps = {
   ref: Ref<FormHandle>
+  validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
+  setQuizzes: Dispatch<SetStateAction<QuizFormTypes[]>>
 }
 
-const SubjectiveShortAnswer = ({ ref }: SubjectiveShortAnswerProps) => {
+const SubjectiveShortAnswer = ({
+  ref,
+  validateFunction,
+  setQuizzes,
+}: SubjectiveShortAnswerProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
-  const [popupMessage, setPopupMessage] = useState('')
+  const [popupTitle, setPopupTitle] = useState<ReactNode>('')
+  const [popupDescription, setPopupDescription] = useState<ReactNode>('')
 
-  const methods = useForm<SubjectiveShortAnswerFormValues>({
+  const methods = useForm<Omit<SubjectiveShortAnswerFormValues, 'type'>>({
     mode: 'onSubmit',
     defaultValues: {
       question: '',
@@ -35,14 +55,42 @@ const SubjectiveShortAnswer = ({ ref }: SubjectiveShortAnswerProps) => {
     },
   })
 
-  const onSubmit: SubmitHandler<SubjectiveShortAnswerFormValues> = (data) => {
-    console.log(data)
-    // TODO: 문제 추가
+  const onSubmit: SubmitHandler<
+    Omit<SubjectiveShortAnswerFormValues, 'type'>
+  > = (data) => {
+    const { isError, PopupTitle, PopupDetail } = validateFunction({
+      QuizScore: Number(data.score),
+    })
+
+    if (isError && PopupTitle && PopupDetail) {
+      setPopupTitle(PopupTitle)
+      setPopupDescription(PopupDetail)
+      setIsPopupOpen(true)
+      return
+    }
+
+    const newQuiz: SubjectiveShortAnswerFormValues = {
+      ...data,
+      type: 'subjective-short-answer',
+    }
+
+    setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
   }
 
-  const onError = (errors: FieldErrors<SubjectiveShortAnswerFormValues>) => {
-    console.log(errors)
-    // TODO: 에러 표시
+  const onError = (
+    errors: FieldErrors<Omit<SubjectiveShortAnswerFormValues, 'type'>>
+  ) => {
+    const errorEntries = Object.values(errors)
+
+    if (errorEntries.length === 0) {
+      setPopupTitle('오류가 발생했습니다.')
+      setIsPopupOpen(true)
+      return
+    }
+
+    const firstErrorMessage = findFirstErrorMessage(errorEntries[0])
+    setPopupTitle(firstErrorMessage || '오류가 발생했습니다.')
+
     setIsPopupOpen(true)
   }
 
@@ -69,7 +117,8 @@ const SubjectiveShortAnswer = ({ ref }: SubjectiveShortAnswerProps) => {
         onClose={() => setIsPopupOpen(false)}
         type={POP_UP_TYPE.DELETE_CONFIRM}
       >
-        <PopUp.Description>{popupMessage}</PopUp.Description>
+        <PopUp.Title>{popupTitle}</PopUp.Title>
+        <PopUp.Description>{popupDescription}</PopUp.Description>
         <PopUp.Buttons>
           <Button onClick={() => setIsPopupOpen(false)}>확인</Button>
         </PopUp.Buttons>

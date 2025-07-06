@@ -148,6 +148,8 @@ const AddQuizModal = ({
           ref={(el) => {
             pageRefs.current[3] = el
           }}
+          validateFunction={validateFunction}
+          setQuizzes={setQuizzes}
         />
       ),
     },

@@ -14,7 +14,7 @@ const AnswerInput = ({ className }: AnswerInputProps) => {
       <textarea
         placeholder="답안을 입력해주세요"
         className="h-[70px] resize-none rounded-[3px] border border-[#DDDDDD] p-[12px] text-[14px] text-[#666666] outline-none"
-        {...register('answer', { required: true })}
+        {...register('answer', { required: '답안은 필수 항목입니다.' })}
       />
       <div className="mt-[7px] text-[10px] text-[#666666]">
         * 필수 입력값입니다.
