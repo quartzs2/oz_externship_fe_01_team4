@@ -1,7 +1,3 @@
-import { useEditor, EditorContent, type Editor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import { cn } from '@utils/cn'
 import BoldIcon from '@assets/icons/editor/bold.svg?react'
 import ItalicIcon from '@assets/icons/editor/italic.svg?react'
 import StrikeThroughIcon from '@assets/icons/editor/strikeThrough.svg?react'
@@ -10,6 +6,8 @@ import UnorderedListIcon from '@assets/icons/editor/unorderedList.svg?react'
 import IndentIcon from '@assets/icons/editor/indent.svg?react'
 import Icon from '@components/common/Icon'
 import UnderlineIcon from '@assets/icons/editor/underline.svg?react'
+import { type Editor } from '@tiptap/react'
+import { cn } from '@utils/cn'
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
@@ -96,28 +94,4 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   )
 }
 
-const Tiptap = () => {
-  const editor = useEditor({
-    extensions: [StarterKit, Underline],
-    content: '',
-
-    editorProps: {
-      attributes: {
-        class: cn(
-          'prose dark:prose-invert prose-sm sm:prose-base lg:prose-lg xl:prose-2xl',
-          'min-h-[164px]  border border-[#D2D2D2] border-t-0 p-4 text-[11px]',
-          'focus:outline-none'
-        ),
-      },
-    },
-  })
-
-  return (
-    <div>
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
-    </div>
-  )
-}
-
-export default Tiptap
+export default MenuBar

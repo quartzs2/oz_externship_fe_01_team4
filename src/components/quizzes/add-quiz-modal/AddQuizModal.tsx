@@ -7,8 +7,14 @@ import SortByOrder from '@components/quizzes/add-quiz-modal/pages/SortByOrder'
 import SubjectiveShortAnswer from '@components/quizzes/add-quiz-modal/pages/SubjectiveShortAnswer'
 import TrueOrFalse from '@components/quizzes/add-quiz-modal/pages/TrueOrFalse'
 import { PADDING_SIZE } from '@constants/modal/modal'
-import { type FormHandle } from '@custom-types/quiz'
-import { useRef, useState, type JSX } from 'react'
+import { type FormHandle, type QuizFormTypes } from '@custom-types/quiz'
+import {
+  useRef,
+  useState,
+  type Dispatch,
+  type JSX,
+  type SetStateAction,
+} from 'react'
 
 export type ValidateFunctionProps = {
   QuizScore: number
@@ -26,6 +32,7 @@ type AddQuizModalProps = {
   maxQuizCount: number
   currentQuizScoreSum: number
   maxQuizScoreSum: number
+  setQuizzes: Dispatch<SetStateAction<QuizFormTypes[]>>
 }
 
 const AddQuizModal = ({
@@ -35,6 +42,7 @@ const AddQuizModal = ({
   maxQuizCount,
   currentQuizScoreSum,
   maxQuizScoreSum = 100,
+  setQuizzes,
 }: AddQuizModalProps) => {
   const [currentTab, setCurrentTab] = useState(0)
 
@@ -105,6 +113,7 @@ const AddQuizModal = ({
             pageRefs.current[0] = el
           }}
           validateFunction={validateFunction}
+          setQuizzes={setQuizzes}
         />
       ),
     },
@@ -115,6 +124,8 @@ const AddQuizModal = ({
           ref={(el) => {
             pageRefs.current[1] = el
           }}
+          validateFunction={validateFunction}
+          setQuizzes={setQuizzes}
         />
       ),
     },
