@@ -16,6 +16,7 @@ import {
 import SearchBar from '@components/common/SearchBar'
 import axios from 'axios'
 import { filterOption } from '@utils/filterOption'
+import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
 
 // 페이지 상수
 const COUNT_LIMIT = 20
@@ -34,7 +35,7 @@ const deploymentHeaders = [
 
 // 공통 API 인스턴스
 const api = axios.create({
-  baseURL: 'http://54.180.237.77/api/v1/admin',
+  baseURL: ADMIN_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -44,7 +45,7 @@ const api = axios.create({
 
 // fetch 함수
 const fetchAPI = async () => {
-  const res = await api.get<DeploymentResponse>('/test-deployments/')
+  const res = await api.get<DeploymentResponse>(ADMIN_API_PATH.TEST_DEPLOYMENTS)
   return res.data.results.map(mapDeployment)
 }
 
