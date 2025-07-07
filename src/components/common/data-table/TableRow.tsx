@@ -72,7 +72,7 @@ export default function TableRow({
         </td>
       )}
       {headers.map((header, i) => (
-        <td key={i} className="w-[150px] p-2">
+        <td key={i} className="w-[150px] p-2 text-[#666]">
           {(() => {
             const value = data[header.dataKey]
 

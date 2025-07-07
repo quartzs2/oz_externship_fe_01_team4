@@ -1,3 +1,5 @@
+import { cn } from '@utils/cn'
+
 type Props = {
   currentPage: number
   totalPages: number
@@ -27,7 +29,7 @@ export default function Pagination({
   return (
     <div className="mt-2 flex items-center justify-center text-[14px] text-[#666666]">
       <button
-        className="mr-3"
+        className="mr-3 cursor-pointer"
         onClick={() => goToPage(1)}
         disabled={currentPage === 1}
       >
@@ -36,7 +38,7 @@ export default function Pagination({
       <button
         onClick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
-        className="mr-3"
+        className="mr-3 cursor-pointer"
       >
         &lt;
       </button>
@@ -45,7 +47,10 @@ export default function Pagination({
         <button
           key={page}
           onClick={() => goToPage(page)}
-          className={`mx-1 w-[12px] ${page === currentPage ? 'text-[#000000] underline' : ''}`}
+          className={cn(
+            'mx-1 w-[12px] cursor-pointer',
+            page === currentPage ? 'text-[#000000] underline' : ''
+          )}
         >
           {page}
         </button>
@@ -54,14 +59,14 @@ export default function Pagination({
       <button
         onClick={() => goToPage(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="ml-3"
+        className="ml-3 cursor-pointer"
       >
         &gt;
       </button>
       <button
         onClick={() => goToPage(totalPages)}
         disabled={currentPage === totalPages}
-        className="ml-3"
+        className="ml-3 cursor-pointer"
       >
         ≫
       </button>
