@@ -1,3 +1,5 @@
+import { cn } from '@utils/cn'
+
 type Props = {
   currentPage: number
   totalPages: number
@@ -45,7 +47,10 @@ export default function Pagination({
         <button
           key={page}
           onClick={() => goToPage(page)}
-          className={`mx-1 w-[12px] cursor-pointer ${page === currentPage ? 'text-[#000000] underline' : ''}`}
+          className={cn(
+            'mx-1 w-[12px] cursor-pointer',
+            page === currentPage ? 'text-[#000000] underline' : ''
+          )}
         >
           {page}
         </button>
