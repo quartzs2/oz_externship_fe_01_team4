@@ -44,9 +44,12 @@ export default function TableHeader({
             className="border-b border-[#DDDDDD] p-2 text-center"
           >
             <div className="flex items-center justify-center gap-1">
-              <span>{header.text}</span>
+              <span className="font-normal text-[#222]">{header.text}</span>
               {sortKeys.includes(header.dataKey) && (
-                <button onClick={() => onSort(header.dataKey)}>
+                <button
+                  className="text-[14px] text-[#222]"
+                  onClick={() => onSort(header.dataKey)}
+                >
                   {sortKey === header.dataKey && sortOrder === SORT_ORDER.DESC
                     ? SORT_ICON.DESC
                     : SORT_ICON.ASC}
