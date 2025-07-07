@@ -2,7 +2,7 @@ import type { SortOrder } from '@hooks/data-table/useSort'
 
 export type TableRowData = {
   id: number // string 제거
-  [key: string]: string | number | string[] | null // 타입추가
+  [key: string]: string | number | string[] | boolean | null | undefined // 타입추가
 }
 
 export type TableHeader = {
