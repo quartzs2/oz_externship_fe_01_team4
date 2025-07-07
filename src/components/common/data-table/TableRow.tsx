@@ -19,7 +19,6 @@ export default function TableRow({
   isCheckBox,
   isChecked,
   onToggle,
-  isDeployStatus,
   isTime,
 }: Props) {
   const DATA_KEYS = {
@@ -27,6 +26,9 @@ export default function TableRow({
     DEPLOY_SWITCH: 'deploySwitch',
     CREATED_AT: 'created_at',
     UPDATED_AT: 'updated_at',
+    CREATED_AT_CAMEL: 'createdAt',
+    STARTED_AT: 'startedAt',
+    SUBMITTED_AT: 'submittedAt',
     TYPE: 'type',
     ROLE: 'role',
   } as const
@@ -43,7 +45,7 @@ export default function TableRow({
     STUDENT: 'STUDENT',
   } as const
 
-  const [deployStatus, setDeployStatus] = useState(isDeployStatus)
+  const [deployStatus, setDeployStatus] = useState<boolean>(!!data.deploySwitch)
 
   const handleDeploy = () => {
     setDeployStatus(true)
@@ -166,6 +168,9 @@ export default function TableRow({
                 }
               case DATA_KEYS.CREATED_AT:
               case DATA_KEYS.UPDATED_AT:
+              case DATA_KEYS.CREATED_AT_CAMEL:
+              case DATA_KEYS.STARTED_AT:
+              case DATA_KEYS.SUBMITTED_AT:
                 return formatIsoToDotDateTime(String(value), isTime ?? false)
               default:
                 return value
