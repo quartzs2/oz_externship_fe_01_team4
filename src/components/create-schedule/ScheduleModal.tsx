@@ -4,6 +4,7 @@ import { useCustomToast } from '@hooks/toast/useToast'
 import { ScheduleFormFields } from '@components/create-schedule/ScheduleFormFields'
 import { useScheduleForm } from '@hooks/create-schedule/useScheduleForm'
 import { SCHEDULE_CONSTANTS } from '@constants/create-schedule/createSchedule'
+import { TOAST_CONSTANTS } from '@constants/toast/toastConstants'
 import type { ScheduleCreateModalProps } from '@custom-types/createSchedule'
 
 const ScheduleModal = ({
@@ -36,11 +37,15 @@ const ScheduleModal = ({
   const handleCreateButtonClick = async () => {
     const result = await handleFormSubmit()
     if (result.success) {
-      toast.success(API.SUCCESS_MESSAGE, { style: 'style4' })
+      toast.success(API.SUCCESS_MESSAGE, {
+        style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
+      })
       resetForm()
       onClose()
     } else {
-      toast.error(result.error, { style: 'style4' })
+      toast.error(result.error || API.ERROR_MESSAGE, {
+        style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
+      })
     }
   }
 
