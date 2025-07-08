@@ -110,8 +110,8 @@ export const useScheduleForm = ({
       await onSubmit(payload)
 
       return { success: true }
-    } catch (error: any) {
-      const errorMessage = error.message
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : ''
       return {
         success: false,
         error:

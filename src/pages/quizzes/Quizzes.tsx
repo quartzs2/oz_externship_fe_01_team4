@@ -19,7 +19,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
 import ScheduleModal from '@components/create-schedule/ScheduleModal'
 import { useScheduleStore } from '@store/create-schedule/scheduleStore'
+<<<<<<< HEAD
 import quizAPI from '@api/quizAPI'
+=======
+import { quizAPI } from '@lib/api/scheduleApi'
+>>>>>>> cb29028 (feat: 쪽지시험 배포 일정 등록 모달 구현(#61))
 import type { SchedulePayload } from '@custom-types/createSchedule'
 
 // 표제목 상수화

@@ -1,3 +1,20 @@
+export type DeploymentResponse = {
+  deployment_id: number
+  access_code: string
+  status: string
+}
+
+export type ErrorResponse = {
+  detail: string
+  message?: string
+}
+
+export type QuizData = {
+  id: number
+  title: string
+  subject_name: string
+}
+
 // 배포 일정 생성에 필요한 정보
 export type SchedulePayload = {
   test_id: number

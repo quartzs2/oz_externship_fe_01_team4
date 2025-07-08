@@ -16,6 +16,10 @@ export const SCHEDULE_CONSTANTS = {
     ERROR_MESSAGE: '일정 등록에 실패했습니다. 다시 시도해주세요.',
   },
 
+  AUTH: {
+    TOKEN_KEY: 'access_token',
+    REFRESH_TOKEN_KEY: 'refresh_token',
+  },
   UI: {
     LABELS: {
       MODAL_TITLE: '쪽지시험 배포',
