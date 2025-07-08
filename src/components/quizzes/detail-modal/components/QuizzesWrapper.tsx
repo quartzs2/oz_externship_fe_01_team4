@@ -1,0 +1,71 @@
+import { useState } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination } from 'swiper/modules'
+import SlideItem from '@components/quizzes/detail-modal/components/SlideItem'
+import type { QuizData } from '@custom-types/quizzes/quizTypes'
+
+type QuizzesWrapperProps = {
+  quizData: QuizData
+  questions: QuizData['questions']
+}
+
+const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
+  const {
+    title,
+    subject,
+    created_at: createdAt,
+    updated_at: updatedAt,
+  } = quizData
+
+  const totalQuestions = questions.length
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
+
+  return (
+    <div className="flex min-h-screen flex-col items-center bg-gray-100 p-[30px]">
+      <div className="flex w-full items-center justify-between border-gray-200 p-6">
+        <div className="flex items-center gap-[25px]">
+          <div className="flex items-center gap-[11px]">
+            <div className="h-[32px] w-[32px] bg-amber-200">
+              {/* TODO: 이미지 영역 - 받아와서 추가 */}
+            </div>
+            <div className="text-[20px] font-semibold text-[#666666]">
+              {title}
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-sm/[24px] text-[#666666]">
+              과목 : {subject.name} 문제 수 : {totalQuestions}
+            </p>
+          </div>
+        </div>
+
+        <div className="text-sm text-[#666666]">
+          {/* TODO: 시간 파싱 필요 */}
+          <p>등록일시 : {createdAt}</p>
+          <p>수정일시 : {updatedAt}</p>
+        </div>
+      </div>
+
+      <Swiper
+        modules={[Navigation, Pagination]}
+        spaceBetween={0}
+        slidesPerView={1}
+        navigation
+        pagination={{ clickable: true }}
+        className="h-[600px] w-[1060px] rounded-[12px]"
+        onSlideChange={(swiper) => setCurrentSlideIndex(swiper.activeIndex)}
+      >
+        {[...Array(totalQuestions)].map((_, index) => (
+          <SwiperSlide key={index}>
+            <SlideItem index={index} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      <div className="mt-[32px] w-full text-[16px] text-[#666666]">
+        {currentSlideIndex + 1}/{totalQuestions}
+      </div>
+    </div>
+  )
+}
+export default QuizzesWrapper
