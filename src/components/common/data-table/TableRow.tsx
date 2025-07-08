@@ -11,6 +11,9 @@ type Props = {
   onToggle: (checked: boolean) => void
   isDeployStatus?: boolean
   isTime?: boolean
+  renderMap?: {
+    [key: string]: (value: unknown, rowData: TableRowData) => React.ReactNode
+  }
 }
 
 export default function TableRow({
@@ -20,6 +23,7 @@ export default function TableRow({
   isChecked,
   onToggle,
   isTime,
+  renderMap,
 }: Props) {
   const DATA_KEYS = {
     DEPLOY: 'deploy',
@@ -27,6 +31,7 @@ export default function TableRow({
     CREATED_AT: 'created_at',
     UPDATED_AT: 'updated_at',
     CREATED_AT_CAMEL: 'createdAt',
+    UPDATED_AT_CAMEL: 'updatedAt',
     STARTED_AT: 'startedAt',
     SUBMITTED_AT: 'submittedAt',
     TYPE: 'type',
@@ -77,6 +82,9 @@ export default function TableRow({
         <td key={i} className="w-[150px] p-2 text-[#666]">
           {(() => {
             const value = data[header.dataKey]
+            // renderMap으로 커스텀 스타일 적용
+            const customRender = renderMap?.[header.dataKey]
+            if (customRender) return customRender(value, data)
 
             // 공백 대시 처리
             const isValueEmpty =
@@ -169,6 +177,7 @@ export default function TableRow({
               case DATA_KEYS.CREATED_AT:
               case DATA_KEYS.UPDATED_AT:
               case DATA_KEYS.CREATED_AT_CAMEL:
+              case DATA_KEYS.UPDATED_AT_CAMEL:
               case DATA_KEYS.STARTED_AT:
               case DATA_KEYS.SUBMITTED_AT:
                 return formatIsoToDotDateTime(String(value), isTime ?? false)
