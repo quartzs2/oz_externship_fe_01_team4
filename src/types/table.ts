@@ -33,6 +33,11 @@ export type Pagination = {
   goNext: () => void
 }
 
+export type UsePaginationProps<T> = {
+  item: T[]
+  count: number
+}
+
 export type PaginationProps = {
   pageSize?: number
 }

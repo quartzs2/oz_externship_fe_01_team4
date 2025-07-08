@@ -7,4 +7,6 @@ export const ADMIN_API_PATH = {
   SUBJECTS: 'subjects/',
   TEST_DEPLOYMENTS: 'test-deployments/',
   TEST_SUBMISSIONS: 'test-submissions/',
+  COURSES_DROPDOWN: 'courses/dropdown-list/',
+  CREATE_QUIZZES: 'create',
 }

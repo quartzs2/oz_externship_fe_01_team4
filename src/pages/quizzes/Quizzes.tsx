@@ -10,12 +10,13 @@ import Label from '@components/common/Label'
 import Modal from '@components/common/Modal'
 import SearchBar from '@components/common/SearchBar'
 import type { TableRowData } from '@custom-types/table'
-import { usePagination } from '@hooks/data-table/usePagination'
+import { useServerPagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
 import axios from 'axios'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -31,12 +32,11 @@ const TableHeaderItem = [
 
 const SortItem = ['title', 'created_at'] // 정렬할 데이터 지정
 
-const access_token =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMDQxMjkzLCJpYXQiOjE3NTE5NTQ4OTMsImp0aSI6IjkyM2MzOWQ3MjE5MjQ1YmNiMDYyZmRiODNmOGY3OGI0IiwidXNlcl9pZCI6MTJ9.7c0FeVj_uqMFoBjdTpEAu6Z661ELNGDvbzmkWz3hL4Y'
+const access_token = '엑세스 토큰'
 
 // 공통 config(baseURL, headers) 선언 (추후 수정 예정)
 const api = axios.create({
-  baseURL: 'http://54.180.237.77/api/v1/admin',
+  baseURL: ADMIN_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${access_token}`,
@@ -86,7 +86,7 @@ const Quizzes = () => {
   const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizzes)
   const [searchKeyword, setSearchKeyword] = useState('')
   const { currentPage, totalPages, goToPage, setTotalCount, setCurrentPage } =
-    usePagination({ pageSize: 10 })
+    useServerPagination({ pageSize: 10 })
   const [filteredData, setFilteredData] = useState<TableRowData[]>([])
   const [tempSelectedCourse, setTempSelectedCourse] = useState(courseOptions[0])
   const [selectedCourse, setSelectedCourse] = useState(courseOptions[0])
@@ -99,15 +99,15 @@ const Quizzes = () => {
       // 첫 렌더링 또는 모달 오픈 시에만 과목/과정 데이터 요청
       let subjectsRes, courseRes
       if (isOpen) {
-        subjectsRes = await api.get('/subjects/')
+        subjectsRes = await api.get(`/${ADMIN_API_PATH.SUBJECTS}`)
         setSubjects(subjectsRes.data.results)
       } else if (isFilterModalOpen) {
-        courseRes = await api.get('/courses/dropdown-list/')
+        courseRes = await api.get(`/${ADMIN_API_PATH.COURSES_DROPDOWN}`)
         setCourse(courseRes.data)
       }
 
       // 쪽지시험 데이터는 항상 요청
-      const quizzesRes = await api.get('/tests/', {
+      const quizzesRes = await api.get(`/${ADMIN_API_PATH.TEST}`, {
         params: {
           page: currentPage,
           page_size: pageSize,
@@ -146,12 +146,15 @@ const Quizzes = () => {
     }
 
     try {
-      const response = await api.post('/tests/create', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      console.log(title, selectedSubject.value, file)
+      const response = await api.post(
+        `/${ADMIN_API_PATH.TEST}${ADMIN_API_PATH.CREATE_QUIZZES}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
 
       return response.data
     } catch (err) {
@@ -190,9 +193,9 @@ const Quizzes = () => {
   const [isImageFile, setIsImageFile] = useState(true)
 
   const validateForm = () => {
-    const isTitleValid = !!title.trim()
-    const isSubjectValid = !!selectedSubject.value
-    const isFileValid = !!file
+    const isTitleValid = Boolean(title.trim())
+    const isSubjectValid = Boolean(selectedSubject.value)
+    const isFileValid = Boolean(file)
 
     setIsTitle(isTitleValid)
     setIsSelectedSubject(isSubjectValid)
@@ -228,6 +231,7 @@ const Quizzes = () => {
     setCurrentPage(1)
     setIsFilterModalOpen(false)
   }
+  // const [isOpen, setIsOpen] = useState(false)
 
   const openModal = () => {
     setIsOpen(true)
@@ -386,7 +390,12 @@ const Quizzes = () => {
                 id="subject"
                 name="subject"
                 value={selectedSubject.value}
-                onChange={setSelectedSubject}
+                onChange={(option) => {
+                  setSelectedSubject(option)
+                  if (option.value) {
+                    setIsSelectedSubject(true)
+                  }
+                }}
                 options={subjectOptions}
               />
               {!isSelectedSubject && (

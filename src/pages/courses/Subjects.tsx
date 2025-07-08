@@ -6,7 +6,7 @@ import {
   type Subject,
   type SubjectResponse,
 } from '@custom-types/subjects'
-import { usePagination } from '@hooks/data-table/usePagination'
+import { useClientPagination } from '@hooks/data-table/usePagination'
 import { cn } from '@utils/cn'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
@@ -77,10 +77,11 @@ const Subjects = () => {
   }, [fetchData])
 
   // 페이지네이션
-  const { currentPage, totalPages, paginatedData, goToPage } = usePagination({
-    item: tableData,
-    count: COUNT_LIMIT,
-  })
+  const { currentPage, totalPages, paginatedData, goToPage } =
+    useClientPagination({
+      item: tableData,
+      count: COUNT_LIMIT,
+    })
   if (loading)
     return <div className="h-full text-center text-3xl">Loading...</div>
   if (error) return <div>에러가 발생했습니다: {error.message}</div>
