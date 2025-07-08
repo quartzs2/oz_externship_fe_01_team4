@@ -44,7 +44,7 @@ export const ScheduleFormFields = ({
             id="course-select"
             name="course"
             value={formData.course_name}
-            onChange={(value) => onFieldChange('course_name', value)}
+            onChange={(Option) => onFieldChange('course_name', Option.value)}
             options={courseOptions}
             placeholder={UI.PLACEHOLDERS.COURSE_NAME}
             wrapClassName={SIZES.COURSE_DROPDOWN}
@@ -64,7 +64,7 @@ export const ScheduleFormFields = ({
             id="generation-select"
             name="generation"
             value={formData.generation_id}
-            onChange={(value) => onFieldChange('generation_id', value)}
+            onChange={(option) => onFieldChange('generation_id', option.value)}
             options={generationOptions}
             wrapClassName={SIZES.GENERATION_DROPDOWN}
           />
