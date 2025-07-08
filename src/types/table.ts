@@ -23,6 +23,9 @@ export type DataTableProps = {
   sortOrder: SortOrder
   sortByKey: (key: string) => void
   isTime: boolean
+  renderMap?: {
+    [key: string]: (value: unknown, rowData: TableRowData) => React.ReactNode
+  }
 }
 
 export type Pagination = {
