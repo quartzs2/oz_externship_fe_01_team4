@@ -1,18 +1,11 @@
-import { useState, useMemo } from 'react'
-import type { UsePaginationProps } from '@custom-types/table'
+import type { PaginationProps } from '@custom-types/table'
+import { useState } from 'react'
 
-export function usePagination<T>({ item, count }: UsePaginationProps<T>) {
+export function usePagination({ pageSize = 10 }: PaginationProps) {
   const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
 
-  const totalPages = useMemo(
-    () => Math.ceil(item.length / count),
-    [item.length, count]
-  )
-
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * count
-    return item.slice(start, start + count)
-  }, [item, currentPage, count])
+  const totalPages = Math.ceil(totalCount / pageSize)
 
   const goToPage = (page: number) => {
     const next = Math.min(Math.max(1, page), totalPages)
@@ -22,8 +15,8 @@ export function usePagination<T>({ item, count }: UsePaginationProps<T>) {
   return {
     currentPage,
     totalPages,
-    paginatedData,
     goToPage,
+    setTotalCount,
     setCurrentPage,
   }
 }

@@ -15,7 +15,7 @@ import { useSort } from '@hooks/data-table/useSort'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -29,80 +29,136 @@ const TableHeaderItem = [
   { text: '', dataKey: 'deploy' },
 ]
 
+const SortItem = ['title', 'created_at'] // 정렬할 데이터 지정
+
+const access_token =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMDQxMjkzLCJpYXQiOjE3NTE5NTQ4OTMsImp0aSI6IjkyM2MzOWQ3MjE5MjQ1YmNiMDYyZmRiODNmOGY3OGI0IiwidXNlcl9pZCI6MTJ9.7c0FeVj_uqMFoBjdTpEAu6Z661ELNGDvbzmkWz3hL4Y'
+
 // 공통 config(baseURL, headers) 선언 (추후 수정 예정)
 const api = axios.create({
   baseURL: 'http://54.180.237.77/api/v1/admin',
   headers: {
     'Content-Type': 'application/json',
-    // Authorization: `Bearer ${access_token}`,
+    Authorization: `Bearer ${access_token}`,
   },
 })
-const SortItem = ['title'] // 정렬할 데이터 지정
 
 // 쪽지시험 관리
 const Quizzes = () => {
   const [quizzes, setQuizzes] = useState<TableRowData[]>([])
   const [subjects, setSubjects] = useState<TableRowData[]>([])
+  const [course, setCourse] = useState<TableRowData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
-
-  // API 추후 수정 예정
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [quizzesRes, subjectsRes] = await axios.all([
-          api.get('/tests/'),
-          api.get('/subjects/'),
-        ])
-        setQuizzes(quizzesRes.data.results)
-        setSubjects(subjectsRes.data.results)
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err)
-        } else {
-          console.error('알 수 없는 에러:', err)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
+  const [isOpen, setIsOpen] = useState(false)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
 
   // 드롭다운 옵션
-  const courseOptions = [
-    { label: '과정을 선택하세요', value: '' },
-    ...Array.from(
-      new Map(
-        subjects.map((subject) => [
-          subject.course_name,
-          {
-            label: String(subject.course_name),
-            value: String(subject.title),
-          },
-        ])
-      ).values()
-    ),
-  ]
+  const courseOptions = useMemo(() => {
+    return [
+      { label: '과정을 선택하세요', value: '' },
+      ...Array.from(
+        new Map(
+          course.map((course) => [
+            course.name,
+            {
+              label: String(course.name),
+              value: String(course.id),
+            },
+          ])
+        ).values()
+      ),
+    ]
+  }, [course])
 
-  const subjectOptions = [
-    { label: '과목을 선택하세요', value: '' },
-    ...subjects.map((subject) => ({
-      label: String(subject.title ?? ''),
-      value: String(subject.id),
-    })),
-  ]
+  // ✅ subjectOptions
+  const subjectOptions = useMemo(() => {
+    return [
+      { label: '과목을 선택하세요', value: '' },
+      ...subjects.map((subject) => ({
+        label: String(subject.title ?? ''),
+        value: String(subject.id),
+      })),
+    ]
+  }, [subjects])
 
   // 정렬, 검색, 필터, 페이지 state
   const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizzes)
   const [searchKeyword, setSearchKeyword] = useState('')
+  const { currentPage, totalPages, goToPage, setTotalCount, setCurrentPage } =
+    usePagination({ pageSize: 10 })
+  const [filteredData, setFilteredData] = useState<TableRowData[]>([])
+  const [tempSelectedCourse, setTempSelectedCourse] = useState(courseOptions[0])
   const [selectedCourse, setSelectedCourse] = useState(courseOptions[0])
-  const [filteredData, setFilteredData] = useState(sortedData) // 화면에 최종 표시할 필터링된 데이터 (기본값: 정렬된 데이터 전체)
-  const { currentPage, totalPages, paginatedData, goToPage } = usePagination({
-    item: filteredData, // <--- 기존 item 대신 sortedData를 넘겨줌 -> filteredData로 변경
-    count: 10,
-  })
+
+  // API 추후 수정 예정
+  const fetchData = useCallback(async () => {
+    const pageSize = 10
+    setLoading(true)
+    try {
+      // 첫 렌더링 또는 모달 오픈 시에만 과목/과정 데이터 요청
+      let subjectsRes, courseRes
+      if (isOpen) {
+        subjectsRes = await api.get('/subjects/')
+        setSubjects(subjectsRes.data.results)
+      } else if (isFilterModalOpen) {
+        courseRes = await api.get('/courses/dropdown-list/')
+        setCourse(courseRes.data)
+      }
+
+      // 쪽지시험 데이터는 항상 요청
+      const quizzesRes = await api.get('/tests/', {
+        params: {
+          page: currentPage,
+          page_size: pageSize,
+          search: searchKeyword,
+          course_id: selectedCourse.value || undefined,
+          ordering: 'recent',
+        },
+      })
+      setQuizzes(quizzesRes.data.results)
+      setTotalCount(quizzesRes.data.count)
+    } catch (error) {
+      setError(error as Error)
+    } finally {
+      setLoading(false)
+    }
+  }, [
+    currentPage,
+    searchKeyword,
+    selectedCourse.value,
+    setTotalCount,
+    isOpen,
+    isFilterModalOpen,
+  ])
+
+  // 검색어나 필터 변경 시 fetchData 재호출
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  const postQuiz = async () => {
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('subject_id', selectedSubject.value) // subject_id는 id 문자열
+    if (file) {
+      formData.append('thumbnail_file', file)
+    }
+
+    try {
+      const response = await api.post('/tests/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      console.log(title, selectedSubject.value, file)
+
+      return response.data
+    } catch (err) {
+      console.error('쪽지시험 생성 실패:', err)
+      throw err
+    }
+  }
 
   // 쪽지시험 또는 과목 검색 필터링
   useEffect(() => {
@@ -133,62 +189,45 @@ const Quizzes = () => {
   const [isSelectedSubject, setIsSelectedSubject] = useState(true)
   const [isImageFile, setIsImageFile] = useState(true)
 
-  const handleSubmit = () => {
-    let isValid = true
+  const validateForm = () => {
+    const isTitleValid = !!title.trim()
+    const isSubjectValid = !!selectedSubject.value
+    const isFileValid = !!file
 
-    setIsTitle(true)
-    setIsSelectedSubject(true)
+    setIsTitle(isTitleValid)
+    setIsSelectedSubject(isSubjectValid)
+    setIsImageFile(isFileValid)
 
-    if (!title.trim()) {
-      setIsTitle(false)
-      isValid = false
-    }
+    return isTitleValid && isSubjectValid && isFileValid
+  }
 
-    if (!selectedSubject.value) {
-      setIsSelectedSubject(false)
-      isValid = false
-    }
-
-    if (!file) {
-      setIsImageFile(false)
-      isValid = false
-    }
-
-    if (!isValid) return
+  const handleSubmit = async () => {
+    if (!validateForm()) return
 
     setIsOpen(false)
     resetForm()
-    setIsTitle(true)
-    setIsSelectedSubject(true)
 
-    toast.success('성공적으로 쪽지시험이 생성되었습니다.', {
-      style: 'style4',
-      duration: 5000,
-      hasActionButton: false,
-      actionLabel: '확인',
-      hasCloseButton: true,
-      hasIcon: true,
-    })
+    try {
+      await postQuiz()
+      await fetchData()
+      toast.success('성공적으로 쪽지시험이 생성되었습니다.', {
+        style: 'style4',
+        duration: 5000,
+        hasActionButton: false,
+        actionLabel: '확인',
+        hasCloseButton: true,
+        hasIcon: true,
+      })
+    } catch {
+      toast.error('쪽지시험 생성에 실패했습니다.')
+    }
   }
-
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
 
   const handleFilterApply = () => {
+    setSelectedCourse(tempSelectedCourse)
+    setCurrentPage(1)
     setIsFilterModalOpen(false)
-
-    let tempData = [...sortedData]
-
-    // 과정별 필터링
-    if (selectedCourse.value) {
-      tempData = tempData.filter(
-        (quiz) => quiz.subject_name === selectedCourse.value
-      )
-    }
-
-    setFilteredData(tempData)
   }
-
-  const [isOpen, setIsOpen] = useState(false)
 
   const openModal = () => {
     setIsOpen(true)
@@ -227,7 +266,10 @@ const Quizzes = () => {
       <h2 className="mb-[26px] text-[18px] font-semibold">쪽지시험 조회</h2>
       <div className="mb-[17px] flex justify-between">
         <SearchBar
-          onSearch={(keyword) => setSearchKeyword(keyword)}
+          onSearch={(keyword) => {
+            setSearchKeyword(keyword)
+            setCurrentPage(1)
+          }}
           placeholder="검색어를 입력하세요."
         />
         <Button
@@ -258,16 +300,16 @@ const Quizzes = () => {
         <Dropdown
           id="course"
           name="course"
-          onChange={setSelectedCourse}
-          value={selectedCourse.value}
+          value={tempSelectedCourse.value}
+          onChange={setTempSelectedCourse}
           options={courseOptions}
           wrapClassName="w-[360px] mb-auto"
         />
-        {selectedCourse.value && (
+        {tempSelectedCourse.value && (
           <p className="mb-[36px] text-[14px] text-[#222]">
             현재 선택된 과정은{' '}
             <span className="font-[600] text-[#522193]">
-              {selectedCourse.label}
+              {tempSelectedCourse.label}
             </span>{' '}
             입니다.
           </p>
@@ -279,7 +321,7 @@ const Quizzes = () => {
 
       <DataTable
         headerData={TableHeaderItem} // 표제목,열 개수
-        tableItem={paginatedData} // 페이지네이션된 데이터 전달
+        tableItem={filteredData} // 페이지네이션된 데이터 전달
         isCheckBox={false} // 체크박스 여부
         sortKeys={SortItem} // 정렬할 데이터 지정
         sortKey={sortKey} // 현재 정렬 키 전달

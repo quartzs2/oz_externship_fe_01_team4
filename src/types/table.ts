@@ -16,9 +16,7 @@ export type DataTableProps = {
   tableItem: TableRowData[]
   sortKeys?: string[]
   isCheckBox?: boolean
-  isDeploy?: boolean
   isDeployStatus?: boolean
-  isDeploySwitch?: boolean
   sortKey: string | null
   sortOrder: SortOrder
   sortByKey: (key: string) => void
@@ -35,7 +33,6 @@ export type Pagination = {
   goNext: () => void
 }
 
-export type UsePaginationProps<T> = {
-  item: T[]
-  count: number
+export type PaginationProps = {
+  pageSize?: number
 }
