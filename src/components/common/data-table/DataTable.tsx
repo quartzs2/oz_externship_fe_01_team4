@@ -13,7 +13,7 @@ export default function DataTable({
   sortByKey,
   isTime,
   renderMap,
-  onDeployClick,
+  onClick,
 }: DataTableProps) {
   const { checkedItems, toggleItem, toggleAll, isAllChecked } = useSelection()
 
@@ -50,7 +50,7 @@ export default function DataTable({
               onToggle={(checked) => toggleItem(String(item.id), checked)}
               isTime={isTime}
               renderMap={renderMap}
-              onDeployClick={onDeployClick}
+              onClick={onClick}
             />
           ))}
 

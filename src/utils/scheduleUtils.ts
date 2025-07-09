@@ -6,13 +6,13 @@ import type {
 } from '@custom-types/createSchedule'
 
 export const INITIAL_FORM_DATA: ScheduleFormData = {
-  course_name: '',
-  generation_id: '',
-  duration_time: '',
-  start_date: '',
-  start_time: '',
-  end_date: '',
-  end_time: '',
+  courseName: '',
+  generationId: '',
+  durationTime: '',
+  startDate: '',
+  startTime: '',
+  endDate: '',
+  endTime: '',
 }
 
 /**
@@ -22,21 +22,15 @@ export const createSchedulePayload = (
   formData: ScheduleFormData,
   testId: number
 ): SchedulePayload => {
-  const {
-    generation_id,
-    duration_time,
-    start_date,
-    start_time,
-    end_date,
-    end_time,
-  } = formData
+  const { generationId, durationTime, startDate, startTime, endDate, endTime } =
+    formData
 
   return {
-    test_id: testId,
-    generation_id: Number(generation_id),
-    duration_time: Number(duration_time),
-    open_at: `${start_date}T${start_time}`,
-    close_at: `${end_date}T${end_time}`,
+    testId: testId,
+    generationId: Number(generationId),
+    durationTime: Number(durationTime),
+    openAt: `${startDate}T${startTime}`,
+    closeAt: `${endDate}T${endTime}`,
   }
 }
 
@@ -53,13 +47,13 @@ export const mapClassesToOptions = (
 }
 
 /**
- * 과정 목록을 드롭다운 옵션으로 변환 (course_name 선택용)
+ * 과정 목록을 드롭다운 옵션으로 변환 (courseName 선택용)
  */
 export const mapCoursesToOptions = (
   courses: ClassOption[]
 ): DropdownOption[] => {
   return courses.map((course) => ({
     label: course.name,
-    value: course.name, // course_name은 문자열 값으로 저장
+    value: course.name, // courseName은 문자열 값으로 저장
   }))
 }

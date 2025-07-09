@@ -24,7 +24,7 @@ export type DataTableProps = {
   renderMap?: {
     [key: string]: (value: unknown, rowData: TableRowData) => React.ReactNode
   }
-  onDeployClick?: (data: TableRowData) => void
+  onClick?: (data: TableRowData) => void
 }
 
 export type Pagination = {

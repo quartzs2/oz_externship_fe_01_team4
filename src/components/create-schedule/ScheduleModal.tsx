@@ -3,16 +3,26 @@ import Button from '@components/common/Button'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { ScheduleFormFields } from '@components/create-schedule/ScheduleFormFields'
 import { useScheduleForm } from '@hooks/create-schedule/useScheduleForm'
-import { SCHEDULE_CONSTANTS } from '@constants/create-schedule/createSchedule'
+
+import {
+  SCHEDULE_LABELS,
+  SCHEDULE_MODAL,
+  SCHEDULE_STYLES,
+  SCHEDULE_API,
+} from '@constants/create-schedule'
+
 import { TOAST_CONSTANTS } from '@constants/toast/toastConstants'
-import type { ScheduleCreateModalProps } from '@custom-types/createSchedule'
+import type {
+  ScheduleCreateModalProps,
+  UpdateFormFieldProps,
+} from '@custom-types/createSchedule'
 
 const ScheduleModal = ({
   isOpen,
   onClose,
-  test_id,
-  test_title,
-  subject_title,
+  testId,
+  testTitle,
+  subjectTitle,
   courses,
   generations,
   onSubmit,
@@ -27,60 +37,73 @@ const ScheduleModal = ({
     handleSubmit: handleFormSubmit,
   } = useScheduleForm({
     onSubmit,
-    test_id,
+    testId,
     courses,
     generations,
   })
 
-  const { API, UI } = SCHEDULE_CONSTANTS
+  const handleFieldChange = (props: UpdateFormFieldProps) => {
+    updateFormField(props)
+  }
 
   const handleCreateButtonClick = async () => {
-    const result = await handleFormSubmit()
-    if (result.success) {
-      toast.success(API.SUCCESS_MESSAGE, {
+    try {
+      const result = await handleFormSubmit()
+
+      if (result.success) {
+        toast.success(SCHEDULE_API.SUCCESS_MESSAGE, {
+          style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
+        })
+        resetForm()
+        onClose()
+      } else {
+        toast.error(result.error, {
+          style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
+        })
+      }
+    } catch (error) {
+      toast.error(SCHEDULE_API.ERROR_MESSAGE, {
         style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
       })
-      resetForm()
-      onClose()
-    } else {
-      toast.error(result.error || API.ERROR_MESSAGE, {
-        style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
-      })
+      console.error(SCHEDULE_API.ERROR_MESSAGE, error)
     }
   }
 
   return (
     <Modal
-      modalId={UI.MODAL.ID}
+      modalId={SCHEDULE_MODAL.ID}
       isOpen={isOpen}
       onClose={() => {
-        resetForm()
         onClose()
       }}
-      className={UI.MODAL.WIDTH}
+      className={SCHEDULE_MODAL.WIDTH}
     >
-      <div className={UI.STYLES.MODAL.CONTAINER}>
-        <h2 className={UI.STYLES.MODAL.TITLE}>{UI.LABELS.MODAL_TITLE}</h2>
+      <div className={SCHEDULE_STYLES.MODAL.CONTAINER}>
+        <h2 className={SCHEDULE_STYLES.MODAL.TITLE}>
+          {SCHEDULE_LABELS.MODAL_TITLE}
+        </h2>
 
         {/* 선택된 퀴즈 정보 표시 */}
-        <div className={UI.STYLES.QUIZ_INFO.CONTAINER}>
-          <div className={UI.STYLES.QUIZ_INFO.ITEM_CONTAINER}>
-            <span className={UI.STYLES.QUIZ_INFO.LABEL}>
-              {UI.LABELS.QUIZ_INFO.TEST_NAME}:
+        <div className={SCHEDULE_STYLES.QUIZ_INFO.CONTAINER}>
+          <div className={SCHEDULE_STYLES.QUIZ_INFO.ITEM_CONTAINER}>
+            <span className={SCHEDULE_STYLES.QUIZ_INFO.LABEL}>
+              {SCHEDULE_LABELS.QUIZ_INFO.TEST_NAME}:
             </span>
-            <span className={UI.STYLES.QUIZ_INFO.VALUE}>{test_title}</span>
+            <span className={SCHEDULE_STYLES.QUIZ_INFO.VALUE}>{testTitle}</span>
           </div>
-          <div className={UI.STYLES.QUIZ_INFO.ITEM_CONTAINER}>
-            <span className={UI.STYLES.QUIZ_INFO.LABEL}>
-              {UI.LABELS.QUIZ_INFO.SUBJECT_NAME}:
+          <div className={SCHEDULE_STYLES.QUIZ_INFO.ITEM_CONTAINER}>
+            <span className={SCHEDULE_STYLES.QUIZ_INFO.LABEL}>
+              {SCHEDULE_LABELS.QUIZ_INFO.SUBJECT_NAME}:
             </span>
-            <span className={UI.STYLES.QUIZ_INFO.VALUE}>{subject_title}</span>
+            <span className={SCHEDULE_STYLES.QUIZ_INFO.VALUE}>
+              {subjectTitle}
+            </span>
           </div>
         </div>
 
         <ScheduleFormFields
           formData={formData}
-          onFieldChange={updateFormField}
+          onFieldChange={handleFieldChange}
           courses={courses}
           generations={generations}
         />
@@ -92,8 +115,8 @@ const ScheduleModal = ({
             disabled={isSubmitting}
           >
             {isSubmitting
-              ? UI.LABELS.BUTTON.SUBMITTING
-              : UI.LABELS.BUTTON.SUBMIT}
+              ? SCHEDULE_LABELS.BUTTON.SUBMITTING
+              : SCHEDULE_LABELS.BUTTON.SUBMIT}
           </Button>
         </div>
       </div>

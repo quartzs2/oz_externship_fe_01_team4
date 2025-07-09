@@ -1,6 +1,6 @@
 export type DeploymentResponse = {
-  deployment_id: number
-  access_code: string
+  deploymentId: number
+  accessCode: string
   status: string
 }
 
@@ -12,27 +12,27 @@ export type ErrorResponse = {
 export type QuizData = {
   id: number
   title: string
-  subject_name: string
+  subjectName: string
 }
 
 // 배포 일정 생성에 필요한 정보
 export type SchedulePayload = {
-  test_id: number
-  generation_id: number
-  duration_time: number
-  open_at: string
-  close_at: string
+  testId: number
+  generationId: number
+  durationTime: number
+  openAt: string
+  closeAt: string
 }
 
 // 폼 데이터
 export type ScheduleFormData = {
-  course_name: string
-  generation_id: string
-  duration_time: string
-  start_date: string
-  start_time: string
-  end_date: string
-  end_time: string
+  courseName: string
+  generationId: string
+  durationTime: string
+  startDate: string
+  startTime: string
+  endDate: string
+  endTime: string
 }
 
 // 드롭다운용 옵션
@@ -50,9 +50,9 @@ export type DropdownOption = {
 export type ScheduleCreateModalProps = {
   isOpen: boolean
   onClose: () => void
-  test_id: number
-  test_title: string
-  subject_title: string
+  testId: number
+  testTitle: string
+  subjectTitle: string
   courses: ClassOption[]
   generations: ClassOption[]
   onSubmit: (payload: SchedulePayload) => Promise<void>
@@ -67,15 +67,22 @@ export type FormValidationResult = {
 // 폼 훅 Props
 export type UseScheduleFormProps = {
   onSubmit: (payload: SchedulePayload) => Promise<void>
-  test_id: number
+  testId: number
   courses: ClassOption[]
   generations: ClassOption[]
 }
 
+export type UpdateFormFieldProps = {
+  field: keyof ScheduleFormData
+  value: string
+}
+
+export type SubmitResult = { success: true } | { success: false; error: string }
+
 export type UseScheduleFormReturn = {
   formData: ScheduleFormData
   isSubmitting: boolean
-  updateFormField: (field: keyof ScheduleFormData, value: string) => void
-  handleSubmit: () => Promise<{ success: boolean; error?: string }>
+  updateFormField: (props: UpdateFormFieldProps) => void
+  handleSubmit: () => Promise<SubmitResult>
   resetForm: () => void
 }

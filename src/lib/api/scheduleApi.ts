@@ -4,23 +4,15 @@ import type {
   ErrorResponse,
   SchedulePayload,
 } from '@custom-types/createSchedule'
-import { SCHEDULE_CONSTANTS } from '@constants/create-schedule/createSchedule'
-import { API_URLS } from '@constants/\burls'
+import { SCHEDULE_API } from '@constants/create-schedule'
+import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
 
-// axios 인스턴스 생성 (baseURL 없이)
+// axios 인스턴스 생성
 const axiosInstance = axios.create({
+  baseURL: ADMIN_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-})
-
-// 요청 인터셉터 - 토큰 자동 추가
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem(SCHEDULE_CONSTANTS.AUTH.TOKEN_KEY)
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
 })
 
 // request 함수
@@ -42,21 +34,21 @@ const request = async <T = unknown>(
         errorData.detail || errorData.message || `HTTP ${error.response.status}`
       )
     }
-    throw new Error(SCHEDULE_CONSTANTS.API.ERROR_MESSAGE)
+    throw new Error(SCHEDULE_API.ERROR_MESSAGE)
   }
 }
 
-// API 메서드에서 전체 URL 사용
+// API 메서드 - snake_case 변환
 export const quizAPI = {
   setDeploySchedule: (payload: SchedulePayload): Promise<DeploymentResponse> =>
-    request<DeploymentResponse>(`${API_URLS.ADMIN}/test-deployments/`, {
+    request<DeploymentResponse>(ADMIN_API_PATH.TEST_DEPLOYMENTS, {
       method: 'POST',
       data: {
-        test_id: payload.test_id,
-        generation_id: payload.generation_id,
-        duration_time: payload.duration_time,
-        open_at: payload.open_at,
-        close_at: payload.close_at,
+        test_id: payload.testId,
+        generation_id: payload.generationId,
+        duration_time: payload.durationTime,
+        open_at: payload.openAt,
+        close_at: payload.closeAt,
       },
     }),
 } as const
