@@ -1,5 +1,5 @@
+import MultipleChoiceSingle from '@components/quizzes/detail-modal/components/questions/MultipleChoiceSingle'
 import type { Question } from '@custom-types/quizzes/quizTypes'
-import MultipleChoice from '@components/quizzes/detail-modal/components/questions/MultipleChoice'
 import { parseQuestionTypeToString } from '@utils/question/parseQuestionType'
 
 interface SlideItemProps {
@@ -11,10 +11,10 @@ const SlideItem = ({ question, index }: SlideItemProps) => {
   const renderQuestionComponent = () => {
     switch (question.type) {
       case 'multiple_choice_single':
-        return <MultipleChoice question={question} />
-      // TODO: 컴포넌트로 수정 필요
+        return <MultipleChoiceSingle question={question} />
       case 'multiple_choice_multi':
-        return '다지선다형(멀티)'
+        return 'multi'
+      // TODO: 컴포넌트로 수정 필요
       case 'ox':
         return '참/거짓형 (O/X)'
       case 'ordering':
