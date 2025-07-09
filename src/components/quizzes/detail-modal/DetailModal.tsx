@@ -15,12 +15,13 @@ function DetailModal() {
     questions: [
       {
         id: 101,
-        type: 'multiple_choice',
+        type: 'multiple_choice_single',
         question: '스택의 LIFO는 무엇의 약자인가요?',
         point: 5,
         prompt: null,
         options: ['Last In', 'First Out'],
         answer: 'Last In First Out',
+        explanation: '',
       },
       {
         id: 102,
@@ -30,6 +31,7 @@ function DetailModal() {
         prompt: '자료구조에서 큐는 ____ 구조입니다.',
         options: [],
         answer: 'FIFO',
+        explanation: '',
       },
     ],
     created_at: '2025-06-01T14:23:00',

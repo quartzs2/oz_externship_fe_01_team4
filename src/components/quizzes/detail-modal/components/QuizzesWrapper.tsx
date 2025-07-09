@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination } from 'swiper/modules'
 import SlideItem from '@components/quizzes/detail-modal/components/SlideItem'
-import type { QuizData } from '@custom-types/quizzes/quizTypes'
+import type { Question, QuizData } from '@custom-types/quizzes/quizTypes'
 
 type QuizzesWrapperProps = {
   quizData: QuizData
-  questions: QuizData['questions']
+  questions: Question[]
 }
 
 const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
@@ -52,12 +52,12 @@ const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
         slidesPerView={1}
         navigation
         pagination={{ clickable: true }}
-        className="h-[600px] w-[1060px] rounded-[12px]"
+        className="h-[600px] w-[1060px] rounded-[12px] border border-[#D9D9D9] bg-white"
         onSlideChange={(swiper) => setCurrentSlideIndex(swiper.activeIndex)}
       >
-        {[...Array(totalQuestions)].map((_, index) => (
-          <SwiperSlide key={index}>
-            <SlideItem index={index} />
+        {questions.map((question, index) => (
+          <SwiperSlide key={question.id}>
+            <SlideItem question={question} index={index} />
           </SwiperSlide>
         ))}
       </Swiper>

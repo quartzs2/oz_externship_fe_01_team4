@@ -3,14 +3,58 @@ export type Subject = {
   name: string
 }
 
-export type MultipleChoiceQuestion = {
+export type MultipleChoiceSingleQuestion = {
   id: number
-  type: 'multiple_choice'
+  type: 'multiple_choice_single'
   question: string
   point: number
   prompt: string | null
   options: string[]
   answer: string
+  explanation: string
+}
+
+export type MultipleChoiceMultiQuestion = {
+  id: number
+  type: 'multiple_choice_multi'
+  question: string
+  point: number
+  prompt: string | null
+  options: string[]
+  answer: string
+  explanation: string
+}
+
+export type OxQuestion = {
+  id: number
+  type: 'ox'
+  question: string
+  point: number
+  prompt: string
+  options: []
+  answer: string
+  explanation: string
+}
+export type OrderingQuestion = {
+  id: number
+  type: 'ordering'
+  question: string
+  point: number
+  prompt: string
+  options: []
+  answer: string
+  explanation: string
+}
+
+export type ShortAnswerQuestion = {
+  id: number
+  type: 'short_answer'
+  question: string
+  point: number
+  prompt: string
+  options: []
+  answer: string
+  explanation: string
 }
 
 export type FillInBlankQuestion = {
@@ -21,9 +65,18 @@ export type FillInBlankQuestion = {
   prompt: string
   options: []
   answer: string
+  explanation: string
 }
 
-export type Question = MultipleChoiceQuestion | FillInBlankQuestion
+export type Question =
+  | MultipleChoiceSingleQuestion
+  | MultipleChoiceMultiQuestion
+  | FillInBlankQuestion
+  | ShortAnswerQuestion
+  | OrderingQuestion
+  | OxQuestion
+
+export type QuestionType = Question['type']
 
 export type QuizData = {
   id: number
