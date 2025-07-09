@@ -5,6 +5,7 @@ export const ADMIN_API_BASE_URL = 'http://54.180.237.77/api/v1/admin/'
 export const ADMIN_API_PATH = {
   TEST: 'tests/',
   SUBJECTS: 'subjects/',
+  COURSES: 'courses/',
   TEST_DEPLOYMENTS: 'test-deployments/',
   TEST_SUBMISSIONS: 'test-submissions/',
   COURSES_DROPDOWN: 'courses/dropdown-list/',
