@@ -1,3 +1,4 @@
+import FillInBlank from '@components/quizzes/detail-modal/components/questions/FillInBlank'
 import MultipleChoiceMulti from '@components/quizzes/detail-modal/components/questions/MultipleChoiceMulti'
 import MultipleChoiceSingle from '@components/quizzes/detail-modal/components/questions/MultipleChoiceSingle'
 import Ordering from '@components/quizzes/detail-modal/components/questions/Ordering'
@@ -22,7 +23,7 @@ const SlideItem = ({ question, index }: SlideItemProps) => {
       case 'ordering':
         return <Ordering question={question} />
       case 'fill_in_blank':
-        return '빈칸 채우기'
+        return <FillInBlank question={question} />
       case 'short_answer':
         return '주관식 단답형'
       default:
