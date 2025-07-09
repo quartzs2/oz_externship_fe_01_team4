@@ -19,11 +19,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
 import ScheduleModal from '@components/create-schedule/ScheduleModal'
 import { useScheduleStore } from '@store/create-schedule/scheduleStore'
-<<<<<<< HEAD
-import quizAPI from '@api/quizAPI'
-=======
 import { quizAPI } from '@lib/api/scheduleApi'
->>>>>>> cb29028 (feat: 쪽지시험 배포 일정 등록 모달 구현(#61))
 import type { SchedulePayload } from '@custom-types/createSchedule'
 
 // 표제목 상수화
@@ -391,7 +387,7 @@ const Quizzes = () => {
         sortOrder={sortOrder} // 현재 정렬 방향 전달
         sortByKey={sortByKey} // 정렬 함수 전달
         isTime // 시간 표시 여부
-        onDeployClick={handleOnclick} // 배포 버튼 클릭 핸들러
+        onClick={handleOnclick} // 배포 버튼 클릭 핸들러
       />
 
       <div className="mt-[80px] flex justify-center">
@@ -408,9 +404,9 @@ const Quizzes = () => {
       <ScheduleModal
         isOpen={isModalOpen}
         onClose={closeScheduleModal}
-        test_id={selectedQuiz?.test_id || 0}
-        test_title={selectedQuiz?.test_title || ''}
-        subject_title={selectedQuiz?.subject_title || ''}
+        testId={selectedQuiz?.test_id || 0}
+        testTitle={selectedQuiz?.test_title || ''}
+        subjectTitle={selectedQuiz?.subject_title || ''}
         courses={coursesData}
         generations={generationsData}
         onSubmit={handleScheduleSubmit}
