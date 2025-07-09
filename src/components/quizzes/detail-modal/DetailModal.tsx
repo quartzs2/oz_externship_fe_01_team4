@@ -79,7 +79,7 @@ function DetailModal() {
     updated_at: '2025-06-19T17:45:00',
   }
 
-  const [additionalQuestions, setAdditionalQuestions] = useState<Question[]>([])
+  const [additionalQuestions] = useState<Question[]>([])
   const visibleQuestions = [...quizData.questions, ...additionalQuestions]
 
   return (
