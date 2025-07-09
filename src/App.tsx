@@ -11,10 +11,18 @@ import Deployments from '@pages/quizzes/Deployments'
 import Quizzes from '@pages/quizzes/Quizzes'
 import Submissions from '@pages/quizzes/Submissions'
 import { Toaster } from 'react-hot-toast'
-import { Route, Routes } from 'react-router'
+import { Route, Routes, useNavigate } from 'react-router'
+import { setGlobalNavigator } from './utils/navigation'
+import { useEffect } from 'react'
 import './App.css'
 
 function App() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setGlobalNavigator(navigate)
+  }, [navigate])
+
   const ROUTES = [
     { element: <Main />, path: '/main' },
     // Quiz

@@ -1,6 +1,6 @@
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
-import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
+import { ADMIN_API_PATH } from '@constants/urls'
 import {
   mapSubject,
   type Subject,
@@ -8,7 +8,7 @@ import {
 } from '@custom-types/subjects'
 import { useClientPagination } from '@hooks/data-table/usePagination'
 import { cn } from '@utils/cn'
-import axios from 'axios'
+import api from '@api/axiosInstance'
 import { useEffect, useMemo, useState } from 'react'
 
 // 페이지 상수
@@ -25,16 +25,6 @@ const subjectHeader = [
   { text: '등록 일시', dataKey: 'createdAt' },
   { text: '수정 일시', dataKey: 'updatedAt' },
 ]
-
-// 공통 API 인스턴스
-const api = axios.create({
-  baseURL: ADMIN_API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    // Authorization: `Bearer ${access_token}`,
-  },
-})
 
 // fetch 함수
 const fetchAPI = async () => {

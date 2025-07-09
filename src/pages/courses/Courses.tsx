@@ -1,30 +1,17 @@
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
-import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
+import { ADMIN_API_PATH } from '@constants/urls'
 import type { TableRowData } from '@custom-types/table'
 import { useClientPagination } from '@hooks/data-table/usePagination'
-import axios from 'axios'
+import api from '@api/axiosInstance'
 import { useEffect, useState } from 'react'
-
-const ACCESS_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMTIyMTg4LCJpYXQiOjE3NTIwMzU3ODgsImp0aSI6IjUwODQ5Nzc2NmIxNzRkMTk4Yzc4YjNmN2JhMDRlOGUzIiwidXNlcl9pZCI6MTJ9.-vbrx_gHsU9XaIrtdFjjmB3Ema-IoI9dCJA2Tp98Mh0'
 
 // 페이지 상수 추가
 const COUNT_LIMIT = 20
 
-// 공통 API 인스턴스
-const apiClient = axios.create({
-  baseURL: ADMIN_API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    Authorization: `Bearer ${ACCESS_TOKEN}`,
-  },
-})
-
 const fetchAPI = async () => {
-  const res = await apiClient.get(ADMIN_API_PATH.COURSES)
+  const res = await api.get(ADMIN_API_PATH.COURSES)
   console.log(res)
   return res.data.results
 }
