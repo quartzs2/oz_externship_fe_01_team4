@@ -1,25 +1,53 @@
 import Logo from '@assets/ozcoding_logo_black.svg'
 import Button from '@components/common/Button'
+import { useAuth } from '@hooks/useAuth'
 import { cn } from '@utils/cn'
+import PopUp from '@components/common/PopUp'
+import { POP_UP_TYPE } from '@constants/popup/popUp'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
+import { ADMIN_API_PATH } from '@constants/urls'
 
 const Login = () => {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
 
   // 버튼 비활성화 여부
   const isDisabled = !email || !password
 
-  // API 추후 수정
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setError('') // 이전 에러 메시지 초기화
+    setIsPopupOpen(false) // 이전 팝업 닫기
 
-    // API 추후 연결
+    if (isDisabled) return
 
-    if (!isDisabled) navigate('/main')
+    try {
+      const isLoggedIn = await login({ email, password })
+
+      if (isLoggedIn) {
+        navigate(ADMIN_API_PATH.MAIN)
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === 'LOGIN_LOCKED_OUT') {
+          setIsPopupOpen(true)
+        } else if (err.message === 'INVALID_CREDENTIALS') {
+          setError(
+            '로그인 입력정보가 일치하지 않습니다. 확인 후 다시 시도해주세요.'
+          )
+        } else {
+          setError('로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
+        }
+      } else {
+        setError('로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
+      }
+    }
   }
 
   return (
@@ -49,17 +77,34 @@ const Login = () => {
               className="h-[48px] w-full rounded-[4px] border-1 border-[#DDD] px-[14px] py-[10px] text-[14px] tracking-tight text-[#222] placeholder-[#BDBDBD] outline-none"
             />
 
+            {error && <p className="text-sm text-red-500">{error}</p>}
+
             <Button
-              children="로그인"
               disabled={isDisabled}
               className={cn('h-[52px] w-full rounded-[4px] text-[16px]', {
                 'bg-[#666]': isDisabled,
               })}
-            />
+            >
+              로그인
+            </Button>
           </form>
         </div>
       </div>
       <div className="w-1/2 bg-[#f2effd]"></div>
+
+      <PopUp
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        type={POP_UP_TYPE.ERROR}
+      >
+        <PopUp.Title>로그인 차단</PopUp.Title>
+        <PopUp.Description>10분간 로그인이 불가능 합니다.</PopUp.Description>
+        <PopUp.Buttons>
+          <Button variant="VARIANT9" onClick={() => setIsPopupOpen(false)}>
+            확인
+          </Button>
+        </PopUp.Buttons>
+      </PopUp>
     </div>
   )
 }

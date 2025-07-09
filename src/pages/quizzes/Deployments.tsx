@@ -14,9 +14,9 @@ import {
   type DeploymentResponse,
 } from '@custom-types/deployments'
 import SearchBar from '@components/common/SearchBar'
-import axios from 'axios'
+import api from '@api/axiosInstance'
 import { filterOption } from '@utils/filterOption'
-import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
+import { ADMIN_API_PATH } from '@constants/urls'
 
 // 페이지 상수
 const COUNT_LIMIT = 20
@@ -32,16 +32,6 @@ const deploymentHeaders = [
   { text: '생성 일시', dataKey: 'createdAt' },
   { text: '배포 상태', dataKey: 'deploySwitch' },
 ]
-
-// 공통 API 인스턴스
-const api = axios.create({
-  baseURL: ADMIN_API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    // Authorization: `Bearer ${access_token}`,
-  },
-})
 
 // fetch 함수
 const fetchAPI = async () => {

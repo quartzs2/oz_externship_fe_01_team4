@@ -14,13 +14,13 @@ import { useServerPagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
-import axios from 'axios'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
+import { ADMIN_API_PATH } from '@constants/urls'
 import ScheduleModal from '@components/create-schedule/ScheduleModal'
 import { useScheduleStore } from '@store/create-schedule/scheduleStore'
 import { quizAPI } from '@lib/api/scheduleApi'
 import type { SchedulePayload } from '@custom-types/createSchedule'
+import api from '@api/axiosInstance'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -35,17 +35,6 @@ const TableHeaderItem = [
 ]
 
 const SortItem = ['title', 'created_at'] // 정렬할 데이터 지정
-
-const access_token = '엑세스 토큰'
-
-// 공통 config(baseURL, headers) 선언 (추후 수정 예정)
-const api = axios.create({
-  baseURL: ADMIN_API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${access_token}`,
-  },
-})
 
 // 쪽지시험 관리
 const Quizzes = () => {
@@ -84,29 +73,6 @@ const Quizzes = () => {
   const handleScheduleSubmit = async (payload: SchedulePayload) => {
     await quizAPI.setDeploySchedule(payload)
   }
-  // API 추후 수정 예정
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [quizzesRes, subjectsRes] = await axios.all([
-          api.get('/tests/'),
-          api.get('/subjects/'),
-        ])
-        setQuizzes(quizzesRes.data.results)
-        setSubjects(subjectsRes.data.results)
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err)
-        } else {
-          console.error('알 수 없는 에러:', err)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
 
   // 드롭다운 옵션
   const courseOptions = useMemo(() => {
