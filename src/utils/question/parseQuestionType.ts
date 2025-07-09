@@ -9,8 +9,9 @@ export const parseQuestionTypeToString = ({
 }: ParseQuestionTypeProps): string => {
   switch (questionType) {
     case 'multiple_choice_single':
-    case 'multiple_choice_multi':
       return '다지선다형'
+    case 'multiple_choice_multi':
+      return '다지선다형(다중선택)'
     case 'ox':
       return '참/거짓형 (O/X)'
     case 'ordering':

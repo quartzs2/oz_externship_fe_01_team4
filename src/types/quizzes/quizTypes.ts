@@ -21,7 +21,7 @@ export type MultipleChoiceMultiQuestion = {
   point: number
   prompt: string | null
   options: string[]
-  answer: string
+  answer: string[]
   explanation: string
 }
 
@@ -30,8 +30,8 @@ export type OxQuestion = {
   type: 'ox'
   question: string
   point: number
-  prompt: string
-  options: []
+  prompt: string | null
+  options: string[]
   answer: string
   explanation: string
 }
@@ -40,9 +40,9 @@ export type OrderingQuestion = {
   type: 'ordering'
   question: string
   point: number
-  prompt: string
-  options: []
-  answer: string
+  prompt: string | null
+  options: string[]
+  answer: string[]
   explanation: string
 }
 
@@ -51,7 +51,7 @@ export type ShortAnswerQuestion = {
   type: 'short_answer'
   question: string
   point: number
-  prompt: string
+  prompt: string | null
   options: []
   answer: string
   explanation: string
@@ -62,7 +62,7 @@ export type FillInBlankQuestion = {
   type: 'fill_in_blank'
   question: string
   point: number
-  prompt: string
+  prompt: string | null
   options: []
   answer: string
   explanation: string
@@ -82,6 +82,7 @@ export type QuizData = {
   id: number
   title: string
   subject: Subject
+  thumbnail_img_url: string
   question_count: number
   questions: Question[]
   created_at: string

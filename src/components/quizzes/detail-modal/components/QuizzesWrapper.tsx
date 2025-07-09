@@ -13,6 +13,7 @@ const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
   const {
     title,
     subject,
+    thumbnail_img_url,
     created_at: createdAt,
     updated_at: updatedAt,
   } = quizData
@@ -25,9 +26,15 @@ const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
       <div className="flex w-full items-center justify-between border-gray-200 p-6">
         <div className="flex items-center gap-[25px]">
           <div className="flex items-center gap-[11px]">
-            <div className="h-[32px] w-[32px] bg-amber-200">
-              {/* TODO: 이미지 영역 - 받아와서 추가 */}
-            </div>
+            <img
+              src={thumbnail_img_url}
+              alt="thumbnail"
+              className="h-[32px] w-[32px]"
+              onError={() => {
+                // TODO: 이미지 없을 때 처리 필요
+                console.log('이미지가 없습니다.')
+              }}
+            />
             <div className="text-[20px] font-semibold text-[#666666]">
               {title}
             </div>
