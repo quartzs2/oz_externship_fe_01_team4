@@ -7,7 +7,7 @@ import SearchIcon from '@assets/icons/search.svg?react'
 import { useState, useMemo, useEffect } from 'react'
 import Pagination from '@components/common/data-table/Pagination'
 import { useSort } from '@hooks/data-table/useSort'
-import { usePagination } from '@hooks/data-table/usePagination'
+import { useClientPagination } from '@hooks/data-table/usePagination'
 import {
   mapDeployment,
   type Deployment,
@@ -102,10 +102,11 @@ const Deployments = () => {
   const { sortedData, sortKey, sortOrder, sortByKey } = useSort(filteredData)
 
   // 페이지네이션
-  const { currentPage, totalPages, paginatedData, goToPage } = usePagination({
-    item: sortedData,
-    count: COUNT_LIMIT,
-  })
+  const { currentPage, totalPages, paginatedData, goToPage } =
+    useClientPagination({
+      item: sortedData,
+      count: COUNT_LIMIT,
+    })
 
   // 필터링 기능
   const filterHandler = () => {
