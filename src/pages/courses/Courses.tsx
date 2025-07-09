@@ -3,7 +3,7 @@ import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
 import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
 import type { TableRowData } from '@custom-types/table'
-import { usePagination } from '@hooks/data-table/usePagination'
+import { useClientPagination } from '@hooks/data-table/usePagination'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 
@@ -61,10 +61,11 @@ const Courses = () => {
     fetchData()
   }, [])
 
-  const { currentPage, totalPages, paginatedData, goToPage } = usePagination({
-    item: fetchData,
-    count: COUNT_LIMIT,
-  })
+  const { currentPage, totalPages, paginatedData, goToPage } =
+    useClientPagination({
+      item: fetchData,
+      count: COUNT_LIMIT,
+    })
 
   if (loading)
     return <div className="h-full text-center text-3xl">Loading...</div>
