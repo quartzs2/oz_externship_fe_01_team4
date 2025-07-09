@@ -72,7 +72,7 @@ const Quizzes = () => {
   ]
 
   // 배포 버튼 클릭 핸들러 추가
-  const handleOnclick = (quizData: TableRowData) => {
+  const handleDeployClick = (quizData: TableRowData) => {
     openScheduleModal({
       test_id: Number(quizData.id),
       test_title: String(quizData.title),
@@ -387,7 +387,7 @@ const Quizzes = () => {
         sortOrder={sortOrder} // 현재 정렬 방향 전달
         sortByKey={sortByKey} // 정렬 함수 전달
         isTime // 시간 표시 여부
-        onClick={handleOnclick} // 배포 버튼 클릭 핸들러
+        onClick={handleDeployClick} // 배포 버튼 클릭 핸들러
       />
 
       <div className="mt-[80px] flex justify-center">
