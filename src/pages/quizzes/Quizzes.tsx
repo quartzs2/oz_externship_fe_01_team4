@@ -99,15 +99,15 @@ const Quizzes = () => {
       // 첫 렌더링 또는 모달 오픈 시에만 과목/과정 데이터 요청
       let subjectsRes, courseRes
       if (isOpen) {
-        subjectsRes = await api.get(`/${ADMIN_API_PATH.SUBJECTS}`)
+        subjectsRes = await api.get(ADMIN_API_PATH.SUBJECTS)
         setSubjects(subjectsRes.data.results)
       } else if (isFilterModalOpen) {
-        courseRes = await api.get(`/${ADMIN_API_PATH.COURSES_DROPDOWN}`)
+        courseRes = await api.get(ADMIN_API_PATH.COURSES_DROPDOWN)
         setCourse(courseRes.data)
       }
 
       // 쪽지시험 데이터는 항상 요청
-      const quizzesRes = await api.get(`/${ADMIN_API_PATH.TEST}`, {
+      const quizzesRes = await api.get(ADMIN_API_PATH.TEST, {
         params: {
           page: currentPage,
           page_size: pageSize,
@@ -147,7 +147,7 @@ const Quizzes = () => {
 
     try {
       const response = await api.post(
-        `/${ADMIN_API_PATH.TEST}${ADMIN_API_PATH.CREATE_QUIZZES}`,
+        `${ADMIN_API_PATH.TEST}${ADMIN_API_PATH.CREATE_QUIZZES}`,
         formData,
         {
           headers: {
