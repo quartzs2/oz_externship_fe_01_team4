@@ -8,7 +8,7 @@ export type MultipleChoiceSingleQuestion = {
   type: 'multiple_choice_single'
   question: string
   point: number
-  prompt: string | null
+  prompt: null
   options: string[]
   answer: string
   explanation: string
@@ -19,7 +19,7 @@ export type MultipleChoiceMultiQuestion = {
   type: 'multiple_choice_multi'
   question: string
   point: number
-  prompt: string | null
+  prompt: null
   options: string[]
   answer: string[]
   explanation: string
@@ -40,7 +40,7 @@ export type OrderingQuestion = {
   type: 'ordering'
   question: string
   point: number
-  prompt: string | null
+  prompt: null
   options: string[]
   answer: string[]
   explanation: string
@@ -51,8 +51,8 @@ export type ShortAnswerQuestion = {
   type: 'short_answer'
   question: string
   point: number
-  prompt: string | null
-  options: []
+  prompt: string
+  options: null
   answer: string
   explanation: string
 }
@@ -62,9 +62,9 @@ export type FillInBlankQuestion = {
   type: 'fill_in_blank'
   question: string
   point: number
-  prompt: string | null
-  options: []
-  answer: string
+  prompt: string
+  options: null
+  answer: string[]
   explanation: string
 }
 

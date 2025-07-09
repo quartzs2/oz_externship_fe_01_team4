@@ -3,6 +3,7 @@ import MultipleChoiceMulti from '@components/quizzes/detail-modal/components/que
 import MultipleChoiceSingle from '@components/quizzes/detail-modal/components/questions/MultipleChoiceSingle'
 import Ordering from '@components/quizzes/detail-modal/components/questions/Ordering'
 import Ox from '@components/quizzes/detail-modal/components/questions/Ox'
+import ShortAnswer from '@components/quizzes/detail-modal/components/questions/ShortAnswer'
 import type { Question } from '@custom-types/quizzes/quizTypes'
 import { parseQuestionTypeToString } from '@utils/question/parseQuestionType'
 
@@ -25,7 +26,7 @@ const SlideItem = ({ question, index }: SlideItemProps) => {
       case 'fill_in_blank':
         return <FillInBlank question={question} />
       case 'short_answer':
-        return '주관식 단답형'
+        return <ShortAnswer question={question} />
       default:
         return <div>지원하지 않는 문제 유형입니다</div>
     }
