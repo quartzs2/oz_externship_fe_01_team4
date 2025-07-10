@@ -5,7 +5,7 @@ import SubjectDetailModal from '@components/subject/SubjectDetailModal'
 import { ADMIN_API_PATH } from '@constants/urls'
 import { type Subject } from '@custom-types/subjects'
 import { useClientPagination } from '@hooks/data-table/usePagination'
-import { renderStatus } from '@utils/renderColor'
+import { renderStatus } from '@utils/renderStatus'
 import { useEffect, useState } from 'react'
 
 // 페이지 상수

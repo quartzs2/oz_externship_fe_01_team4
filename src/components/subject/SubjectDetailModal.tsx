@@ -3,7 +3,7 @@ import FormRow from '@components/common/FormRow'
 import Modal from '@components/common/Modal'
 import type { Subject } from '@custom-types/subjects'
 import { formatIsoToDotDateTime } from '@utils/formatDate'
-import { renderStatus } from '@utils/renderColor'
+import { renderStatus } from '@utils/renderStatus'
 
 type Props = {
   subject: Subject | null
