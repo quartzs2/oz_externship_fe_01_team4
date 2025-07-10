@@ -27,12 +27,9 @@ const SearchBar = ({ onSearch, placeholder }: SearchBarProps) => {
         wrapClassName="w-[250px]"
       />
 
-      <Button
-        children="조회"
-        onClick={handleSearch}
-        variant="VARIANT6"
-        className="w-[70px]"
-      />
+      <Button onClick={handleSearch} variant="VARIANT6" className="w-[70px]">
+        조회
+      </Button>
     </div>
   )
 }
