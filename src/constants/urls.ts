@@ -1,6 +1,6 @@
 // baseURL
-export const ADMIN_API_BASE_URL = 'http://54.180.237.77/api/v1/admin/'
-export const API_BASE_URL = 'http://54.180.237.77/api/v1/'
+export const ADMIN_API_BASE_URL = 'http://13.124.239.91/api/v1/admin/'
+export const API_BASE_URL = 'http://13.124.239.91/api/v1/'
 // 세부 경로
 export const ADMIN_API_PATH = {
   TEST: 'tests/',
