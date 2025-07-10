@@ -23,7 +23,6 @@ const AddExamModal = ({
   subjects,
   fetchData,
 }: AddExamModalProps) => {
-  // subjectOptions
   const subjectOptions = useMemo(() => {
     return [
       { label: '과목을 선택하세요', value: '' },
@@ -36,11 +35,14 @@ const AddExamModal = ({
 
   const [preview, setPreview] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
-  const [isTitle, setIsTitle] = useState(true)
-  const [isSelectedSubject, setIsSelectedSubject] = useState(true)
-  const [isImageFile, setIsImageFile] = useState(true)
   const [selectedSubject, setSelectedSubject] = useState(subjectOptions[0])
   const [title, setTitle] = useState('')
+  const [errors, setErrors] = useState({
+    title: false,
+    subject: false,
+    file: false,
+  })
+
   const toast = useCustomToast()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,15 +55,13 @@ const AddExamModal = ({
   }
 
   const validateForm = () => {
-    const isTitleValid = Boolean(title.trim())
-    const isSubjectValid = Boolean(selectedSubject.value)
-    const isFileValid = Boolean(file)
-
-    setIsTitle(isTitleValid)
-    setIsSelectedSubject(isSubjectValid)
-    setIsImageFile(isFileValid)
-
-    return isTitleValid && isSubjectValid && isFileValid
+    const newErrors = {
+      title: !title.trim(),
+      subject: !selectedSubject.value,
+      file: !file,
+    }
+    setErrors(newErrors)
+    return !Object.values(newErrors).some(Boolean) // error가 하나라도 있으면 false 반환
   }
 
   const postQuiz = async () => {
@@ -93,11 +93,13 @@ const AddExamModal = ({
   const resetForm = () => {
     setTitle('')
     setSelectedSubject(subjectOptions[0])
-    setIsTitle(true)
-    setIsSelectedSubject(true)
-    setIsImageFile(true)
     setPreview(null)
     setFile(null)
+    setErrors({
+      title: false,
+      subject: false,
+      file: false,
+    })
   }
 
   const handleSubmit = async () => {
@@ -129,8 +131,6 @@ const AddExamModal = ({
       onClose={() => {
         setIsOpen(false)
         resetForm()
-        setIsTitle(true)
-        setIsSelectedSubject(true)
       }}
       paddingSize={32}
       isBackgroundDimmed
@@ -154,10 +154,10 @@ const AddExamModal = ({
               placeholder="제목을 입력하세요."
               onChange={(e) => {
                 setTitle(e.target.value)
-                setIsTitle(true)
+                setErrors({ ...errors, title: false })
               }}
             />
-            {!isTitle && (
+            {errors.title && (
               <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
                 제목 입력 필수
               </p>
@@ -179,12 +179,14 @@ const AddExamModal = ({
               onChange={(option) => {
                 setSelectedSubject(option)
                 if (option.value) {
-                  setIsSelectedSubject(true)
+                  setErrors({ ...errors, subject: false })
+                } else {
+                  setErrors({ ...errors, subject: true })
                 }
               }}
               options={subjectOptions}
             />
-            {!isSelectedSubject && (
+            {errors.subject && (
               <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
                 과목 선택 필수
               </p>
@@ -203,9 +205,9 @@ const AddExamModal = ({
             file={file}
             onFileChange={(e) => {
               handleFileChange(e)
-              setIsImageFile(true)
+              setErrors({ ...errors, file: false })
             }}
-            isValid={isImageFile}
+            isValid={!errors.file}
             errorMessage="로고 업로드를 해주세요."
           />
         </FormRow>

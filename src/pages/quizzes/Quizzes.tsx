@@ -95,26 +95,13 @@ const Quizzes = () => {
   const [filteredData, setFilteredData] = useState<TableRowData[]>([])
   const [selectedCourse, setSelectedCourse] = useState(courseOptions[0])
 
-  // API 추후 수정 예정
-  const fetchData = useCallback(async () => {
-    const pageSize = 10
+  const fetchQuizzes = useCallback(async () => {
     setLoading(true)
     try {
-      // 첫 렌더링 또는 모달 오픈 시에만 과목/과정 데이터 요청
-      let subjectsRes, courseRes
-      if (isOpen) {
-        subjectsRes = await api.get(ADMIN_API_PATH.SUBJECTS)
-        setSubjects(subjectsRes.data.results)
-      } else if (isFilterModalOpen) {
-        courseRes = await api.get(ADMIN_API_PATH.COURSES_DROPDOWN)
-        setCourse(courseRes.data)
-      }
-
-      // 쪽지시험 데이터는 항상 요청
       const quizzesRes = await api.get(ADMIN_API_PATH.TEST, {
         params: {
           page: currentPage,
-          page_size: pageSize,
+          page_size: 10,
           search: searchKeyword,
           course_id: selectedCourse.value || undefined,
           ordering: 'recent',
@@ -127,19 +114,30 @@ const Quizzes = () => {
     } finally {
       setLoading(false)
     }
-  }, [
-    currentPage,
-    searchKeyword,
-    selectedCourse.value,
-    setTotalCount,
-    isOpen,
-    isFilterModalOpen,
-  ])
+  }, [currentPage, searchKeyword, selectedCourse.value, setTotalCount])
 
-  // 검색어나 필터 변경 시 fetchData 재호출
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    fetchQuizzes()
+  }, [fetchQuizzes])
+
+  // 과정 필터 모달을 위한 데이터 로딩
+  useEffect(() => {
+    // 모달이 열려 있고, 아직 course 데이터가 없을 때만 API 호출
+    if (isFilterModalOpen && course.length === 0) {
+      api
+        .get(ADMIN_API_PATH.COURSES_DROPDOWN)
+        .then((res) => setCourse(res.data))
+    }
+  }, [isFilterModalOpen, course.length])
+
+  // 시험 생성 모달을 위한 데이터 로딩
+  useEffect(() => {
+    if (isOpen && subjects.length === 0) {
+      api
+        .get(ADMIN_API_PATH.SUBJECTS)
+        .then((res) => setSubjects(res.data.results))
+    }
+  }, [isOpen, subjects.length])
 
   // 쪽지시험 또는 과목 검색 필터링
   useEffect(() => {
@@ -239,7 +237,7 @@ const Quizzes = () => {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         subjects={subjects}
-        fetchData={fetchData}
+        fetchData={fetchQuizzes}
       />
     </div>
   )
