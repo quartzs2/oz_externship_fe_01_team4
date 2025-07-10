@@ -9,6 +9,7 @@ export const ADMIN_API_PATH = {
   TEST_DEPLOYMENTS: 'test-deployments/',
   TEST_SUBMISSIONS: 'test-submissions/',
   COURSES_DROPDOWN: 'courses/dropdown-list/',
+  GENERATIONS_LIST: 'generations/list',
   CREATE_QUIZZES: 'create/',
   LOGIN_EMAIL: 'auth/login/email',
   TOKEN_REFRESH: 'auth/token/refresh/',
