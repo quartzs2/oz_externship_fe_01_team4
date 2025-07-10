@@ -1,7 +1,7 @@
 import TableHeader from '@components/common/data-table/TableHeader'
 import TableRow from '@components/common/data-table/TableRow'
-import { useSelection } from '@hooks/data-table/useSelection'
 import type { DataTableProps } from '@custom-types/table'
+import { useSelection } from '@hooks/data-table/useSelection'
 
 export default function DataTable({
   headerData,
@@ -23,7 +23,7 @@ export default function DataTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full table-fixed border-t-1 border-[#DDDDDD] text-left text-sm">
+      <table className="border-t-1 min-w-full table-fixed border-[#DDDDDD] text-left text-sm">
         <TableHeader
           headers={headerData}
           isCheckBox={isCheckBox}
