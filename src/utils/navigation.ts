@@ -11,6 +11,5 @@ export const navigateToLogin = () => {
     navigateFunction('/')
   } else {
     console.error('Navigator not set. Cannot navigate to login.')
-    window.location.href = '/login'
   }
 }

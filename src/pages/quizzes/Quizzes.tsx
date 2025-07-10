@@ -252,7 +252,6 @@ const Quizzes = () => {
     setCurrentPage(1)
     setIsFilterModalOpen(false)
   }
-  // const [isOpen, setIsOpen] = useState(false)
 
   const openModal = () => {
     setIsOpen(true)
@@ -378,7 +377,7 @@ const Quizzes = () => {
         onSubmit={handleScheduleSubmit}
       />
       <Modal
-        modalId="example-modal"
+        modalId="quizzes-add-modal"
         isOpen={isOpen}
         onClose={() => {
           setIsOpen(false)
@@ -394,7 +393,11 @@ const Quizzes = () => {
 
         <div className="flex flex-col">
           {/* 제목 */}
-          <FormRow htmlFor="title" labelText="제목" labelClassName="h-[50px]">
+          <FormRow
+            htmlFor="title"
+            labelText="제목"
+            labelClassName="h-[50px] font-normal"
+          >
             <div className="flex w-full items-center gap-2">
               <Input
                 id="title"
@@ -416,7 +419,11 @@ const Quizzes = () => {
           </FormRow>
 
           {/* 과목 */}
-          <FormRow htmlFor="subject" labelText="과목" labelClassName="h-[50px]">
+          <FormRow
+            htmlFor="subject"
+            labelText="과목"
+            labelClassName="h-[50px] font-normal"
+          >
             <div className="flex w-full items-center gap-2">
               <Dropdown
                 id="subject"
@@ -441,7 +448,7 @@ const Quizzes = () => {
           <FormRow
             htmlFor="logo"
             labelText="로고 등록"
-            labelClassName="h-[191px] border-b border-[#DDDDDD]"
+            labelClassName="h-[191px] border-b border-[#DDDDDD] font-normal"
             valueClassName="h-[191px] border-b border-[#DDDDDD]"
           >
             <div
