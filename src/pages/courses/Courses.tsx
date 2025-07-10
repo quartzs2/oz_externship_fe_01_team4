@@ -11,6 +11,7 @@ import Input from '@components/common/Input'
 import Modal from '@components/common/Modal'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
+import ImageUploader from '@components/common/ImageUploader'
 
 // 페이지 상수 추가
 const COUNT_LIMIT = 20
@@ -211,14 +212,14 @@ const Courses = () => {
         <div className="flex flex-col">
           {/* 과정명 */}
           <FormRow
-            htmlFor="course-name"
+            htmlFor="courseName"
             labelText="과정명"
             labelClassName="h-[50px] font-normal"
           >
             <div className="flex w-full items-center gap-2">
               <Input
-                id="course-name"
-                name="course-name"
+                id="courseName"
+                name="courseName"
                 type="text"
                 value={courseName}
                 placeholder="과정명을 입력해주세요."
@@ -237,36 +238,34 @@ const Courses = () => {
 
           {/* 과목태그 */}
           <FormRow
-            htmlFor="course-tag"
+            htmlFor="courseTag"
             labelText="과목태그"
             labelClassName="h-[50px] font-normal"
           >
             <div className="flex w-full items-center gap-2">
-              <div className="flex w-full items-center gap-2">
-                <Input
-                  id="course-tag"
-                  name="course-tag"
-                  type="text"
-                  value={courseTag}
-                  placeholder="과목태그를 입력해주세요."
-                  onChange={(e) => {
-                    setCourseTag(e.target.value)
-                    setIsCourseTag(true)
-                  }}
-                />
-                {!isCourseTag && (
-                  <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
-                    과목태그 입력 필수
-                  </p>
-                )}
-              </div>
+              <Input
+                id="courseTag"
+                name="courseTag"
+                type="text"
+                value={courseTag}
+                placeholder="과목태그를 입력해주세요."
+                onChange={(e) => {
+                  setCourseTag(e.target.value)
+                  setIsCourseTag(true)
+                }}
+              />
+              {!isCourseTag && (
+                <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
+                  과목태그 입력 필수
+                </p>
+              )}
             </div>
           </FormRow>
           {/* 과정 소개 */}
           <FormRow
-            htmlFor="Course-introduction"
+            htmlFor="courseIntroduction"
             labelText="과정 소개"
-            labelClassName="h-[168px]  pb-24"
+            labelClassName="h-[168px]  pb-24 font-normal"
           >
             <div className="flex w-full gap-2">
               <div className="flex w-full items-center gap-2">
@@ -280,8 +279,7 @@ const Courses = () => {
                   }}
                   placeholder="과정소개를 입력해주세요."
                   className={cn(
-                    'h-[152px] w-[506px] rounded-[3px] border-1 bg-white py-[10px] pr-[9px] pl-[12px] text-[14px]',
-                    error ? 'border-[#FDA29B]' : 'border-[#DDD]',
+                    'h-[152px] w-[506px] rounded-[3px] border-1 border-[#DDD] bg-white py-[10px] pr-[9px] pl-[12px] text-[14px]',
                     `resize-none placeholder-[#666] outline-none`
                   )}
                 />
@@ -300,48 +298,16 @@ const Courses = () => {
             labelClassName="h-[191px] border-b border-[#DDDDDD]  pb-26 font-normal"
             valueClassName="h-[191px] border-b border-[#DDDDDD]"
           >
-            <div
-              className={cn(
-                `mt-4 h-[132px] w-[146px] overflow-hidden border border-[#DDD] bg-[#F7F7F7]`,
-                `flex items-center justify-center`
-              )}
-            >
-              {preview ? (
-                <img
-                  src={preview}
-                  alt="미리보기"
-                  className="max-h-[96px] max-w-[96px] object-contain"
-                />
-              ) : (
-                <span className="text-sm">미리보기 없음</span>
-              )}
-            </div>
-
-            <div className="mt-1 ml-4 flex items-center gap-5">
-              <p className="text-[10px] whitespace-nowrap text-[#666666]">
-                96 x 96 사이즈로 등록하세요.
-              </p>
-              <p className="max-w-[150px] truncate text-sm underline">
-                {file && file.name}
-              </p>
-              {!isImageFile && (
-                <p className="text-sm text-[#CC0A0A]">
-                  과정 로고 업로드를 해주세요.
-                </p>
-              )}
-              <label className="cursor-pointer rounded border border-[#DDDDDD] bg-white px-3 py-1 text-sm">
-                파일 첨부
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    handleFileChange(e)
-                    setIsImageFile(true)
-                  }}
-                />
-              </label>
-            </div>
+            <ImageUploader
+              preview={preview}
+              file={file}
+              onFileChange={(e) => {
+                handleFileChange(e)
+                setIsImageFile(true)
+              }}
+              isValid={isImageFile}
+              errorMessage="과정 로고 업로드를 해주세요."
+            />
           </FormRow>
 
           {/* 버튼 */}
