@@ -2,17 +2,11 @@ import FilterIcon from '@assets/icons/search.svg?react'
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
-import Dropdown from '@components/common/Dropdown'
-import FormRow from '@components/common/FormRow'
 import Icon from '@components/common/Icon'
-import Input from '@components/common/Input'
-import Label from '@components/common/Label'
-import Modal from '@components/common/Modal'
 import SearchBar from '@components/common/SearchBar'
 import type { TableRowData } from '@custom-types/table'
 import { useServerPagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
-import { useCustomToast } from '@hooks/toast/useToast'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ADMIN_API_PATH } from '@constants/urls'
 import ScheduleModal from '@components/create-schedule/ScheduleModal'
@@ -20,7 +14,8 @@ import { useScheduleStore } from '@store/create-schedule/scheduleStore'
 import { quizAPI } from '@lib/api/scheduleApi'
 import type { SchedulePayload } from '@custom-types/createSchedule'
 import api from '@api/axiosInstance'
-import ImageUploader from '@components/common/ImageUploader'
+import AddExamModal from '@components/quizzes/add-exam-modal/AddExamModal'
+import CourseFilterModal from '@components/quizzes/course-filter-modal/CourseFilterModal'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -92,24 +87,12 @@ const Quizzes = () => {
     ]
   }, [course])
 
-  // subjectOptions
-  const subjectOptions = useMemo(() => {
-    return [
-      { label: '과목을 선택하세요', value: '' },
-      ...subjects.map((subject) => ({
-        label: String(subject.title ?? ''),
-        value: String(subject.id),
-      })),
-    ]
-  }, [subjects])
-
   // 정렬, 검색, 필터, 페이지 state
   const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizzes)
   const [searchKeyword, setSearchKeyword] = useState('')
   const { currentPage, totalPages, goToPage, setTotalCount, setCurrentPage } =
     useServerPagination({ pageSize: 10 })
   const [filteredData, setFilteredData] = useState<TableRowData[]>([])
-  const [tempSelectedCourse, setTempSelectedCourse] = useState(courseOptions[0])
   const [selectedCourse, setSelectedCourse] = useState(courseOptions[0])
 
   // API 추후 수정 예정
@@ -158,32 +141,6 @@ const Quizzes = () => {
     fetchData()
   }, [fetchData])
 
-  const postQuiz = async () => {
-    const formData = new FormData()
-    formData.append('title', title)
-    formData.append('subject_id', selectedSubject.value) // subject_id는 id 문자열
-    if (file) {
-      formData.append('thumbnail_file', file)
-    }
-
-    try {
-      const response = await api.post(
-        `${ADMIN_API_PATH.TEST}${ADMIN_API_PATH.CREATE_QUIZZES}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      )
-
-      return response.data
-    } catch (err) {
-      console.error('쪽지시험 생성 실패:', err)
-      throw err
-    }
-  }
-
   // 쪽지시험 또는 과목 검색 필터링
   useEffect(() => {
     let tempData = [...sortedData] // 현재 정렬된 데이터 복사
@@ -207,86 +164,15 @@ const Quizzes = () => {
     setFilteredData(tempData)
   }, [sortedData, searchKeyword])
 
-  const toast = useCustomToast()
-
-  const [isTitle, setIsTitle] = useState(true)
-  const [isSelectedSubject, setIsSelectedSubject] = useState(true)
-  const [isImageFile, setIsImageFile] = useState(true)
-
-  const validateForm = () => {
-    const isTitleValid = Boolean(title.trim())
-    const isSubjectValid = Boolean(selectedSubject.value)
-    const isFileValid = Boolean(file)
-
-    setIsTitle(isTitleValid)
-    setIsSelectedSubject(isSubjectValid)
-    setIsImageFile(isFileValid)
-
-    return isTitleValid && isSubjectValid && isFileValid
-  }
-
-  const handleSubmit = async () => {
-    if (!validateForm()) return
-
-    setIsOpen(false)
-    resetForm()
-
-    try {
-      await postQuiz()
-      await fetchData()
-      toast.success('성공적으로 쪽지시험이 생성되었습니다.', {
-        style: 'style4',
-        duration: 5000,
-        hasActionButton: false,
-        actionLabel: '확인',
-        hasCloseButton: true,
-        hasIcon: true,
-      })
-    } catch {
-      toast.error('쪽지시험 생성에 실패했습니다.')
-    }
-  }
-
-  const handleFilterApply = () => {
-    setSelectedCourse(tempSelectedCourse)
-    setCurrentPage(1)
-    setIsFilterModalOpen(false)
-  }
-
   const openModal = () => {
     setIsOpen(true)
-  }
-
-  const resetForm = () => {
-    setTitle('')
-    setSelectedSubject(subjectOptions[0])
-    setIsTitle(true)
-    setIsSelectedSubject(true)
-    setIsImageFile(true)
-    setPreview(null)
-    setFile(null)
-  }
-
-  const [selectedSubject, setSelectedSubject] = useState(subjectOptions[0])
-  const [title, setTitle] = useState('')
-
-  const [preview, setPreview] = useState<string | null>(null)
-  const [file, setFile] = useState<File | null>(null)
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0]
-    if (selectedFile) {
-      setFile(selectedFile)
-      const imageUrl = URL.createObjectURL(selectedFile)
-      setPreview(imageUrl)
-    }
   }
 
   if (loading) return <div>Loading...</div>
   if (error) return <div>에러가 발생했습니다: {error.message}</div>
 
   return (
-    <div className="w-[1600px] p-[30px]">
+    <div className="p-8">
       <h2 className="mb-[26px] text-[18px] font-semibold">쪽지시험 조회</h2>
       <div className="mb-[17px] flex justify-between">
         <SearchBar
@@ -305,43 +191,6 @@ const Quizzes = () => {
           과정별 필터링
         </Button>
       </div>
-
-      <Modal
-        modalId="quizzes-course-filter-modal"
-        isOpen={isFilterModalOpen}
-        onClose={() => setIsFilterModalOpen(false)}
-        className="h-[276px] w-[458px]"
-        paddingSize={30}
-      >
-        <Label
-          htmlFor="course"
-          labelText="과정별 필터링"
-          className="mb-[10px] h-[22px] bg-white p-0 text-[18px] font-semibold"
-        />
-        <p className="mb-[20px] text-[14px]">
-          필터를 적용할 카테고리를 선택해주세요.
-        </p>
-        <Dropdown
-          id="course"
-          name="course"
-          value={tempSelectedCourse.value}
-          onChange={setTempSelectedCourse}
-          options={courseOptions}
-          wrapClassName="w-[360px] mb-auto"
-        />
-        {tempSelectedCourse.value && (
-          <p className="mb-[36px] text-[14px] text-[#222]">
-            현재 선택된 과정은{' '}
-            <span className="font-[600] text-[#522193]">
-              {tempSelectedCourse.label}
-            </span>{' '}
-            입니다.
-          </p>
-        )}
-        <Button onClick={handleFilterApply} className="self-end">
-          조회
-        </Button>
-      </Modal>
 
       <DataTable
         headerData={TableHeaderItem} // 표제목,열 개수
@@ -365,6 +214,15 @@ const Quizzes = () => {
         </div>
         <Button onClick={openModal}>생성</Button>
       </div>
+
+      {/* 과정 필터링 모달 */}
+      <CourseFilterModal
+        isOpen={isFilterModalOpen}
+        setIsOpen={setIsFilterModalOpen}
+        courseOptions={courseOptions}
+        setSelectedCourse={setSelectedCourse}
+        setCurrentPage={setCurrentPage}
+      />
       {/* 스케줄 배포 모달 */}
       <ScheduleModal
         isOpen={isModalOpen}
@@ -376,105 +234,13 @@ const Quizzes = () => {
         generations={generationsData}
         onSubmit={handleScheduleSubmit}
       />
-      <Modal
-        modalId="quizzes-add-modal"
+      {/* 시험을 추가할 때 사용하는 모달 */}
+      <AddExamModal
         isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false)
-          resetForm()
-          setIsTitle(true)
-          setIsSelectedSubject(true)
-        }}
-        paddingSize={32}
-        isBackgroundDimmed
-        closeButtonOffset={16}
-      >
-        <h1 className="mb-[53px] text-xl font-bold">쪽지시험 등록</h1>
-
-        <div className="flex flex-col">
-          {/* 제목 */}
-          <FormRow
-            htmlFor="title"
-            labelText="제목"
-            labelClassName="h-[50px] font-normal"
-          >
-            <div className="flex w-full items-center gap-2">
-              <Input
-                id="title"
-                name="title"
-                type="text"
-                value={title}
-                placeholder="제목을 입력하세요."
-                onChange={(e) => {
-                  setTitle(e.target.value)
-                  setIsTitle(true)
-                }}
-              />
-              {!isTitle && (
-                <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
-                  제목 입력 필수
-                </p>
-              )}
-            </div>
-          </FormRow>
-
-          {/* 과목 */}
-          <FormRow
-            htmlFor="subject"
-            labelText="과목"
-            labelClassName="h-[50px] font-normal"
-          >
-            <div className="flex w-full items-center gap-2">
-              <Dropdown
-                id="subject"
-                name="subject"
-                value={selectedSubject.value}
-                onChange={(option) => {
-                  setSelectedSubject(option)
-                  if (option.value) {
-                    setIsSelectedSubject(true)
-                  }
-                }}
-                options={subjectOptions}
-              />
-              {!isSelectedSubject && (
-                <p className="text-sm whitespace-nowrap text-[#CC0A0A]">
-                  과목 선택 필수
-                </p>
-              )}
-            </div>
-          </FormRow>
-          {/* 로고 업로드 */}
-          <FormRow
-            htmlFor="logo"
-            labelText="로고 등록"
-            labelClassName="h-[191px] border-b border-[#DDDDDD] font-normal"
-            valueClassName="h-[191px] border-b border-[#DDDDDD]"
-          >
-            <ImageUploader
-              preview={preview}
-              file={file}
-              onFileChange={(e) => {
-                handleFileChange(e)
-                setIsImageFile(true)
-              }}
-              isValid={isImageFile}
-              errorMessage="로고 업로드를 해주세요."
-            />
-          </FormRow>
-
-          {/* 버튼 */}
-          <div className="mt-[38px] flex justify-end">
-            <Button
-              onClick={() => {
-                handleSubmit()
-              }}
-            >
-              생성
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        setIsOpen={setIsOpen}
+        subjects={subjects}
+        fetchData={fetchData}
+      />
     </div>
   )
 }
