@@ -1,6 +1,7 @@
 import Button from '@components/common/Button'
 import type { TableHeader, TableRowData } from '@custom-types/table'
 import { cn } from '@utils/cn'
+import { formatIsoToDotDateTime } from '@utils/formatDate'
 import { useState } from 'react'
 
 type Props = {
@@ -32,8 +33,6 @@ export default function TableRow({
     DEPLOY_SWITCH: 'deploySwitch',
     CREATED_AT: 'created_at',
     UPDATED_AT: 'updated_at',
-    CREATED_AT_CAMEL: 'createdAt',
-    UPDATED_AT_CAMEL: 'updatedAt',
     STARTED_AT: 'startedAt',
     SUBMITTED_AT: 'submittedAt',
     TYPE: 'type',
@@ -61,16 +60,13 @@ export default function TableRow({
     setDeployStatus((prev) => !prev)
   }
 
-  const formatIsoToDotDateTime = (isoString: string, isTime: boolean) => {
-    const [date, timePart] = isoString.split('T') // 날짜, 시간 분리
-    const formattedDate = date.replace(/-/g, '.')
-    const time = timePart?.split('.')[0] ?? '' // 소수점 이하 제거
-
-    return isTime ? `${formattedDate} ${time}` : `${formattedDate}`
-  }
-
   return (
-    <tr className="h-[50px] border-b border-[#DDDDDD] text-center hover:bg-[#F7F7F7]">
+    <tr
+      className={cn(
+        'h-[50px] cursor-pointer border-b border-[#DDDDDD] text-center hover:bg-[#F7F7F7]'
+      )}
+      onClick={() => onClick?.(data)}
+    >
       {isCheckBox && (
         <td className="w-12 p-2">
           <input
@@ -121,9 +117,9 @@ export default function TableRow({
                     />
                     <div
                       className={cn(
-                        `peer peer-checked:bg-[#5EB669] peer-focus:ring-2 peer-focus:ring-[#5EB669] peer-focus:outline-none`,
+                        `peer peer-checked:bg-[#5EB669] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#5EB669]`,
                         `peer-checked:after:translate-x-full peer-checked:after:border-[#F5F5F5]`,
-                        `after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full`,
+                        `after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full`,
                         `after:border after:border-[#F5F5F5] after:bg-white after:transition-all after:content-['']`,
                         `h-6 w-11 rounded-full bg-[#DDDDDD]`
                       )}
@@ -178,8 +174,6 @@ export default function TableRow({
                 }
               case DATA_KEYS.CREATED_AT:
               case DATA_KEYS.UPDATED_AT:
-              case DATA_KEYS.CREATED_AT_CAMEL:
-              case DATA_KEYS.UPDATED_AT_CAMEL:
               case DATA_KEYS.STARTED_AT:
               case DATA_KEYS.SUBMITTED_AT:
                 return formatIsoToDotDateTime(String(value), isTime ?? false)

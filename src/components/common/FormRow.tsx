@@ -4,6 +4,7 @@ import { cn } from '@utils/cn'
 type FormRowProps = {
   labelText: string
   htmlFor: string
+  className?: string
   labelClassName?: string
   valueClassName?: string
   children: React.ReactNode
@@ -12,12 +13,18 @@ type FormRowProps = {
 const FormRow = ({
   labelText,
   htmlFor,
+  className,
   labelClassName,
   valueClassName,
   children,
 }: FormRowProps) => {
   return (
-    <div className="inline-flex min-h-[50px] items-center border-t border-[#DDD]">
+    <div
+      className={cn(
+        'inline-flex min-h-[50px] items-center border-t border-[#DDD]',
+        className
+      )}
+    >
       <Label
         htmlFor={htmlFor}
         labelText={labelText}
