@@ -1,4 +1,5 @@
-import api from '@api/axiosInstance'
+import { fetchCourses } from '@api/courses'
+import { fetchGenerations } from '@api/generations'
 import FilterIcon from '@assets/icons/search.svg?react'
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
@@ -7,23 +8,12 @@ import Dropdown from '@components/common/Dropdown'
 import Icon from '@components/common/Icon'
 import Label from '@components/common/Label'
 import Modal from '@components/common/Modal'
-import { ADMIN_API_PATH } from '@constants/urls'
 import type { TableRowData } from '@custom-types/table'
 import { useClientPagination } from '@hooks/data-table/usePagination'
 import { useEffect, useState } from 'react'
 
 // 페이지 상수 추가
 const COUNT_LIMIT = 20
-
-const fetchGenerations = async () => {
-  const res = await api.get(ADMIN_API_PATH.GENERATIONS_LIST)
-  return res.data.results
-}
-
-const fetchCourses = async () => {
-  const res = await api.get(ADMIN_API_PATH.COURSES)
-  return res.data.results
-}
 
 const courseHeaders = [
   { text: 'ID', dataKey: 'id' },
@@ -41,7 +31,10 @@ const Generations = () => {
   const [filteredData, setFilteredData] = useState<TableRowData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
+
+  // 모달 상태
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
   // 기수 목록 fetch
   useEffect(() => {
@@ -79,12 +72,20 @@ const Generations = () => {
     loadCourses()
   }, [isFilterModalOpen, courses.length])
 
+  // 드롭다운 옵션
   const courseOptions = [
-    { label: '과정을 선택하세요', value: '' },
-    ...courses.map((course) => ({
-      label: String(course.name),
-      value: String(course.id),
-    })),
+    { label: '전체 보기', value: '' },
+    ...Array.from(
+      new Map(
+        courses.map((course) => [
+          course.name,
+          {
+            label: String(course.name),
+            value: String(course.id),
+          },
+        ])
+      ).values()
+    ),
   ]
 
   const [selectedCourseOption, setSelectedCourseOption] = useState(
@@ -171,7 +172,18 @@ const Generations = () => {
         sortOrder={'asc'}
         sortByKey={() => {}}
         isTime
+        onClick={() => {
+          setIsDetailModalOpen(true)
+        }}
       />
+      <Modal
+        modalId="generation-detail-modal"
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        className="h-[656px] w-[940px]"
+      >
+        <h3>기수 상세 조회</h3>
+      </Modal>
       <div className="mt-[82px] flex justify-center">
         <div className="flex flex-1 justify-center">
           <Pagination
