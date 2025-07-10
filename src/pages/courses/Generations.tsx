@@ -1,3 +1,4 @@
+import api from '@api/axiosInstance'
 import FilterIcon from '@assets/icons/search.svg?react'
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
@@ -6,37 +7,21 @@ import Dropdown from '@components/common/Dropdown'
 import Icon from '@components/common/Icon'
 import Label from '@components/common/Label'
 import Modal from '@components/common/Modal'
-import { ADMIN_API_BASE_URL, ADMIN_API_PATH } from '@constants/urls'
+import { ADMIN_API_PATH } from '@constants/urls'
 import type { TableRowData } from '@custom-types/table'
 import { useClientPagination } from '@hooks/data-table/usePagination'
-import axios from 'axios'
 import { useEffect, useState } from 'react'
-
-const ACCESS_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUyMTMyNjY1LCJpYXQiOjE3NTIwNDYyNjUsImp0aSI6IjAxMWYzYmY4ODU2NTQ0OTc5NWQ2YTYxZGEwNTliYjJkIiwidXNlcl9pZCI6MTJ9.DbqYnFwkvtlVBZxGlj8JFIpKMRDDX1CZfirNM9pcVbI'
 
 // 페이지 상수 추가
 const COUNT_LIMIT = 20
 
-// 공통 API 인스턴스
-const apiClient = axios.create({
-  baseURL: ADMIN_API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    Authorization: `Bearer ${ACCESS_TOKEN}`,
-  },
-})
-
 const fetchGenerations = async () => {
-  const res = await apiClient.get(ADMIN_API_PATH.GENERATIONS_LIST)
-  console.log(res)
+  const res = await api.get(ADMIN_API_PATH.GENERATIONS_LIST)
   return res.data.results
 }
 
 const fetchCourses = async () => {
-  const res = await apiClient.get(ADMIN_API_PATH.COURSES)
-  console.log(res)
+  const res = await api.get(ADMIN_API_PATH.COURSES)
   return res.data.results
 }
 
@@ -60,10 +45,11 @@ const Generations = () => {
 
   // 기수 목록 fetch
   useEffect(() => {
-    const fetchGenerationsData = async () => {
+    const loadGenerations = async () => {
       try {
         const generationsRes = await fetchGenerations()
         setGenerations(generationsRes)
+        setFilteredData(generationsRes)
       } catch (err) {
         if (err instanceof Error) setError(err)
         else console.error('알 수 없는 에러:', err)
@@ -71,12 +57,12 @@ const Generations = () => {
         setLoading(false)
       }
     }
-    fetchGenerationsData()
+    loadGenerations()
   }, [])
 
   // 과정 API는 모달 열 때 fetch
   useEffect(() => {
-    const fetchCourseData = async () => {
+    const loadCourses = async () => {
       if (!isFilterModalOpen) return
       if (courses.length > 0) return // 이미 가져온 경우 fetch 생략
 
@@ -90,8 +76,8 @@ const Generations = () => {
         setLoading(false)
       }
     }
-    fetchCourseData()
-  }, [isFilterModalOpen])
+    loadCourses()
+  }, [isFilterModalOpen, courses.length])
 
   const courseOptions = [
     { label: '과정을 선택하세요', value: '' },
@@ -101,23 +87,20 @@ const Generations = () => {
     })),
   ]
 
-  const [tempSelectedCourse, setTempSelectedCourse] = useState(courseOptions[0])
-  const [selectedCourse, setSelectedCourse] = useState(courseOptions[0])
+  const [selectedCourseOption, setSelectedCourseOption] = useState(
+    courseOptions[0]
+  )
 
+  // 과정별 필터링
   const handleFilterApply = () => {
-    setSelectedCourse(tempSelectedCourse)
+    const filtered = selectedCourseOption.value
+      ? generations.filter(
+          (item) => item.course_name === selectedCourseOption.label
+        )
+      : generations
+
+    setFilteredData(filtered)
     setIsFilterModalOpen(false)
-
-    let tempData = [...generations]
-
-    // 과정별 필터링
-    if (selectedCourse.value) {
-      tempData = tempData.filter(
-        (quiz) => quiz.subject_name === selectedCourse.value
-      )
-    }
-
-    setFilteredData(tempData)
   }
 
   const { currentPage, totalPages, paginatedData, goToPage } =
@@ -134,7 +117,11 @@ const Generations = () => {
     <div className="w-[1600px] p-[30px]">
       <div className="mb-[25px] flex justify-between">
         <h2 className="text-lg font-semibold">기수 조회</h2>
-        <Button onClick={() => setIsFilterModalOpen(true)} variant="VARIANT8">
+        <Button
+          onClick={() => setIsFilterModalOpen(true)}
+          variant="VARIANT8"
+          className="pr-5"
+        >
           <Icon icon={FilterIcon} size={16} />
           과정별 필터링
         </Button>
@@ -144,6 +131,7 @@ const Generations = () => {
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
         paddingSize={30}
+        className="h-[275px] w-[458px]"
       >
         <Label
           htmlFor="course"
@@ -156,16 +144,16 @@ const Generations = () => {
         <Dropdown
           id="course"
           name="course"
-          value={tempSelectedCourse.value}
-          onChange={setTempSelectedCourse}
+          value={selectedCourseOption.value}
+          onChange={setSelectedCourseOption}
           options={courseOptions}
           wrapClassName="w-[360px] mb-auto"
         />
-        {tempSelectedCourse.value && (
+        {selectedCourseOption.value && (
           <p className="mb-[36px] text-[14px] text-[#222]">
             현재 선택된 과정은{' '}
             <span className="font-[600] text-[#522193]">
-              {tempSelectedCourse.label}
+              {selectedCourseOption.label}
             </span>{' '}
             입니다.
           </p>
