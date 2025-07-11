@@ -1,5 +1,4 @@
-import { fetchCourses } from '@api/courses'
-import { fetchGenerations } from '@api/generations'
+import api from '@api/axiosInstance'
 import FilterIcon from '@assets/icons/search.svg?react'
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
@@ -8,6 +7,8 @@ import Dropdown from '@components/common/Dropdown'
 import Icon from '@components/common/Icon'
 import Label from '@components/common/Label'
 import Modal from '@components/common/Modal'
+import GenerationDetailModal from '@components/generations/GenerationDetailModal'
+import { ADMIN_API_PATH } from '@constants/urls'
 import type { TableRowData } from '@custom-types/table'
 import { useClientPagination } from '@hooks/data-table/usePagination'
 import { useEffect, useState } from 'react'
@@ -15,7 +16,7 @@ import { useEffect, useState } from 'react'
 // 페이지 상수 추가
 const COUNT_LIMIT = 20
 
-const courseHeaders = [
+const generationHeaders = [
   { text: 'ID', dataKey: 'id' },
   { text: '과정명', dataKey: 'course_name' },
   { text: '기수', dataKey: 'number' },
@@ -24,6 +25,22 @@ const courseHeaders = [
   { text: '시작일', dataKey: 'start_date' },
   { text: '종료일', dataKey: 'end_date' },
 ]
+
+// api fetch
+const fetchGenerations = async () => {
+  const res = await api.get(ADMIN_API_PATH.GENERATIONS_LIST)
+  return res.data.results
+}
+
+const fetchGenerationDetail = async (generationId: number) => {
+  const res = await api.get(`generations/${generationId}/detail`)
+  return res.data
+}
+
+const fetchCourses = async () => {
+  const res = await api.get(ADMIN_API_PATH.COURSES)
+  return res.data.results
+}
 
 const Generations = () => {
   const [generations, setGenerations] = useState<TableRowData[]>([])
@@ -36,13 +53,24 @@ const Generations = () => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
+  // 상세 조회용 선택된 기수 데이터
+  const [selectedGeneration, setSelectedGeneration] =
+    useState<TableRowData | null>(null)
+
   // 기수 목록 fetch
   useEffect(() => {
     const loadGenerations = async () => {
       try {
         const generationsRes = await fetchGenerations()
-        setGenerations(generationsRes)
-        setFilteredData(generationsRes)
+        const formattedGenerations = generationsRes.map(
+          (gen: TableRowData) => ({
+            ...gen,
+            number: `${gen.number}기`,
+            registered_students: `${gen.registered_students}명 / ${gen.max_student}명`,
+          })
+        )
+        setGenerations(formattedGenerations)
+        setFilteredData(formattedGenerations)
       } catch (err) {
         if (err instanceof Error) setError(err)
         else console.error('알 수 없는 에러:', err)
@@ -53,7 +81,7 @@ const Generations = () => {
     loadGenerations()
   }, [])
 
-  // 과정 API는 모달 열 때 fetch
+  // 모달 열 때 과정 목록 fetch
   useEffect(() => {
     const loadCourses = async () => {
       if (!isFilterModalOpen) return
@@ -110,6 +138,20 @@ const Generations = () => {
       count: COUNT_LIMIT,
     })
 
+  // 테이블 로우 클릭 시 기수 상세조회 fetch
+  const handleRowClick = async (rowData: TableRowData) => {
+    try {
+      const detailData = await fetchGenerationDetail(rowData.id)
+      setSelectedGeneration(detailData)
+      setIsDetailModalOpen(true)
+    } catch (err) {
+      if (err instanceof Error) setError(err)
+      else console.error('알 수 없는 에러:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   if (loading)
     return <div className="h-full text-center text-3xl">Loading...</div>
   if (error) return <div>에러가 발생했습니다: {error.message}</div>
@@ -131,8 +173,8 @@ const Generations = () => {
         modalId="course-filter-modal"
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
+        className='h-[275px]'
         paddingSize={30}
-        className="h-[275px] w-[458px]"
       >
         <Label
           htmlFor="course"
@@ -151,7 +193,7 @@ const Generations = () => {
           wrapClassName="w-[360px] mb-auto"
         />
         {selectedCourseOption.value && (
-          <p className="mb-[36px] text-[14px] text-[#222]">
+          <p className="mb-[37px] text-[14px] text-[#222]">
             현재 선택된 과정은{' '}
             <span className="font-[600] text-[#522193]">
               {selectedCourseOption.label}
@@ -164,7 +206,7 @@ const Generations = () => {
         </Button>
       </Modal>
       <DataTable
-        headerData={courseHeaders}
+        headerData={generationHeaders}
         tableItem={paginatedData}
         isCheckBox={false}
         sortKeys={[]}
@@ -172,18 +214,13 @@ const Generations = () => {
         sortOrder={'asc'}
         sortByKey={() => {}}
         isTime
-        onClick={() => {
-          setIsDetailModalOpen(true)
-        }}
+        onClick={handleRowClick}
       />
-      <Modal
-        modalId="generation-detail-modal"
+      <GenerationDetailModal
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
-        className="h-[656px] w-[940px]"
-      >
-        <h3>기수 상세 조회</h3>
-      </Modal>
+        selectedGeneration={selectedGeneration}
+      />
       <div className="mt-[82px] flex justify-center">
         <div className="flex flex-1 justify-center">
           <Pagination
