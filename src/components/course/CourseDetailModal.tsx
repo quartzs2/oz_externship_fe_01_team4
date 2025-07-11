@@ -5,6 +5,7 @@ import Label from '@components/common/Label'
 import { ADMIN_API_PATH } from '@constants/urls'
 import axiosInstance from '@api/axiosInstance'
 import { AxiosError } from 'axios'
+import ozRoundLogoUrl from '@assets/oz_round_logo.svg'
 
 type CourseDetailData = {
   id: number
@@ -151,25 +152,15 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
                 <div className="flex items-center space-x-3">
                   <div className="flex w-full items-center justify-center">
                     <img
-                      src={
-                        courseData.thumbnail_img_url ||
-                        '/images/fallback-thumbnail.png'
-                      }
+                      src={courseData.thumbnail_img_url || ozRoundLogoUrl}
                       alt="과정 썸네일"
                       className="h-24 w-24 rounded-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
-                        // 1. 무한 루프 방지
+                        // 무한 루프 방지
                         target.onerror = null
-                        // 2. 기본 OZ 로고 스타일로 변경
-                        target.style.display = 'none'
-                        if (target.parentElement) {
-                          target.parentElement.innerHTML = `
-                            <div class="flex h-24 w-24 items-center justify-center rounded-full bg-black">
-                              <span class="text-lg font-bold text-white">OZ</span>
-                            </div>
-                          `
-                        }
+                        // OZ SVG 로고로 변경
+                        target.src = ozRoundLogoUrl
                       }}
                     />
                   </div>
