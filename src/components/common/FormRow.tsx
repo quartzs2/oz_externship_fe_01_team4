@@ -30,7 +30,7 @@ const FormRow = ({
         labelText={labelText}
         className={labelClassName}
       />
-      <div className={cn('w-[530px] pl-[14px]', valueClassName)}>
+      <div className={cn('w-[530px] pl-[14px] text-sm text-[#666]', valueClassName)}>
         {children}
       </div>
     </div>
