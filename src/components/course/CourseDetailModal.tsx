@@ -3,7 +3,7 @@ import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import Label from '@components/common/Label'
 import { ADMIN_API_PATH } from '@constants/urls'
-import axiosInstance from '@api/axiosInstance'
+import axiosInstance from '@api/instance/axiosInstance'
 import { AxiosError } from 'axios'
 import ozRoundLogoUrl from '@assets/oz_round_logo.svg'
 
