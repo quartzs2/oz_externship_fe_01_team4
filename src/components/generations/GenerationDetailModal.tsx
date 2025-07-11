@@ -25,13 +25,13 @@ const GenerationDetailModal = ({
       modalId="generation-detail-modal"
       isOpen={isOpen}
       onClose={onClose}
-      className="h-[656px] w-[940px] px-[44px] pt-[46px] pb-[30px]"
+      className="w-[940px] px-[44px] pt-[46px] pb-[30px]"
       paddingSize={30}
     >
       <h2 className="mt-4 mb-10 ml-[14px] text-lg font-semibold text-[#222]">
         기수 상세 조회
       </h2>
-      <div className="mb-10 border-b-1 border-grey-300 text-sm">
+      <div className="mb-10 w-[822px] self-center">
         <FormRow
           labelText="ID"
           htmlFor="id"
@@ -133,7 +133,7 @@ const GenerationDetailModal = ({
         <FormRow
           labelText="과정 소개"
           htmlFor="course_description"
-          className="h-[196px]"
+          className="h-[196px] border-b-1 border-grey-300 text-sm"
           labelClassName="w-[130px]"
           valueClassName="w-[692px] h-full p-[14px]"
         >
