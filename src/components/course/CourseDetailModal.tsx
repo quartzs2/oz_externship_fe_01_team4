@@ -3,7 +3,7 @@ import Modal from '@components/common/Modal'
 import Button from '@components/common/Button'
 import Label from '@components/common/Label'
 import { ADMIN_API_PATH } from '@constants/urls'
-import axiosInstance from '@api/axiosInstance' // 리프레시 토큰 로직이 있는 인스턴스
+import axiosInstance from '@api/axiosInstance'
 import { AxiosError } from 'axios'
 
 type CourseDetailData = {
@@ -31,7 +31,6 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
   const [courseData, setCourseData] = useState<CourseDetailData | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
-  const [imageError, setImageError] = useState<boolean>(false)
 
   // 과정 상세 데이터 조회
   const getCourseDetail = async (id: number) => {
@@ -56,9 +55,148 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
     }
   }
 
-  // 이미지 로드 실패 시 호출되는 핸들러
-  const handleImageError = () => {
-    setImageError(true)
+  // 컨텐츠 렌더링 함수
+  const renderContent = () => {
+    // 1. 로딩 상태일 때
+    if (loading) {
+      return (
+        <div className="flex h-96 items-center justify-center">
+          <div className="text-lg text-[#666666]">로딩 중...</div>
+        </div>
+      )
+    }
+
+    // 2. 에러 상태일 때
+    if (error) {
+      return (
+        <div className="flex h-96 items-center justify-center">
+          <div className="text-lg text-red-600">{error}</div>
+        </div>
+      )
+    }
+
+    // 3. 데이터가 성공적으로 로드되었을 때
+    if (courseData) {
+      return (
+        <div className="border border-[#DDDDDD]">
+          {/* 첫 번째 줄: ID, 등록일시, 수정일시 */}
+          <div className="flex h-[48px] w-full">
+            {/* ID */}
+            <div className="flex h-[48px] border-r border-[#DDDDDD]">
+              <Label htmlFor="" labelText="ID" className="h-[48px] w-[130px]" />
+              <div className="flex h-[48px] w-[78px] flex-none items-center justify-center bg-white px-[22px] py-[14px] text-center text-[14px] text-[#666666]">
+                {courseData.id}
+              </div>
+            </div>
+            {/* 등록일시 */}
+            <div className="flex h-[48px] border-r border-[#DDDDDD]">
+              <Label
+                htmlFor=""
+                labelText="등록일시"
+                className="h-[48px] w-[130px]"
+              />
+              <div className="flex h-[48px] w-[178px] flex-none items-center justify-center bg-white px-[22px] py-[14px] text-center text-[14px] text-[#666666]">
+                {courseData.created_at}
+              </div>
+            </div>
+            {/* 수정일시 */}
+            <div className="flex h-[48px]">
+              <Label
+                htmlFor=""
+                labelText="수정일시"
+                className="h-[48px] w-[130px]"
+              />
+              <div className="flex h-[48px] w-[178px] flex-none items-center justify-center bg-white px-[22px] py-[14px] text-center text-[14px] text-[#666666]">
+                {courseData.updated_at}
+              </div>
+            </div>
+          </div>
+
+          {/* 두 번째와 세 번째 줄: 과정명/과정태그, 썸네일 로고 */}
+          <div className="flex border-t border-[#DDDDDD]">
+            {/* 왼쪽: 과정명과 과정태그 */}
+            <div className="flex flex-col border-r border-[#DDDDDD]">
+              {/* 과정명 */}
+              <div className="flex">
+                <Label
+                  htmlFor=""
+                  labelText="과정명"
+                  className="h-[96px] w-[130px]"
+                />
+                <div className="w-[386px] rounded-[3px] bg-white px-[22px] py-[14px] text-left text-[14px] text-[#666666]">
+                  {courseData.name}
+                </div>
+              </div>
+              {/* 과정태그 */}
+              <div className="flex border-t border-[#DDDDDD]">
+                <Label
+                  htmlFor=""
+                  labelText="과정태그"
+                  className="h-[96px] w-[130px]"
+                />
+                <div className="w-[386px] rounded-[3px] bg-white px-[22px] py-[14px] text-left text-[14px] text-[#666666]">
+                  {courseData.tag}
+                </div>
+              </div>
+            </div>
+
+            {/* 오른쪽: 썸네일 로고 (두 행에 걸쳐 표시) */}
+            <div className="flex">
+              <Label
+                htmlFor=""
+                labelText="썸네일 로고"
+                className="h-[191px] w-[130px]"
+              />
+              <div className="w-[176px] bg-white px-[22px] py-[14px]">
+                <div className="flex items-center space-x-3">
+                  <div className="flex w-full items-center justify-center">
+                    <img
+                      src={
+                        courseData.thumbnail_img_url ||
+                        '/images/fallback-thumbnail.png'
+                      }
+                      alt="과정 썸네일"
+                      className="h-24 w-24 rounded-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        // 1. 무한 루프 방지
+                        target.onerror = null
+                        // 2. 기본 OZ 로고 스타일로 변경
+                        target.style.display = 'none'
+                        if (target.parentElement) {
+                          target.parentElement.innerHTML = `
+                            <div class="flex h-24 w-24 items-center justify-center rounded-full bg-black">
+                              <span class="text-lg font-bold text-white">OZ</span>
+                            </div>
+                          `
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 네 번째 줄: 자기소개 */}
+          <div className="flex border-t border-[#DDDDDD]">
+            <Label
+              htmlFor=""
+              labelText="자기소개"
+              className="h-[169px] w-[130px]"
+            />
+            <div className="w-[689px] rounded-[3px] bg-white px-[22px] py-[14px]">
+              <div className="text-[14px] whitespace-pre-line text-[#666666]">
+                {courseData.description || '과정 설명이 없습니다.'}
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // 4. 모든 조건에 해당하지 않을 때 (초기 상태)
+    return null
   }
 
   // 모달이 열릴 때 데이터 조회
@@ -76,11 +214,6 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
     }
   }, [isOpen])
 
-  // courseData가 변경될 때마다 imageError 상태 리셋
-  useEffect(() => {
-    setImageError(false)
-  }, [courseData])
-
   return (
     <Modal
       modalId="course-detail-modal"
@@ -93,120 +226,7 @@ const CourseDetailModal: React.FC<CourseDetailModalProps> = ({
           과정 상세 조회
         </h2>
 
-        {loading && (
-          <div className="flex h-40 items-center justify-center">
-            <div className="text-lg text-[#666666]">로딩 중...</div>
-          </div>
-        )}
-
-        {error && (
-          <div className="flex h-40 items-center justify-center">
-            <div className="text-lg text-red-600">{error}</div>
-          </div>
-        )}
-
-        {courseData && !loading && !error && (
-          <div className="border border-[#DDDDDD]">
-            <div className="flex h-[48px] w-full">
-              <div className="flex h-[48px] border-r border-[#DDDDDD]">
-                <Label
-                  htmlFor=""
-                  labelText="ID"
-                  className="h-[48px] w-[130px]"
-                />
-                <div className="flex h-[48px] w-[78px] flex-none items-center justify-center bg-white px-[22px] py-[14px] text-center text-[14px] text-[#666666]">
-                  {courseData.id}
-                </div>
-              </div>
-              <div className="flex h-[48px] border-r border-[#DDDDDD]">
-                <Label
-                  htmlFor=""
-                  labelText="등록일시"
-                  className="h-[48px] w-[130px]"
-                />
-                <div className="flex h-[48px] w-[178px] flex-none items-center justify-center bg-white px-[22px] py-[14px] text-center text-[14px] text-[#666666]">
-                  {courseData.created_at}
-                </div>
-              </div>
-              <div className="flex h-[48px]">
-                <Label
-                  htmlFor=""
-                  labelText="수정일시"
-                  className="h-[48px] w-[130px]"
-                />
-                <div className="flex h-[48px] w-[178px] flex-none items-center justify-center bg-white px-[22px] py-[14px] text-center text-[14px] text-[#666666]">
-                  {courseData.updated_at}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex border-t border-[#DDDDDD]">
-              <div className="flex flex-col border-r border-[#DDDDDD]">
-                <div className="flex">
-                  <Label
-                    htmlFor=""
-                    labelText="과정명"
-                    className="h-[96px] w-[130px]"
-                  />
-                  <div className="w-[386px] rounded-[3px] bg-white px-[22px] py-[14px] text-left text-[14px] text-[#666666]">
-                    {courseData.name}
-                  </div>
-                </div>
-                <div className="flex border-t border-[#DDDDDD]">
-                  <Label
-                    htmlFor=""
-                    labelText="과정태그"
-                    className="h-[96px] w-[130px]"
-                  />
-                  <div className="w-[386px] rounded-[3px] bg-white px-[22px] py-[14px] text-left text-[14px] text-[#666666]">
-                    {courseData.tag}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex">
-                <Label
-                  htmlFor=""
-                  labelText="썸네일 로고"
-                  className="h-[191px] w-[130px]"
-                />
-                <div className="w-[176px] bg-white px-[22px] py-[14px]">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex w-full items-center justify-center">
-                      {!imageError && courseData.thumbnail_img_url ? (
-                        <img
-                          src={courseData.thumbnail_img_url}
-                          alt="과정 썸네일"
-                          className="h-24 w-24 rounded-full object-cover"
-                          onError={handleImageError}
-                        />
-                      ) : (
-                        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-black">
-                          <span className="text-lg font-bold text-white">
-                            OZ
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex border-t border-[#DDDDDD]">
-              <Label
-                htmlFor=""
-                labelText="자기소개"
-                className="h-[169px] w-[130px]"
-              />
-              <div className="w-[689px] rounded-[3px] bg-white px-[22px] py-[14px]">
-                <div className="text-[14px] whitespace-pre-line text-[#666666]">
-                  {courseData.description || '과정 설명이 없습니다.'}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {renderContent()}
 
         {!error && (
           <div className="mt-13 flex justify-end space-x-3 pt-6">
