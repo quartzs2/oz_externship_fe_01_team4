@@ -173,7 +173,7 @@ const Generations = () => {
         modalId="course-filter-modal"
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
-        className='h-[275px]'
+        className="h-[275px]"
         paddingSize={30}
       >
         <Label

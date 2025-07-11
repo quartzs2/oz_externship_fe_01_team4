@@ -10,7 +10,7 @@ export const renderStatus = (
   return (
     <span
       className={cn(
-        'inline-block rounded-md px-2 py-1 text-xs font-semibold',
+        'mx-auto flex h-[24px] w-[80px] items-center justify-center rounded-md text-xs font-semibold',
         value
           ? 'bg-[rgba(94,182,105,0.15)] text-option-green'
           : 'bg-[rgba(204,10,10,0.15)] text-option-red'

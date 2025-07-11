@@ -197,7 +197,7 @@ const Quizzes = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="min-w-[1600px] p-[30px]">
       <h2 className="mb-[26px] text-[18px] font-semibold">쪽지시험 조회</h2>
       <div className="mb-[17px] flex justify-between">
         <SearchBar
