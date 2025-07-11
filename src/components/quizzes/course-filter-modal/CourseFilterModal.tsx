@@ -26,7 +26,7 @@ const CourseFilterModal = ({
   const handleFilterApply = () => {
     setSelectedCourse(tempSelectedCourse)
     setCurrentPage(1)
-    setIsOpen(isOpen)
+    setIsOpen(!isOpen)
   }
 
   return (

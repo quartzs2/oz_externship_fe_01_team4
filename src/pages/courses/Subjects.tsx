@@ -1,14 +1,16 @@
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
-import SubjectDetailModal from '@components/subject/SubjectDetailModal'
+import AddGenerationsModal from '@components/subject/add-subject-modal/AddSubjectModal'
+import SubjectDetailModal from '@components/subject/detail-modal/SubjectDetailModal'
 import { type Subject } from '@custom-types/subjects'
-import { useClientPagination } from '@hooks/data-table/usePagination'
 import { useSubjects } from '@hooks/queries/useSubjects'
 import { renderStatus } from '@utils/renderStatus'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useServerPagination } from '@hooks/data-table/usePagination'
+import Button from '@components/common/Button'
 
 // 페이지 상수
-const COUNT_LIMIT = 20
+const COUNT_LIMIT = 10
 
 // 테이블 헤더
 const subjectHeader = [
@@ -24,64 +26,94 @@ const subjectHeader = [
 
 // 과목 관리
 const Subjects = () => {
+  // 페이지네이션
+  const { currentPage, totalPages, goToPage, setTotalCount } =
+    useServerPagination({
+      pageSize: COUNT_LIMIT,
+    })
+
   // React Query로 fetch
-  const { data = [], isLoading, isError, error } = useSubjects()
+  const { data, refetch, isLoading, isError, error } = useSubjects(
+    currentPage,
+    COUNT_LIMIT
+  )
+
+  useEffect(() => {
+    if (data?.count !== undefined) {
+      setTotalCount(data.count)
+    }
+  }, [data?.count, setTotalCount])
+
+  const handleSubjectsRefresh: typeof refetch = (options) => {
+    return refetch(options)
+  }
 
   // 모달 상태
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // 페이지네이션
-  const { currentPage, totalPages, paginatedData, goToPage } =
-    useClientPagination({
-      item: data,
-      count: COUNT_LIMIT,
-    })
+  const openModal = () => {
+    setIsModalOpen(true)
+  }
 
   if (isLoading)
     return <div className="h-full text-center text-3xl">Loading...</div>
   if (isError) return <div>에러가 발생했습니다: {error.message}</div>
 
-  return (
-    <div className="min-w-[1600px] p-[30px]">
-      <h2 className="mb-5 text-lg font-semibold">과목 조회</h2>
-      {/* 테이블 */}
-      <DataTable
-        headerData={subjectHeader}
-        tableItem={paginatedData}
-        onClick={(subject) => {
-          setSelectedSubject(subject as Subject)
-          setIsModalOpen(true)
-        }}
-        renderMap={{
-          status: renderStatus,
-        }}
-        isCheckBox={false}
-        sortKeys={[]}
-        isTime
-        sortKey={null}
-        sortOrder={'asc'}
-        sortByKey={() => {}}
-      />
-      {/* 모달 */}
-      <SubjectDetailModal
-        subject={selectedSubject as Subject}
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false)
-          setSelectedSubject(null)
-        }}
-      />
+  console.log(data?.results)
 
-      {/* 페이지네이션 */}
-      <div className="pt-8 pb-2">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          goToPage={goToPage}
+  return (
+    <>
+      <div className="min-w-[1600px] p-[30px]">
+        <h2 className="mb-5 text-lg font-semibold">과목 조회</h2>
+        {/* 테이블 */}
+        <DataTable
+          headerData={subjectHeader}
+          tableItem={data?.results ?? []}
+          onClick={(subject) => {
+            setSelectedSubject(subject as Subject)
+            setIsModalOpen(true)
+          }}
+          renderMap={{
+            status: renderStatus,
+          }}
+          isCheckBox={false}
+          sortKeys={[]}
+          isTime
+          sortKey={null}
+          sortOrder={'asc'}
+          sortByKey={() => {}}
         />
+        {/* 모달 */}
+        <SubjectDetailModal
+          subject={selectedSubject as Subject}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false)
+            setSelectedSubject(null)
+          }}
+        />
+
+        {/* 페이지네이션 */}
+        <div className="mt-[80px] flex justify-center">
+          <div className="flex flex-1 justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              goToPage={goToPage}
+            />
+          </div>
+          <Button onClick={openModal}>등록</Button>
+        </div>
       </div>
-    </div>
+      {/* 과목을 추가할 때 사용하는 모달 */}
+      <AddGenerationsModal
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        fetchData={handleSubjectsRefresh}
+      />
+    </>
   )
 }
+
 export default Subjects

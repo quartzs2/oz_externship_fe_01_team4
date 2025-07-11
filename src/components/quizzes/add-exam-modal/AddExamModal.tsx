@@ -14,7 +14,7 @@ type AddExamModalProps = {
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   subjects: TableRowData[]
-  fetchData: () => Promise<void>
+  fetchData: () => void | Promise<void>
 }
 
 const AddExamModal = ({
@@ -105,12 +105,11 @@ const AddExamModal = ({
   const handleSubmit = async () => {
     if (!validateForm()) return
 
-    setIsOpen(false)
-    resetForm()
-
     try {
       await postQuiz()
-      await fetchData()
+      fetchData()
+      setIsOpen(false)
+      resetForm()
       toast.success('성공적으로 쪽지시험이 생성되었습니다.', {
         style: 'style4',
         duration: 5000,

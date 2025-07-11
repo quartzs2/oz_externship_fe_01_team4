@@ -1,7 +1,7 @@
 import TableHeader from '@components/common/data-table/TableHeader'
 import TableRow from '@components/common/data-table/TableRow'
-import type { DataTableProps } from '@custom-types/table'
 import { useSelection } from '@hooks/data-table/useSelection'
+import type { DataTableProps } from '@custom-types/table'
 
 export default function DataTable({
   headerData,
@@ -13,7 +13,6 @@ export default function DataTable({
   sortByKey,
   isTime,
   renderMap,
-  onClick,
 }: DataTableProps) {
   const { checkedItems, toggleItem, toggleAll, isAllChecked } = useSelection()
 
@@ -23,7 +22,7 @@ export default function DataTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="border-t-1 min-w-full table-fixed border-[#DDDDDD] text-left text-sm">
+      <table className="min-w-full table-fixed border-t-1 border-[#DDDDDD] text-left text-sm">
         <TableHeader
           headers={headerData}
           isCheckBox={isCheckBox}
@@ -50,7 +49,6 @@ export default function DataTable({
               onToggle={(checked) => toggleItem(String(item.id), checked)}
               isTime={isTime}
               renderMap={renderMap}
-              onClick={onClick}
             />
           ))}
 
