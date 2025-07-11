@@ -1,4 +1,4 @@
-import api from '@api/axiosInstance'
+import api from '@api/instance/axiosInstance'
 import FilterIcon from '@assets/icons/search.svg?react'
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'

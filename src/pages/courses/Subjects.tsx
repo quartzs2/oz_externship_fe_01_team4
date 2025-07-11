@@ -1,12 +1,11 @@
-import api from '@api/axiosInstance'
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
 import SubjectDetailModal from '@components/subject/SubjectDetailModal'
-import { ADMIN_API_PATH } from '@constants/urls'
 import { type Subject } from '@custom-types/subjects'
 import { useClientPagination } from '@hooks/data-table/usePagination'
+import { useSubjects } from '@hooks/queries/useSubjects'
 import { renderStatus } from '@utils/renderStatus'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 // 페이지 상수
 const COUNT_LIMIT = 20
@@ -23,52 +22,25 @@ const subjectHeader = [
   { text: '수정 일시', dataKey: 'updated_at' },
 ]
 
-const fetchAPI = async (): Promise<Subject[]> => {
-  const res = await api.get(ADMIN_API_PATH.SUBJECTS)
-  console.log(res.data)
-  return res.data.results
-}
-
 // 과목 관리
 const Subjects = () => {
-  // fetch 상태
-  const [fetchData, setFetchData] = useState<Subject[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
+  // React Query로 fetch
+  const { data = [], isLoading, isError, error } = useSubjects()
 
   // 모달 상태
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // API 호출 (임시)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const subjects = await fetchAPI()
-        setFetchData(subjects)
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err)
-        } else {
-          console.error('알 수 없는 에러:', err)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
-
   // 페이지네이션
   const { currentPage, totalPages, paginatedData, goToPage } =
     useClientPagination({
-      item: fetchData,
+      item: data,
       count: COUNT_LIMIT,
     })
 
-  if (loading)
+  if (isLoading)
     return <div className="h-full text-center text-3xl">Loading...</div>
-  if (error) return <div>에러가 발생했습니다: {error.message}</div>
+  if (isError) return <div>에러가 발생했습니다: {error.message}</div>
 
   return (
     <div className="min-w-[1600px] p-[30px]">
