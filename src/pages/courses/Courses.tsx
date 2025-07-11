@@ -12,6 +12,7 @@ import { useClientPagination } from '@hooks/data-table/usePagination'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
 import { useEffect, useState } from 'react'
+import CourseDetailModal from '@components/CourseDetailModal'
 
 // 페이지 상수 추가
 const COUNT_LIMIT = 20
@@ -47,6 +48,8 @@ const Courses = () => {
   const [courseIntroduction, setCourseIntroduction] = useState('')
   const [preview, setPreview] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
+  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
   const fetchData = async () => {
     try {
@@ -164,6 +167,13 @@ const Courses = () => {
       count: COUNT_LIMIT,
     })
 
+  // 테이블 행 클릭 핸들러
+  const handleRowClick = (rowData: TableRowData) => {
+    console.log('클릭된 행 데이터:', rowData)
+    setSelectedCourseId(rowData.id as number)
+    setIsDetailModalOpen(true)
+  }
+
   if (loading)
     return <div className="h-full text-center text-3xl">Loading...</div>
   if (error) return <div>에러가 발생했습니다: {error.message}</div>
@@ -181,6 +191,7 @@ const Courses = () => {
           sortOrder={'asc'}
           sortByKey={() => {}}
           isTime
+          onClick={handleRowClick}
         />
         <div className="mt-[82px] flex justify-center">
           <div className="flex flex-1 justify-center">
@@ -320,9 +331,20 @@ const Courses = () => {
               등록
             </Button>
           </div>
+
+          {/* 과정 상세 조회 모달 */}
+          <CourseDetailModal
+            courseId={selectedCourseId}
+            isOpen={isDetailModalOpen}
+            onClose={() => {
+              setIsDetailModalOpen(false)
+              setSelectedCourseId(null)
+            }}
+          />
         </div>
       </Modal>
     </>
   )
 }
+
 export default Courses
