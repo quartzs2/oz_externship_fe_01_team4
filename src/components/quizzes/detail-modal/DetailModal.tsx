@@ -2,7 +2,12 @@ import { useState } from 'react'
 import QuizzesWrapper from '@components/quizzes/detail-modal/components/QuizzesWrapper'
 import { type Question, type QuizData } from '@custom-types/quizzes/quizTypes'
 
-function DetailModal() {
+type DetailModalProps = {
+  testId: number
+}
+
+function DetailModal({ testId }: DetailModalProps) {
+  console.log(testId)
   // TODO: 임시 데이터, 나중에 수정
   const quizData: QuizData = {
     id: 4,
@@ -57,10 +62,10 @@ function DetailModal() {
       {
         id: 105,
         type: 'fill_in_blank',
-        question: '자료구조에서 큐에 해당하는 구조를 입력하세요.',
+        question: '자료구조에서 큐는 ____ 구조입니다.',
         point: 5,
-        prompt: '자료구조에서 큐는 (A)____ 구조입니다.',
-        options: null,
+        prompt: '자료구조에서 큐는 ____ 구조입니다.',
+        options: [],
         answer: ['FIFO'],
         explanation: '큐는 선입선출(FIFO) 구조입니다.',
       },
@@ -70,7 +75,7 @@ function DetailModal() {
         question: 'HTTP의 약어는 무엇인가요?',
         point: 5,
         prompt: '알파벳 4자로 입력하세요',
-        options: null,
+        options: [],
         answer: 'HyperText Transfer Protocol',
         explanation: 'HTTP는 웹 통신에 사용되는 프로토콜입니다.',
       },

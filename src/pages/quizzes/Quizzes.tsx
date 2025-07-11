@@ -16,6 +16,7 @@ import type { SchedulePayload } from '@custom-types/createSchedule'
 import api from '@api/axiosInstance'
 import AddExamModal from '@components/quizzes/add-exam-modal/AddExamModal'
 import CourseFilterModal from '@components/quizzes/course-filter-modal/CourseFilterModal'
+import DetailModal from '@components/quizzes/detail-modal/DetailModal'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -40,6 +41,8 @@ const Quizzes = () => {
   const [error, setError] = useState<Error | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [selectedTestId, setSelectedTestId] = useState<number | null>(null)
 
   const { isModalOpen, selectedQuiz, openScheduleModal, closeScheduleModal } =
     useScheduleStore()
@@ -55,13 +58,32 @@ const Quizzes = () => {
     { id: 10, name: '10기' },
   ]
 
-  // 배포 버튼 클릭 핸들러 추가
-  const handleDeployClick = (quizData: TableRowData) => {
+  const handleTableClick = (quizData: TableRowData) => {
+    setSelectedTestId(Number(quizData.id))
+    setIsDetailModalOpen(true)
+  }
+
+  const handleDeployButtonClick = (quizData: TableRowData) => {
     openScheduleModal({
       test_id: Number(quizData.id),
       test_title: String(quizData.title),
       subject_title: String(quizData.subject_name),
     })
+  }
+
+  const renderMap = {
+    deploy: (_: unknown, rowData: TableRowData) => (
+      <Button
+        variant="VARIANT5"
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+          e.stopPropagation()
+
+          handleDeployButtonClick(rowData)
+        }}
+      >
+        배포
+      </Button>
+    ),
   }
 
   // 스케줄 제출 핸들러 추가
@@ -169,6 +191,11 @@ const Quizzes = () => {
   if (loading) return <div>Loading...</div>
   if (error) return <div>에러가 발생했습니다: {error.message}</div>
 
+  if (isDetailModalOpen && selectedTestId !== null) {
+    // 시험 상세정보 조회/수정/삭제 모달
+    return <DetailModal testId={selectedTestId} />
+  }
+
   return (
     <div className="p-8">
       <h2 className="mb-[26px] text-[18px] font-semibold">쪽지시험 조회</h2>
@@ -199,7 +226,8 @@ const Quizzes = () => {
         sortOrder={sortOrder} // 현재 정렬 방향 전달
         sortByKey={sortByKey} // 정렬 함수 전달
         isTime // 시간 표시 여부
-        onClick={handleDeployClick} // 배포 버튼 클릭 핸들러
+        onClick={handleTableClick}
+        renderMap={renderMap}
       />
 
       <div className="mt-[80px] flex justify-center">

@@ -52,7 +52,7 @@ export type ShortAnswerQuestion = {
   question: string
   point: number
   prompt: string
-  options: null
+  options: []
   answer: string
   explanation: string
 }
@@ -63,7 +63,7 @@ export type FillInBlankQuestion = {
   question: string
   point: number
   prompt: string
-  options: null
+  options: []
   answer: string[]
   explanation: string
 }
