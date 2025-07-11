@@ -12,7 +12,7 @@ import { useClientPagination } from '@hooks/data-table/usePagination'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
 import { useEffect, useState } from 'react'
-import CourseDetailModal from '@components/CourseDetailModal'
+import CourseDetailModal from '@components/course/CourseDetailModal'
 
 // 페이지 상수 추가
 const COUNT_LIMIT = 20
