@@ -8,7 +8,7 @@ type ButtonVariant = keyof typeof BUTTON_VARIANTS
 
 type ButtonProps = {
   children: React.ReactNode
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
   disabled?: boolean
   variant?: ButtonVariant
   className?: string

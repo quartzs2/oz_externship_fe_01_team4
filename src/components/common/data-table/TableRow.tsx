@@ -1,4 +1,3 @@
-import Button from '@components/common/Button'
 import type { TableHeader, TableRowData } from '@custom-types/table'
 import { cn } from '@utils/cn'
 import { formatIsoToDotDateTime } from '@utils/formatDate'
@@ -53,9 +52,6 @@ export default function TableRow({
 
   const [deployStatus, setDeployStatus] = useState<boolean>(!!data.deploySwitch)
 
-  const handleClick = () => {
-    onClick?.(data)
-  }
   const toggleSwitch = () => {
     setDeployStatus((prev) => !prev)
   }
@@ -100,12 +96,6 @@ export default function TableRow({
             }
 
             switch (header.dataKey) {
-              case DATA_KEYS.DEPLOY:
-                return (
-                  <Button variant="VARIANT5" onClick={handleClick}>
-                    배포
-                  </Button>
-                )
               case DATA_KEYS.DEPLOY_SWITCH:
                 return (
                   <label className="relative inline-flex cursor-pointer items-center">
@@ -117,9 +107,9 @@ export default function TableRow({
                     />
                     <div
                       className={cn(
-                        `peer peer-checked:bg-[#5EB669] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#5EB669]`,
+                        `peer peer-checked:bg-[#5EB669] peer-focus:ring-2 peer-focus:ring-[#5EB669] peer-focus:outline-none`,
                         `peer-checked:after:translate-x-full peer-checked:after:border-[#F5F5F5]`,
-                        `after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full`,
+                        `after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full`,
                         `after:border after:border-[#F5F5F5] after:bg-white after:transition-all after:content-['']`,
                         `h-6 w-11 rounded-full bg-[#DDDDDD]`
                       )}
