@@ -11,9 +11,9 @@ import SolutionInput from '@components/quizzes/add-quiz-modal/components/Solutio
 import { POP_UP_TYPE } from '@constants/popup/popUp'
 import type {
   FormHandle,
-  QuizFormTypes,
   SubjectiveShortAnswerFormValues,
-} from '@custom-types/quiz'
+} from '@custom-types/quizzes/quizFormTypes'
+import type { Question } from '@custom-types/quizzes/quizTypes'
 import findFirstErrorMessage from '@utils/findFirstErrorMessage'
 import {
   type ReactNode,
@@ -33,7 +33,7 @@ import {
 type SubjectiveShortAnswerProps = {
   ref: Ref<FormHandle>
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
-  setQuizzes: Dispatch<SetStateAction<QuizFormTypes[]>>
+  setQuizzes: Dispatch<SetStateAction<Question[]>>
 }
 
 const SubjectiveShortAnswer = ({
@@ -69,9 +69,16 @@ const SubjectiveShortAnswer = ({
       return
     }
 
-    const newQuiz: SubjectiveShortAnswerFormValues = {
-      ...data,
-      type: 'subjective-short-answer',
+    // Question 타입에 맞게 변환
+    const newQuiz: Question = {
+      id: Date.now(), // 임시 id, 실제 구현에 맞게 수정 필요
+      type: 'short_answer',
+      question: data.question,
+      point: Number(data.score),
+      prompt: '',
+      options: [],
+      answer: data.answer,
+      explanation: data.solution,
     }
 
     setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])

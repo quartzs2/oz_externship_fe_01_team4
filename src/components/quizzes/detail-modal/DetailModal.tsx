@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import QuizzesWrapper from '@components/quizzes/detail-modal/components/QuizzesWrapper'
 import { type Question, type QuizData } from '@custom-types/quizzes/quizTypes'
+import AddQuizModal from '@components/quizzes/add-quiz-modal/AddQuizModal'
 
 type DetailModalProps = {
   testId: number
 }
+
+const MAX_QUIZ_COUNT = 10
+const MAX_QUIZ_SCORE_SUM = 100
 
 function DetailModal({ testId }: DetailModalProps) {
   console.log(testId)
@@ -84,8 +88,10 @@ function DetailModal({ testId }: DetailModalProps) {
     updated_at: '2025-06-19T17:45:00',
   }
 
-  const [additionalQuestions] = useState<Question[]>([])
-  const visibleQuestions = [...quizData.questions, ...additionalQuestions]
+  const [visibleQuestions, setVisibleQuestions] = useState<Question[]>(
+    quizData.questions
+  )
+  const [isAddQuizModalOpen, setIsAddQuizModalOpen] = useState(false)
 
   return (
     <div className="flex flex-col gap-[26px] p-[28px]">
@@ -98,6 +104,18 @@ function DetailModal({ testId }: DetailModalProps) {
         </div>
       </div>
       <QuizzesWrapper quizData={quizData} questions={visibleQuestions} />
+      <AddQuizModal
+        isOpen={isAddQuizModalOpen}
+        onClose={() => setIsAddQuizModalOpen(false)}
+        currentQuizCount={visibleQuestions.length}
+        maxQuizCount={MAX_QUIZ_COUNT}
+        currentQuizScoreSum={visibleQuestions.reduce(
+          (sum, question) => sum + question.point,
+          0
+        )}
+        maxQuizScoreSum={MAX_QUIZ_SCORE_SUM}
+        setQuizzes={setVisibleQuestions}
+      />
     </div>
   )
 }

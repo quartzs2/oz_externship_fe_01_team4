@@ -34,7 +34,7 @@ export type BlankFormOption = {
  * [다지선다형] 페이지의 폼 전체 데이터 구조입니다.
  */
 export type MultipleChoiceFormValues = {
-  type: 'multiple-choice'
+  type: 'multiple_choice_multi'
   question: string
   options: QuizOption[]
   score: string
@@ -45,7 +45,7 @@ export type MultipleChoiceFormValues = {
  * [주관식 단답형] 페이지의 폼 전체 데이터 구조입니다.
  */
 export type SubjectiveShortAnswerFormValues = {
-  type: 'subjective-short-answer'
+  type: 'short_answer'
   question: string
   answer: string // 답안
   score: string
@@ -56,7 +56,7 @@ export type SubjectiveShortAnswerFormValues = {
  * [빈칸 채우기형] 페이지의 폼 전체 데이터 구조입니다.
  */
 export type FillInTheBlanksFormValues = {
-  type: 'fill-in-the-blanks'
+  type: 'fill_in_blank'
   question: string
   passage: string // 지문
   options: BlankFormOption[]

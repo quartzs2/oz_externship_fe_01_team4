@@ -13,8 +13,8 @@ import { POP_UP_TYPE } from '@constants/popup/popUp'
 import type {
   FillInTheBlanksFormValues,
   FormHandle,
-  QuizFormTypes,
-} from '@custom-types/quiz'
+} from '@custom-types/quizzes/quizFormTypes'
+import type { Question } from '@custom-types/quizzes/quizTypes'
 import findFirstErrorMessage from '@utils/findFirstErrorMessage'
 import {
   type Dispatch,
@@ -34,7 +34,7 @@ import {
 type FillInTheBlanksProps = {
   ref: Ref<FormHandle>
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
-  setQuizzes: Dispatch<SetStateAction<QuizFormTypes[]>>
+  setQuizzes: Dispatch<SetStateAction<Question[]>>
 }
 
 const FillInTheBlanks = ({
@@ -71,9 +71,16 @@ const FillInTheBlanks = ({
       return
     }
 
-    const newQuiz: FillInTheBlanksFormValues = {
-      ...data,
-      type: 'fill-in-the-blanks',
+    // Question 타입에 맞게 변환
+    const newQuiz: Question = {
+      id: Date.now(), // 임시 id, 실제 구현에 맞게 수정 필요
+      type: 'fill_in_blank',
+      question: data.question,
+      point: Number(data.score),
+      prompt: data.passage,
+      options: [],
+      answer: data.options.map((option) => option.text),
+      explanation: data.solution,
     }
 
     setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])

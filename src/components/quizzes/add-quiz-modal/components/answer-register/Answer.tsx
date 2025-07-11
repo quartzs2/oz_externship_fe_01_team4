@@ -1,5 +1,5 @@
 import CustomCheckbox from '@components/quizzes/add-quiz-modal/components/common/CustomCheckbox'
-import type { TrueOrFalseFormValues } from '@custom-types/quiz'
+import type { TrueOrFalseFormValues } from '@custom-types/quizzes/quizFormTypes'
 import { cn } from '@utils/cn'
 import { Controller, useFormContext } from 'react-hook-form'
 

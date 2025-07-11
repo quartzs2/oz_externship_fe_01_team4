@@ -1,6 +1,6 @@
 import DeleteIcon from '@assets/icons/quizzes/add-quiz-modal/delete.svg?react'
 import Icon from '@components/common/Icon'
-import type { FillInTheBlanksFormValues } from '@custom-types/quiz'
+import type { FillInTheBlanksFormValues } from '@custom-types/quizzes/quizFormTypes'
 import { cn } from '@utils/cn'
 import { useFormContext } from 'react-hook-form'
 

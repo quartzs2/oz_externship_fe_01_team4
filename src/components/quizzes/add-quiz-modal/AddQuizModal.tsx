@@ -7,7 +7,8 @@ import SortByOrder from '@components/quizzes/add-quiz-modal/pages/SortByOrder'
 import SubjectiveShortAnswer from '@components/quizzes/add-quiz-modal/pages/SubjectiveShortAnswer'
 import TrueOrFalse from '@components/quizzes/add-quiz-modal/pages/TrueOrFalse'
 import { PADDING_SIZE } from '@constants/modal/modal'
-import { type FormHandle, type QuizFormTypes } from '@custom-types/quiz'
+import { type FormHandle } from '@custom-types/quizzes/quizFormTypes'
+import type { Question } from '@custom-types/quizzes/quizTypes'
 import {
   useRef,
   useState,
@@ -32,7 +33,7 @@ type AddQuizModalProps = {
   maxQuizCount: number
   currentQuizScoreSum: number
   maxQuizScoreSum: number
-  setQuizzes: Dispatch<SetStateAction<QuizFormTypes[]>>
+  setQuizzes: Dispatch<SetStateAction<Question[]>>
 }
 
 const AddQuizModal = ({
@@ -41,7 +42,7 @@ const AddQuizModal = ({
   currentQuizCount,
   maxQuizCount,
   currentQuizScoreSum,
-  maxQuizScoreSum = 100,
+  maxQuizScoreSum,
   setQuizzes,
 }: AddQuizModalProps) => {
   const [currentTab, setCurrentTab] = useState(0)

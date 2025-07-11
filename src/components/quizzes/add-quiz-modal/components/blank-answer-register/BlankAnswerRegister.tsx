@@ -1,7 +1,7 @@
 import AddIcon from '@assets/icons/quizzes/add-quiz-modal/add.svg?react'
 import Icon from '@components/common/Icon'
 import BlankQuestionOption from '@components/quizzes/add-quiz-modal/components/blank-answer-register/BlankQuestionOption'
-import type { FillInTheBlanksFormValues } from '@custom-types/quiz'
+import type { FillInTheBlanksFormValues } from '@custom-types/quizzes/quizFormTypes'
 import { cn } from '@utils/cn'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
