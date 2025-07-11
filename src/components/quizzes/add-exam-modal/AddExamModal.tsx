@@ -1,14 +1,14 @@
+import api from '@api/instance/axiosInstance'
 import Button from '@components/common/Button'
 import Dropdown from '@components/common/Dropdown'
 import FormRow from '@components/common/FormRow'
 import ImageUploader from '@components/common/ImageUploader'
 import Input from '@components/common/Input'
 import Modal from '@components/common/Modal'
-import api from '@api/axiosInstance'
 import { ADMIN_API_PATH } from '@constants/urls'
+import type { TableRowData } from '@custom-types/table'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { useMemo, useState } from 'react'
-import type { TableRowData } from '@custom-types/table'
 
 type AddExamModalProps = {
   isOpen: boolean

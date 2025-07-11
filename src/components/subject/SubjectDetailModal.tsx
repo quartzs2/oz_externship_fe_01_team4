@@ -4,11 +4,33 @@ import Modal from '@components/common/Modal'
 import type { Subject } from '@custom-types/subjects'
 import { formatIsoToDotDateTime } from '@utils/formatDate'
 import { renderStatus } from '@utils/renderStatus'
+import { useState } from 'react'
 
 type Props = {
   subject: Subject | null
   isOpen: boolean
   onClose: () => void
+}
+
+const SubjectDetailImage = ({ src }: { src: string }) => {
+  const [isError, setIsError] = useState(true)
+  if (isError || !src) {
+    return (
+      <div className="flex size-24 items-center justify-center rounded bg-grey-200 text-grey-400">
+        No Image
+      </div>
+    )
+  }
+  return (
+    <img
+      src={`${src}`}
+      alt="과목 로고"
+      className="size-24"
+      onError={() => {
+        setIsError(false)
+      }}
+    />
+  )
 }
 
 const SubjectDetailModal = ({ subject, isOpen, onClose }: Props) => {
@@ -30,11 +52,7 @@ const SubjectDetailModal = ({ subject, isOpen, onClose }: Props) => {
                 labelClassName="whitespace-nowrap h-full items-start py-4"
                 valueClassName="w-fit mx-10 my-6"
               >
-                <img
-                  src={`${subject.thumbnail_img_url}`}
-                  alt="과목 로고"
-                  className="size-24"
-                />
+                <SubjectDetailImage src={`${subject.thumbnail_img_url}`} />
               </FormRow>
             </div>
             <div className="flex flex-1 flex-col">
