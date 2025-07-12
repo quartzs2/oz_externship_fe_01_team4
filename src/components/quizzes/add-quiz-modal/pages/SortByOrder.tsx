@@ -34,12 +34,14 @@ type SortByOrderProps = {
   ref: Ref<FormHandle>
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
   setQuizzes: Dispatch<SetStateAction<Question[]>>
+  onClose: () => void
 }
 
 const SortByOrder = ({
   ref,
   validateFunction,
   setQuizzes,
+  onClose,
 }: SortByOrderProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [popupTitle, setPopupTitle] = useState<ReactNode>('')
@@ -96,6 +98,7 @@ const SortByOrder = ({
     }
 
     setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    onClose()
   }
 
   const onError = (errors: FieldErrors<SortByOrderFormValues>) => {

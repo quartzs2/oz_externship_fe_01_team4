@@ -34,12 +34,14 @@ type TrueOrFalseProps = {
   ref: Ref<FormHandle>
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
   setQuizzes: Dispatch<SetStateAction<Question[]>>
+  onClose: () => void
 }
 
 const TrueOrFalse = ({
   ref,
   validateFunction,
   setQuizzes,
+  onClose,
 }: TrueOrFalseProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [popupTitle, setPopupTitle] = useState<ReactNode>('')
@@ -85,6 +87,7 @@ const TrueOrFalse = ({
     }
 
     setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    onClose()
   }
 
   const onError = (errors: FieldErrors<TrueOrFalseFormValues>) => {

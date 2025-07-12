@@ -34,12 +34,14 @@ type MultipleChoiceProps = {
   ref: Ref<FormHandle>
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
   setQuizzes: Dispatch<SetStateAction<Question[]>>
+  onClose: () => void
 }
 
 const MultipleChoice = ({
   ref,
   validateFunction,
   setQuizzes,
+  onClose,
 }: MultipleChoiceProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [popupTitle, setPopupTitle] = useState<ReactNode>('')
@@ -72,21 +74,35 @@ const MultipleChoice = ({
       return
     }
 
+    // 정답 개수에 따라 타입 결정
+    const correctAnswers = data.options.filter((opt) => opt.isCorrect)
+    const isSingleChoice = correctAnswers.length === 1
+
     // Question 타입에 맞게 변환
-    const newQuiz: Question = {
-      id: Date.now(), // 임시 id, 실제 구현에 맞게 수정 필요
-      type: 'multiple_choice_multi',
-      question: data.question,
-      point: Number(data.score),
-      prompt: null,
-      options: data.options.map((opt) => opt.text),
-      answer: data.options
-        .filter((opt) => opt.isCorrect)
-        .map((opt) => opt.text),
-      explanation: data.solution,
-    }
+    const newQuiz: Question = isSingleChoice
+      ? {
+          id: Date.now(), // 임시 id, 실제 구현에 맞게 수정 필요
+          type: 'multiple_choice_single',
+          question: data.question,
+          point: Number(data.score),
+          prompt: null,
+          options: data.options.map((opt) => opt.text),
+          answer: correctAnswers[0].text, // 단일 정답
+          explanation: data.solution,
+        }
+      : {
+          id: Date.now(), // 임시 id, 실제 구현에 맞게 수정 필요
+          type: 'multiple_choice_multi',
+          question: data.question,
+          point: Number(data.score),
+          prompt: null,
+          options: data.options.map((opt) => opt.text),
+          answer: correctAnswers.map((opt) => opt.text), // 다중 정답
+          explanation: data.solution,
+        }
 
     setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    onClose()
   }
 
   const onError = (errors: FieldErrors<MultipleChoiceFormValues>) => {

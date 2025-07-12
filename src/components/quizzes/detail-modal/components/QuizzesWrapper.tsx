@@ -1,19 +1,28 @@
-import { useState } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination } from 'swiper/modules'
 import SlideItem from '@components/quizzes/detail-modal/components/SlideItem'
 import type { Question, QuizData } from '@custom-types/quizzes/quizTypes'
+import ozRoundLogoUrl from '@assets/oz_round_logo.svg'
+import Button from '@components/common/Button'
 
 type QuizzesWrapperProps = {
   quizData: QuizData
   questions: Question[]
+  setIsAddQuizModalOpen: (isOpen: boolean) => void
+  setQuestions: Dispatch<SetStateAction<Question[]>>
 }
 
-const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
+const QuizzesWrapper = ({
+  quizData,
+  questions,
+  setIsAddQuizModalOpen,
+  setQuestions,
+}: QuizzesWrapperProps) => {
   const {
     title,
     subject,
-    thumbnail_img_url,
+    thumbnail_img_url: thumbnailImgUrl,
     created_at: createdAt,
     updated_at: updatedAt,
   } = quizData
@@ -27,12 +36,15 @@ const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
         <div className="flex items-center gap-[25px]">
           <div className="flex items-center gap-[11px]">
             <img
-              src={thumbnail_img_url}
+              src={thumbnailImgUrl}
               alt="thumbnail"
               className="h-[32px] w-[32px]"
-              onError={() => {
-                // TODO: 이미지 없을 때 처리 필요
-                console.log('이미지가 없습니다.')
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                // 무한 루프 방지
+                target.onerror = null
+                // OZ SVG 로고로 변경
+                target.src = ozRoundLogoUrl
               }}
             />
             <div className="text-[20px] font-semibold text-[#666666]">
@@ -64,15 +76,25 @@ const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
       >
         {questions.map((question, index) => (
           <SwiperSlide key={question.id}>
-            <SlideItem question={question} index={index} />
+            <SlideItem
+              question={question}
+              index={index}
+              setIsAddQuizModalOpen={setIsAddQuizModalOpen}
+              setQuestions={setQuestions}
+            />
           </SwiperSlide>
         ))}
       </Swiper>
 
-      <div className="mt-[32px] w-full text-[16px] text-[#666666]">
-        {currentSlideIndex + 1}/{totalQuestions}
+      <div className="mt-[32px] flex w-full items-center justify-between gap-[10px] text-[16px] text-[#666666]">
+        <div>
+          {currentSlideIndex + 1}/{totalQuestions}
+        </div>
+        {/* TODO: 서버로 제출 */}
+        <Button>저장</Button>
       </div>
     </div>
   )
 }
+
 export default QuizzesWrapper

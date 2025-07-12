@@ -35,12 +35,14 @@ type FillInTheBlanksProps = {
   ref: Ref<FormHandle>
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
   setQuizzes: Dispatch<SetStateAction<Question[]>>
+  onClose: () => void
 }
 
 const FillInTheBlanks = ({
   ref,
   validateFunction,
   setQuizzes,
+  onClose,
 }: FillInTheBlanksProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [popupTitle, setPopupTitle] = useState<ReactNode>('')
@@ -84,6 +86,7 @@ const FillInTheBlanks = ({
     }
 
     setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    onClose()
   }
 
   const onError = (errors: FieldErrors<FillInTheBlanksFormValues>) => {

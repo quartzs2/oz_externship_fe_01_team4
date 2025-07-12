@@ -34,12 +34,14 @@ type SubjectiveShortAnswerProps = {
   ref: Ref<FormHandle>
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
   setQuizzes: Dispatch<SetStateAction<Question[]>>
+  onClose: () => void
 }
 
 const SubjectiveShortAnswer = ({
   ref,
   validateFunction,
   setQuizzes,
+  onClose,
 }: SubjectiveShortAnswerProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [popupTitle, setPopupTitle] = useState<ReactNode>('')
@@ -82,6 +84,7 @@ const SubjectiveShortAnswer = ({
     }
 
     setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    onClose()
   }
 
   const onError = (

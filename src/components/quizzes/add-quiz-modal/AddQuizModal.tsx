@@ -115,6 +115,7 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
         />
       ),
     },
@@ -127,6 +128,7 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
         />
       ),
     },
@@ -139,6 +141,7 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
         />
       ),
     },
@@ -151,6 +154,7 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
         />
       ),
     },
@@ -163,6 +167,7 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
         />
       ),
     },

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import QuizzesWrapper from '@components/quizzes/detail-modal/components/QuizzesWrapper'
 import { type Question, type QuizData } from '@custom-types/quizzes/quizTypes'
 import AddQuizModal from '@components/quizzes/add-quiz-modal/AddQuizModal'
+import Button from '@components/common/Button'
 
 type DetailModalProps = {
   testId: number
@@ -100,10 +101,16 @@ function DetailModal({ testId }: DetailModalProps) {
           쪽지시험 상세조회
         </div>
         <div className="flex items-center justify-between gap-[6px]">
-          {/* TODO: 버튼 영역 */}
+          <Button>수정</Button>
+          <Button>삭제</Button>
         </div>
       </div>
-      <QuizzesWrapper quizData={quizData} questions={visibleQuestions} />
+      <QuizzesWrapper
+        quizData={quizData}
+        questions={visibleQuestions}
+        setIsAddQuizModalOpen={setIsAddQuizModalOpen}
+        setQuestions={setVisibleQuestions}
+      />
       <AddQuizModal
         isOpen={isAddQuizModalOpen}
         onClose={() => setIsAddQuizModalOpen(false)}
