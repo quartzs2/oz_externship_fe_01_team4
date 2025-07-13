@@ -88,3 +88,27 @@ export type QuizData = {
   created_at: string
   updated_at: string
 }
+
+// 제출용 문제 타입
+export type SubmitQuestion = {
+  prompt: string | null
+  blank_count: number | null
+  options_json: string[]
+  answer: string[]
+  question: string
+  type: string
+  point: number
+  explanation: string
+}
+
+// 제출용 퀴즈 데이터 타입
+export type SubmitQuizData = {
+  test_id: number
+  test_questions: SubmitQuestion[]
+}
+
+export type UpdateQuizData = {
+  title?: string
+  subject_id?: number
+  thumbnail_img_url?: string
+}

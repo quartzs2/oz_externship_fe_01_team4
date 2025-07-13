@@ -5,12 +5,15 @@ import SlideItem from '@components/quizzes/detail-modal/components/SlideItem'
 import type { Question, QuizData } from '@custom-types/quizzes/quizTypes'
 import ozRoundLogoUrl from '@assets/oz_round_logo.svg'
 import Button from '@components/common/Button'
+import NoQuestionSlideItem from '@components/quizzes/detail-modal/components/NoQuestionSlideItem'
+import { formatIsoToDotDateTime } from '@utils/formatDate'
 
 type QuizzesWrapperProps = {
   quizData: QuizData
   questions: Question[]
   setIsAddQuizModalOpen: (isOpen: boolean) => void
   setQuestions: Dispatch<SetStateAction<Question[]>>
+  handleSubmit: () => void
 }
 
 const QuizzesWrapper = ({
@@ -18,6 +21,7 @@ const QuizzesWrapper = ({
   questions,
   setIsAddQuizModalOpen,
   setQuestions,
+  handleSubmit,
 }: QuizzesWrapperProps) => {
   const {
     title,
@@ -59,9 +63,8 @@ const QuizzesWrapper = ({
         </div>
 
         <div className="text-sm text-[#666666]">
-          {/* TODO: 시간 파싱 필요 */}
-          <p>등록일시 : {createdAt}</p>
-          <p>수정일시 : {updatedAt}</p>
+          <p>등록일시 : {formatIsoToDotDateTime(createdAt, true)}</p>
+          <p>수정일시 : {formatIsoToDotDateTime(updatedAt, true)}</p>
         </div>
       </div>
 
@@ -74,24 +77,33 @@ const QuizzesWrapper = ({
         className="h-[600px] w-[1060px] rounded-[12px] border border-[#D9D9D9] bg-white"
         onSlideChange={(swiper) => setCurrentSlideIndex(swiper.activeIndex)}
       >
-        {questions.map((question, index) => (
-          <SwiperSlide key={question.id}>
-            <SlideItem
-              question={question}
-              index={index}
+        {questions.length > 0 ? (
+          questions.map((question, index) => (
+            <SwiperSlide key={question.id}>
+              <SlideItem
+                question={question}
+                index={index}
+                setIsAddQuizModalOpen={setIsAddQuizModalOpen}
+                setQuestions={setQuestions}
+              />
+            </SwiperSlide>
+          ))
+        ) : (
+          <SwiperSlide key={'no-question'}>
+            <NoQuestionSlideItem
               setIsAddQuizModalOpen={setIsAddQuizModalOpen}
-              setQuestions={setQuestions}
             />
           </SwiperSlide>
-        ))}
+        )}
       </Swiper>
 
       <div className="mt-[32px] flex w-full items-center justify-between gap-[10px] text-[16px] text-[#666666]">
         <div>
-          {currentSlideIndex + 1}/{totalQuestions}
+          {questions.length > 0
+            ? `${currentSlideIndex + 1}/${totalQuestions}`
+            : '0/0'}
         </div>
-        {/* TODO: 서버로 제출 */}
-        <Button>저장</Button>
+        <Button onClick={handleSubmit}>저장</Button>
       </div>
     </div>
   )
