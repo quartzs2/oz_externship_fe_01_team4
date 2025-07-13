@@ -61,8 +61,6 @@ const Deployments = () => {
       } catch (err) {
         if (err instanceof Error) {
           setError(err)
-        } else {
-          console.error('알 수 없는 에러:', err)
         }
       } finally {
         setLoading(false)

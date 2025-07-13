@@ -63,8 +63,6 @@ const Courses = () => {
     } catch (err) {
       if (err instanceof Error) {
         setError(err)
-      } else {
-        console.error('알 수 없는 에러:', err)
       }
     } finally {
       setLoading(false)
@@ -84,18 +82,13 @@ const Courses = () => {
       formData.append('thumbnail_img_file', file)
     }
 
-    try {
-      const response = await api.post(ADMIN_API_PATH.COURSES, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+    const response = await api.post(ADMIN_API_PATH.COURSES, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
 
-      return response.data
-    } catch (err) {
-      console.error('과정 등록 실패:', err)
-      throw err
-    }
+    return response.data
   }
 
   const validateForm = () => {
@@ -171,7 +164,6 @@ const Courses = () => {
 
   // 테이블 행 클릭 핸들러
   const handleRowClick = (rowData: TableRowData) => {
-    console.log('클릭된 행 데이터:', rowData)
     setSelectedCourseId(rowData.id as number)
     setIsDetailModalOpen(true)
   }

@@ -56,8 +56,6 @@ const Subjects = () => {
     return <div className="h-full text-center text-3xl">Loading...</div>
   if (isError) return <div>에러가 발생했습니다: {error.message}</div>
 
-  console.log(data?.results)
-
   return (
     <>
       <div className="min-w-[1600px] p-[30px]">

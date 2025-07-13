@@ -93,48 +93,40 @@ const AddExamModal = ({
   }
 
   const postQuiz = async () => {
-    try {
-      if (mode === 'create') {
-        const formData = new FormData()
-        formData.append('title', title)
-        formData.append('subject_id', selectedSubject.value)
-        if (file) {
-          formData.append('thumbnail_file', file)
-        }
-
-        const response = await api.post(
-          `${ADMIN_API_PATH.TEST}${ADMIN_API_PATH.CREATE_QUIZZES}`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        )
-        return response.data
-      } else {
-        // 수정 모드 - updateQuizData 함수 사용
-        const updateData: UpdateQuizData = {}
-
-        if (title !== editData?.title) {
-          updateData.title = title
-        }
-        if (selectedSubject.value !== String(editData?.subjectId)) {
-          updateData.subject_id = Number(selectedSubject.value)
-        }
-        if (file) {
-          updateData.thumbnail_file = file
-        }
-
-        const response = await updateQuizData(editData!.testId, updateData)
-        return response
+    if (mode === 'create') {
+      const formData = new FormData()
+      formData.append('title', title)
+      formData.append('subject_id', selectedSubject.value)
+      if (file) {
+        formData.append('thumbnail_file', file)
       }
-    } catch (err) {
-      console.error(
-        mode === 'create' ? '쪽지시험 생성 실패:' : '쪽지시험 수정 실패:',
-        err
+
+      const response = await api.post(
+        `${ADMIN_API_PATH.TEST}${ADMIN_API_PATH.CREATE_QUIZZES}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       )
-      throw err
+      return response.data
+    } else {
+      // 수정 모드 - updateQuizData 함수 사용
+      const updateData: UpdateQuizData = {}
+
+      if (title !== editData?.title) {
+        updateData.title = title
+      }
+      if (selectedSubject.value !== String(editData?.subjectId)) {
+        updateData.subject_id = Number(selectedSubject.value)
+      }
+      if (file) {
+        updateData.thumbnail_file = file
+      }
+
+      const response = await updateQuizData(editData!.testId, updateData)
+      return response
     }
   }
 

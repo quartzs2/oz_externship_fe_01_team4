@@ -63,17 +63,12 @@ const AddCoursesModal = ({
       formData.append('thumbnail_img_file', file)
     }
 
-    try {
-      const response = await api.post(ADMIN_API_PATH.COURSES, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      return response.data
-    } catch (err) {
-      console.error('과정 등록 실패:', err)
-      throw err
-    }
+    const response = await api.post(ADMIN_API_PATH.COURSES, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
   }
 
   const resetForm = () => {

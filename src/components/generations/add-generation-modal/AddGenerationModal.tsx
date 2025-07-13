@@ -115,17 +115,12 @@ const AddGenerationModal = ({ isOpen, setIsOpen }: AddGenerationModalProps) => {
       status: status,
     }
 
-    try {
-      const response = await api.post(ADMIN_API_PATH.GENERATIONS, postData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      return response.data
-    } catch (err) {
-      console.error('기수 등록 실패:', err)
-      throw err
-    }
+    const response = await api.post(ADMIN_API_PATH.GENERATIONS, postData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return response.data
   }
 
   const resetForm = () => {
@@ -165,8 +160,16 @@ const AddGenerationModal = ({ isOpen, setIsOpen }: AddGenerationModalProps) => {
         hasIcon: true,
       })
     } catch (error) {
-      console.error('handleSubmit 에러:', error)
-      toast.error('기수 등록에 실패했습니다. 관리자에게 문의하세요.')
+      // 'error' 객체의 메시지를 사용하거나, 특정 에러 타입에 따라 분기 처리할 수 있습니다.
+      // 이렇게 하면 'error' 변수가 사용되어 ESLint 경고가 사라집니다.
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '알 수 없는 오류가 발생했습니다.'
+
+      toast.error(`기수 등록에 실패했습니다: ${errorMessage}`, {
+        // toast 스타일 등 필요하면 추가
+      })
     }
   }
 
