@@ -17,7 +17,6 @@ type AddExamModalProps = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   subjects: TableRowData[]
   fetchData: () => void | Promise<void>
-  // 추가할 props
   mode?: 'create' | 'edit'
   editData?: {
     testId: number

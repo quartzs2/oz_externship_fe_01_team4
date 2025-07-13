@@ -22,6 +22,7 @@ import {
   type ReactNode,
   type Ref,
   type SetStateAction,
+  useEffect,
 } from 'react'
 import {
   FormProvider,
@@ -35,6 +36,9 @@ type SortByOrderProps = {
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
   setQuizzes: Dispatch<SetStateAction<Question[]>>
   onClose: () => void
+  mode?: 'add' | 'edit'
+  editQuestion?: Question
+  onEditSuccess?: () => void
 }
 
 const SortByOrder = ({
@@ -42,6 +46,9 @@ const SortByOrder = ({
   validateFunction,
   setQuizzes,
   onClose,
+  mode = 'add',
+  editQuestion,
+  onEditSuccess,
 }: SortByOrderProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [popupTitle, setPopupTitle] = useState<ReactNode>('')
@@ -59,6 +66,27 @@ const SortByOrder = ({
       solution: '',
     },
   })
+
+  // 수정 모드일 때 기존 데이터로 폼 초기화
+  useEffect(() => {
+    if (mode === 'edit' && editQuestion) {
+      const answers = Array.isArray(editQuestion.answer)
+        ? editQuestion.answer
+        : [editQuestion.answer]
+
+      const options = editQuestion.options.map((option) => ({
+        text: option,
+        order: (answers.indexOf(option) + 1).toString(),
+      }))
+
+      methods.reset({
+        question: editQuestion.question,
+        options,
+        score: editQuestion.point.toString(),
+        solution: editQuestion.explanation || '',
+      })
+    }
+  }, [mode, editQuestion, methods])
 
   const onSubmit: SubmitHandler<Omit<SortByOrderFormValues, 'type'>> = (
     data
@@ -85,7 +113,7 @@ const SortByOrder = ({
 
     // Question 타입에 맞게 변환
     const newQuiz: Question = {
-      id: Date.now(), // 임시 id, 실제 구현에 맞게 수정 필요
+      id: editQuestion?.id || Date.now(),
       type: 'ordering',
       question: data.question,
       point: Number(data.score),
@@ -97,7 +125,19 @@ const SortByOrder = ({
       explanation: data.solution,
     }
 
-    setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    if (mode === 'edit') {
+      // 수정 모드: 기존 문제를 새 문제로 교체
+      setQuizzes((prevQuizzes) =>
+        prevQuizzes.map((quiz) =>
+          quiz.id === editQuestion?.id ? newQuiz : quiz
+        )
+      )
+      onEditSuccess?.()
+    } else {
+      // 추가 모드: 새 문제 추가
+      setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    }
+
     onClose()
   }
 

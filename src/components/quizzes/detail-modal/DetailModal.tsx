@@ -29,6 +29,7 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [subjects, setSubjects] = useState<TableRowData[]>([])
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
 
   const handleSubmit = async () => {
     try {
@@ -114,6 +115,16 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
     setIsDeleteModalOpen(false)
   }
 
+  const handleQuestionEdit = (question: Question) => {
+    setEditingQuestion(question)
+    setIsAddQuizModalOpen(true)
+  }
+
+  const handleQuestionEditSuccess = () => {
+    setEditingQuestion(null)
+    setIsAddQuizModalOpen(false)
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col gap-[26px] p-[28px]">
@@ -151,10 +162,14 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
         setIsAddQuizModalOpen={setIsAddQuizModalOpen}
         setQuestions={setVisibleQuestions}
         handleSubmit={handleSubmit}
+        onQuestionEdit={handleQuestionEdit}
       />
       <AddQuizModal
         isOpen={isAddQuizModalOpen}
-        onClose={() => setIsAddQuizModalOpen(false)}
+        onClose={() => {
+          setIsAddQuizModalOpen(false)
+          setEditingQuestion(null)
+        }}
         currentQuizCount={visibleQuestions.length}
         maxQuizCount={MAX_QUIZ_COUNT}
         currentQuizScoreSum={visibleQuestions.reduce(
@@ -163,6 +178,9 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
         )}
         maxQuizScoreSum={MAX_QUIZ_SCORE_SUM}
         setQuizzes={setVisibleQuestions}
+        mode={editingQuestion ? 'edit' : 'add'}
+        editQuestion={editingQuestion || undefined}
+        onEditSuccess={handleQuestionEditSuccess}
       />
 
       {/* 수정 모달 */}

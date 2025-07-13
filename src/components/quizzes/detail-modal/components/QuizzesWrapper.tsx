@@ -14,6 +14,7 @@ type QuizzesWrapperProps = {
   setIsAddQuizModalOpen: (isOpen: boolean) => void
   setQuestions: Dispatch<SetStateAction<Question[]>>
   handleSubmit: () => void
+  onQuestionEdit?: (question: Question) => void
 }
 
 const QuizzesWrapper = ({
@@ -22,6 +23,7 @@ const QuizzesWrapper = ({
   setIsAddQuizModalOpen,
   setQuestions,
   handleSubmit,
+  onQuestionEdit,
 }: QuizzesWrapperProps) => {
   const {
     title,
@@ -85,6 +87,7 @@ const QuizzesWrapper = ({
                 index={index}
                 setIsAddQuizModalOpen={setIsAddQuizModalOpen}
                 setQuestions={setQuestions}
+                onQuestionEdit={onQuestionEdit}
               />
             </SwiperSlide>
           ))

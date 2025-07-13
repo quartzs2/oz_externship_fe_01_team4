@@ -17,6 +17,7 @@ interface SlideItemProps {
   index: number
   setIsAddQuizModalOpen: (isOpen: boolean) => void
   setQuestions: Dispatch<SetStateAction<Question[]>>
+  onQuestionEdit?: (question: Question) => void
 }
 
 const SlideItem = ({
@@ -24,6 +25,7 @@ const SlideItem = ({
   index,
   setIsAddQuizModalOpen,
   setQuestions,
+  onQuestionEdit,
 }: SlideItemProps) => {
   const renderQuestionComponent = () => {
     switch (question.type) {
@@ -50,6 +52,12 @@ const SlideItem = ({
     )
   }
 
+  const handleEditQuestion = () => {
+    if (onQuestionEdit) {
+      onQuestionEdit(question)
+    }
+  }
+
   return (
     <div className="flex h-full w-full flex-col justify-between p-[30px]">
       <div>
@@ -63,7 +71,7 @@ const SlideItem = ({
               <Icon icon={AddQuestionIcon} size={24} />
             </button>
             {/* 문제 수정 버튼 */}
-            <button>
+            <button onClick={handleEditQuestion}>
               <Icon icon={EditQuestionIcon} size={24} />
             </button>
             {/* 문제 삭제 버튼 */}
