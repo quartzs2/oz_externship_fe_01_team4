@@ -32,26 +32,22 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
 
   const handleSubmit = async () => {
-    try {
-      await submitQuizData({
-        test_id: testId,
-        test_questions: visibleQuestions.map((question) => ({
-          prompt: question.prompt || null,
-          blank_count:
-            question.type === 'fill_in_blank' ? question.options.length : null,
-          options_json: question.options,
-          answer: Array.isArray(question.answer)
-            ? question.answer
-            : [question.answer],
-          question: question.question,
-          type: question.type,
-          point: question.point,
-          explanation: question.explanation,
-        })),
-      })
-    } catch (error) {
-      console.error('Failed to submit quiz data:', error)
-    }
+    await submitQuizData({
+      test_id: testId,
+      test_questions: visibleQuestions.map((question) => ({
+        prompt: question.prompt || null,
+        blank_count:
+          question.type === 'fill_in_blank' ? question.options.length : null,
+        options_json: question.options,
+        answer: Array.isArray(question.answer)
+          ? question.answer
+          : [question.answer],
+        question: question.question,
+        type: question.type,
+        point: question.point,
+        explanation: question.explanation,
+      })),
+    })
   }
 
   useEffect(() => {
@@ -104,8 +100,12 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
         onClose()
       }
     } catch (error) {
-      console.error('Failed to delete quiz:', error)
-      setError('퀴즈 삭제에 실패했습니다.')
+      // 'error' 객체의 message 속성을 활용하여 구체적인 에러 메시지를 설정합니다.
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '알 수 없는 오류가 발생했습니다.'
+      setError(`퀴즈 삭제에 실패했습니다: ${errorMessage}`) // <-- 'error.message' 사용 예시
     } finally {
       setIsDeleting(false)
     }

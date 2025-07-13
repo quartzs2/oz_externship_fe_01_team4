@@ -47,26 +47,22 @@ const ScheduleModal = ({
   }
 
   const handleCreateButtonClick = async () => {
-    try {
-      const result = await handleFormSubmit()
+    const result = await handleFormSubmit()
 
-      if (result.success) {
-        toast.success(SCHEDULE_API.SUCCESS_MESSAGE, {
-          style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
-        })
-        resetForm()
-        onClose()
-      } else {
-        toast.error(result.error, {
-          style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
-        })
-      }
-    } catch (error) {
-      toast.error(SCHEDULE_API.ERROR_MESSAGE, {
+    if (result.success) {
+      toast.success(SCHEDULE_API.SUCCESS_MESSAGE, {
         style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
       })
-      console.error(SCHEDULE_API.ERROR_MESSAGE, error)
+      resetForm()
+      onClose()
+    } else {
+      toast.error(result.error, {
+        style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
+      })
     }
+    toast.error(SCHEDULE_API.ERROR_MESSAGE, {
+      style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
+    })
   }
 
   return (

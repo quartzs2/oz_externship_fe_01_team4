@@ -28,7 +28,6 @@ export const useAuth = (): AuthState => {
         if (Date.now() < lockoutEndTime) {
           throw new Error('LOGIN_LOCKED_OUT')
         } else {
-          // Lockout period has passed, reset attempts
           localStorage.removeItem(FAILED_ATTEMPTS_KEY)
           localStorage.removeItem(LOCKOUT_END_TIME_KEY)
         }
@@ -44,18 +43,14 @@ export const useAuth = (): AuthState => {
         setRefreshToken(refresh)
         setIsLoggedIn(true)
 
-        console.log('Login successful')
-        // 로그인 성공 시 실패 횟수 및 잠금 시간 초기화
         localStorage.removeItem(FAILED_ATTEMPTS_KEY)
         localStorage.removeItem(LOCKOUT_END_TIME_KEY)
 
         return true
       } catch (error) {
-        console.error('Login failed:', error)
-        removeTokens() //  잔여 토큰 제거
+        removeTokens()
         setIsLoggedIn(false)
 
-        // --- Modified part ---
         if (axios.isAxiosError(error)) {
           if (error.response) {
             if (
@@ -70,24 +65,26 @@ export const useAuth = (): AuthState => {
               localStorage.setItem(FAILED_ATTEMPTS_KEY, attempts.toString())
 
               if (attempts >= MAX_FAILED_ATTEMPTS) {
-                const lockoutEndTime = Date.now() + LOCKOUT_DURATION_MS
+                const lockoutEndTime = Date.now() + LOCKOUT_DURATION_MS // <-- 여기서 사용됨
                 localStorage.setItem(
                   LOCKOUT_END_TIME_KEY,
                   lockoutEndTime.toString()
                 )
                 throw new Error('LOGIN_LOCKED_OUT')
               }
-              throw new Error('INVALID_CREDENTIALS') // Specific error for wrong email/password
+              throw new Error('INVALID_CREDENTIALS')
             } else if (error.response.status === 429) {
-              throw new Error('TOO_MANY_ATTEMPTS') // Specific error for rate limiting
+              throw new Error('TOO_MANY_ATTEMPTS')
             }
           }
         }
-        throw new Error('UNKNOWN_LOGIN_ERROR') // Generic error for other issues
-        // --- End of modified part ---
+        throw new Error('UNKNOWN_LOGIN_ERROR')
       }
     },
-    []
+    [
+      LOCKOUT_DURATION_MS, // 이 값을 포함합니다.
+      MAX_FAILED_ATTEMPTS, // 이 값도 포함합니다.
+    ]
   )
 
   const logout = useCallback(() => {

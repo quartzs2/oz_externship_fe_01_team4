@@ -18,7 +18,7 @@ export const fetchGenerations = async (
     params.course_id = courseId
   }
 
-  console.log('fetchGenerations params:', params)
+  
 
   const res = await api.get(ADMIN_API_PATH.GENERATIONS_LIST, { params })
 
