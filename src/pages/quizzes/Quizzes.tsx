@@ -14,9 +14,10 @@ import type { SchedulePayload } from '@custom-types/createSchedule'
 import type { TableRowData } from '@custom-types/table'
 import { useServerPagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
-import { quizAPI } from '@lib/api/scheduleApi'
+import { scheduleAPI } from '@api/schedule'
 import { useScheduleStore } from '@store/create-schedule/scheduleStore'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useCourses } from '@hooks/queries/useCourses'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -47,10 +48,13 @@ const Quizzes = () => {
   const { isModalOpen, selectedQuiz, openScheduleModal, closeScheduleModal } =
     useScheduleStore()
 
-  const coursesData = [
-    { id: 1, name: '웹 개발 초급자 프론트엔드 부트캠프' },
-    { id: 2, name: 'AI 백엔드 심화과정' },
-  ]
+  const { data: courseOptionsData } = useCourses()
+
+  const coursesData =
+    courseOptionsData?.map((course) => ({
+      name: String(course.name ?? ''),
+      id: Number(course.id),
+    })) ?? []
 
   const generationsData = [
     { id: 8, name: '8기' },
@@ -88,26 +92,8 @@ const Quizzes = () => {
 
   // 스케줄 제출 핸들러 추가
   const handleScheduleSubmit = async (payload: SchedulePayload) => {
-    await quizAPI.setDeploySchedule(payload)
+    await scheduleAPI.setDeploySchedule(payload)
   }
-
-  // 드롭다운 옵션
-  const courseOptions = useMemo(() => {
-    return [
-      { label: '과정을 선택하세요', value: '' },
-      ...Array.from(
-        new Map(
-          course.map((course) => [
-            course.name,
-            {
-              label: String(course.name),
-              value: String(course.id),
-            },
-          ])
-        ).values()
-      ),
-    ]
-  }, [course])
 
   // 정렬, 검색, 필터, 페이지 state
   const { sortedData, sortByKey, sortKey, sortOrder } = useSort(quizzes)
@@ -115,7 +101,10 @@ const Quizzes = () => {
   const { currentPage, totalPages, goToPage, setTotalCount, setCurrentPage } =
     useServerPagination({ pageSize: 10 })
   const [filteredData, setFilteredData] = useState<TableRowData[]>([])
-  const [selectedCourse, setSelectedCourse] = useState(courseOptions[0])
+  const [selectedCourse, setSelectedCourse] = useState({
+    label: '과정을 선택하세요',
+    value: '',
+  })
 
   const fetchQuizzes = useCallback(async () => {
     setLoading(true)
@@ -254,7 +243,10 @@ const Quizzes = () => {
       <CourseFilterModal
         isOpen={isFilterModalOpen}
         setIsOpen={setIsFilterModalOpen}
-        courseOptions={courseOptions}
+        courseOptions={coursesData.map((course) => ({
+          label: course.name,
+          value: String(course.id),
+        }))}
         setSelectedCourse={setSelectedCourse}
         setCurrentPage={setCurrentPage}
       />
