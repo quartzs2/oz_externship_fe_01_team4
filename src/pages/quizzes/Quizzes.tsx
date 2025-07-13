@@ -193,7 +193,16 @@ const Quizzes = () => {
 
   if (isDetailModalOpen && selectedTestId !== null) {
     // 시험 상세정보 조회/수정/삭제 모달
-    return <DetailModal testId={selectedTestId} />
+    return (
+      <DetailModal
+        testId={selectedTestId}
+        onClose={() => {
+          setIsDetailModalOpen(false)
+          fetchQuizzes()
+        }}
+        fetchQuizzes={fetchQuizzes}
+      />
+    )
   }
 
   return (

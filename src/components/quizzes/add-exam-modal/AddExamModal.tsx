@@ -1,4 +1,5 @@
 import api from '@api/instance/axiosInstance'
+import { updateQuizData } from '@api/quizzes'
 import Button from '@components/common/Button'
 import Dropdown from '@components/common/Dropdown'
 import FormRow from '@components/common/FormRow'
@@ -7,14 +8,23 @@ import Input from '@components/common/Input'
 import Modal from '@components/common/Modal'
 import { ADMIN_API_PATH } from '@constants/urls'
 import type { TableRowData } from '@custom-types/table'
+import type { UpdateQuizData } from '@custom-types/quizzes/quizTypes'
 import { useCustomToast } from '@hooks/toast/useToast'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 type AddExamModalProps = {
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   subjects: TableRowData[]
   fetchData: () => void | Promise<void>
+  // 추가할 props
+  mode?: 'create' | 'edit'
+  editData?: {
+    testId: number
+    title: string
+    subjectId: number
+    thumbnailUrl?: string
+  }
 }
 
 const AddExamModal = ({
@@ -22,6 +32,8 @@ const AddExamModal = ({
   setIsOpen,
   subjects,
   fetchData,
+  mode = 'create',
+  editData,
 }: AddExamModalProps) => {
   const subjectOptions = useMemo(() => {
     return [
@@ -45,6 +57,23 @@ const AddExamModal = ({
 
   const toast = useCustomToast()
 
+  // 수정 모드일 때 초기값 설정
+  useEffect(() => {
+    if (mode === 'edit' && editData) {
+      setTitle(editData.title)
+      const subjectOption = subjectOptions.find(
+        (option) => option.value === String(editData.subjectId)
+      )
+      if (subjectOption) {
+        setSelectedSubject(subjectOption)
+      }
+      // 썸네일 이미지가 있다면 미리보기 설정
+      if (editData.thumbnailUrl) {
+        setPreview(editData.thumbnailUrl)
+      }
+    }
+  }, [mode, editData, subjectOptions])
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
     if (selectedFile) {
@@ -56,36 +85,56 @@ const AddExamModal = ({
 
   const validateForm = () => {
     const newErrors = {
-      title: !title.trim(),
-      subject: !selectedSubject.value,
-      file: !file,
+      title: mode === 'create' ? !title.trim() : false,
+      subject: mode === 'create' ? !selectedSubject.value : false,
+      file: mode === 'create' ? !file : false,
     }
     setErrors(newErrors)
     return !Object.values(newErrors).some(Boolean) // error가 하나라도 있으면 false 반환
   }
 
   const postQuiz = async () => {
-    const formData = new FormData()
-    formData.append('title', title)
-    formData.append('subject_id', selectedSubject.value) // subject_id는 id 문자열
-    if (file) {
-      formData.append('thumbnail_file', file)
-    }
-
     try {
-      const response = await api.post(
-        `${ADMIN_API_PATH.TEST}${ADMIN_API_PATH.CREATE_QUIZZES}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      if (mode === 'create') {
+        const formData = new FormData()
+        formData.append('title', title)
+        formData.append('subject_id', selectedSubject.value)
+        if (file) {
+          formData.append('thumbnail_file', file)
         }
-      )
 
-      return response.data
+        const response = await api.post(
+          `${ADMIN_API_PATH.TEST}${ADMIN_API_PATH.CREATE_QUIZZES}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        return response.data
+      } else {
+        // 수정 모드 - updateQuizData 함수 사용
+        const updateData: UpdateQuizData = {}
+
+        if (title !== editData?.title) {
+          updateData.title = title
+        }
+        if (selectedSubject.value !== String(editData?.subjectId)) {
+          updateData.subject_id = Number(selectedSubject.value)
+        }
+        if (file) {
+          updateData.thumbnail_file = file
+        }
+
+        const response = await updateQuizData(editData!.testId, updateData)
+        return response
+      }
     } catch (err) {
-      console.error('쪽지시험 생성 실패:', err)
+      console.error(
+        mode === 'create' ? '쪽지시험 생성 실패:' : '쪽지시험 수정 실패:',
+        err
+      )
       throw err
     }
   }
@@ -110,16 +159,25 @@ const AddExamModal = ({
       fetchData()
       setIsOpen(false)
       resetForm()
-      toast.success('성공적으로 쪽지시험이 생성되었습니다.', {
-        style: 'style4',
-        duration: 5000,
-        hasActionButton: false,
-        actionLabel: '확인',
-        hasCloseButton: true,
-        hasIcon: true,
-      })
+      toast.success(
+        mode === 'create'
+          ? '성공적으로 쪽지시험이 생성되었습니다.'
+          : '성공적으로 쪽지시험이 수정되었습니다.',
+        {
+          style: 'style4',
+          duration: 5000,
+          hasActionButton: false,
+          actionLabel: '확인',
+          hasCloseButton: true,
+          hasIcon: true,
+        }
+      )
     } catch {
-      toast.error('쪽지시험 생성에 실패했습니다.')
+      toast.error(
+        mode === 'create'
+          ? '쪽지시험 생성에 실패했습니다.'
+          : '쪽지시험 수정에 실패했습니다.'
+      )
     }
   }
 
@@ -135,7 +193,9 @@ const AddExamModal = ({
       isBackgroundDimmed
       closeButtonOffset={16}
     >
-      <h1 className="mb-[53px] text-xl font-bold">쪽지시험 등록</h1>
+      <h1 className="mb-[53px] text-xl font-bold">
+        {mode === 'create' ? '쪽지시험 등록' : '쪽지시험 수정'}
+      </h1>
 
       <div className="flex flex-col">
         {/* 제목 */}
@@ -213,12 +273,8 @@ const AddExamModal = ({
 
         {/* 버튼 */}
         <div className="mt-[38px] flex justify-end">
-          <Button
-            onClick={() => {
-              handleSubmit()
-            }}
-          >
-            생성
+          <Button onClick={handleSubmit}>
+            {mode === 'create' ? '생성' : '수정'}
           </Button>
         </div>
       </div>

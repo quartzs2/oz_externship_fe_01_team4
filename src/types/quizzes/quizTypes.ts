@@ -110,5 +110,5 @@ export type SubmitQuizData = {
 export type UpdateQuizData = {
   title?: string
   subject_id?: number
-  thumbnail_img_url?: string
+  thumbnail_file?: File
 }

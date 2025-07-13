@@ -3,21 +3,32 @@ import QuizzesWrapper from '@components/quizzes/detail-modal/components/QuizzesW
 import { type Question, type QuizData } from '@custom-types/quizzes/quizTypes'
 import AddQuizModal from '@components/quizzes/add-quiz-modal/AddQuizModal'
 import Button from '@components/common/Button'
-import { getQuizData, submitQuizData } from '@api/quizzes'
+import { getQuizData, submitQuizData, deleteQuizData } from '@api/quizzes'
+import AddExamModal from '@components/quizzes/add-exam-modal/AddExamModal'
+import PopUp from '@components/common/PopUp'
+import api from '@api/instance/axiosInstance'
+import type { TableRowData } from '@custom-types/table'
+import { ADMIN_API_PATH } from '@constants/urls'
 
 type DetailModalProps = {
   testId: number
+  onClose?: () => void
+  fetchQuizzes: () => void
 }
 
 const MAX_QUIZ_COUNT = 10
 const MAX_QUIZ_SCORE_SUM = 100
 
-function DetailModal({ testId }: DetailModalProps) {
+function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
   const [quizData, setQuizData] = useState<QuizData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [visibleQuestions, setVisibleQuestions] = useState<Question[]>([])
   const [isAddQuizModalOpen, setIsAddQuizModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [subjects, setSubjects] = useState<TableRowData[]>([])
 
   const handleSubmit = async () => {
     try {
@@ -60,6 +71,49 @@ function DetailModal({ testId }: DetailModalProps) {
     fetchQuizData()
   }, [testId])
 
+  // 과목 데이터 로딩
+  useEffect(() => {
+    if (isEditModalOpen && subjects.length === 0) {
+      api
+        .get(ADMIN_API_PATH.SUBJECTS)
+        .then((res) => setSubjects(res.data.results))
+    }
+  }, [isEditModalOpen, subjects.length])
+
+  const handleEditClick = () => {
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    fetchQuizzes()
+    setIsEditModalOpen(false)
+  }
+
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    try {
+      setIsDeleting(true)
+      await deleteQuizData(testId)
+      setIsDeleteModalOpen(false)
+      // 삭제 성공 시 모달 닫기
+      if (onClose) {
+        onClose()
+      }
+    } catch (error) {
+      console.error('Failed to delete quiz:', error)
+      setError('퀴즈 삭제에 실패했습니다.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false)
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col gap-[26px] p-[28px]">
@@ -83,8 +137,12 @@ function DetailModal({ testId }: DetailModalProps) {
           쪽지시험 상세조회
         </div>
         <div className="flex items-center justify-between gap-[6px]">
-          <Button>수정</Button>
-          <Button>삭제</Button>
+          <Button variant="VARIANT10" onClick={handleEditClick}>
+            수정
+          </Button>
+          <Button variant="VARIANT4" onClick={handleDeleteClick}>
+            삭제
+          </Button>
         </div>
       </div>
       <QuizzesWrapper
@@ -106,6 +164,44 @@ function DetailModal({ testId }: DetailModalProps) {
         maxQuizScoreSum={MAX_QUIZ_SCORE_SUM}
         setQuizzes={setVisibleQuestions}
       />
+
+      {/* 수정 모달 */}
+      {quizData && (
+        <AddExamModal
+          isOpen={isEditModalOpen}
+          setIsOpen={setIsEditModalOpen}
+          subjects={subjects}
+          fetchData={handleEditSuccess}
+          mode="edit"
+          editData={{
+            testId: quizData.id,
+            title: quizData.title,
+            subjectId: quizData.subject.id,
+            thumbnailUrl: quizData.thumbnail_img_url,
+          }}
+        />
+      )}
+
+      {/* 삭제 확인 모달 */}
+      <PopUp
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        type="delete_confirm"
+      >
+        <PopUp.Title>해당 쪽지시험을 정말 삭제하시겠습니까?</PopUp.Title>
+        <PopUp.Description>
+          <div>쪽지시험 삭제 시 되돌릴 수 없으며,</div>
+          <div>시험에 포함된 문제 내역까지 모두 삭제됩니다.</div>
+        </PopUp.Description>
+        <PopUp.Buttons>
+          <Button onClick={handleDeleteCancel} disabled={isDeleting}>
+            취소
+          </Button>
+          <Button onClick={handleDeleteConfirm} disabled={isDeleting}>
+            {isDeleting ? '삭제 중...' : '삭제'}
+          </Button>
+        </PopUp.Buttons>
+      </PopUp>
     </div>
   )
 }
