@@ -1,91 +1,145 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import QuizzesWrapper from '@components/quizzes/detail-modal/components/QuizzesWrapper'
 import { type Question, type QuizData } from '@custom-types/quizzes/quizTypes'
+import AddQuizModal from '@components/quizzes/add-quiz-modal/AddQuizModal'
+import Button from '@components/common/Button'
+import { getQuizData, submitQuizData, deleteQuizData } from '@api/quizzes'
+import AddExamModal from '@components/quizzes/add-exam-modal/AddExamModal'
+import PopUp from '@components/common/PopUp'
+import api from '@api/instance/axiosInstance'
+import type { TableRowData } from '@custom-types/table'
+import { ADMIN_API_PATH } from '@constants/urls'
 
 type DetailModalProps = {
   testId: number
+  onClose?: () => void
+  fetchQuizzes: () => void
 }
 
-function DetailModal({ testId }: DetailModalProps) {
-  console.log(testId)
-  // TODO: 임시 데이터, 나중에 수정
-  const quizData: QuizData = {
-    id: 4,
-    title: '자료구조 쪽지시험',
-    subject: {
-      id: 1,
-      name: '컴퓨터공학',
-    },
-    thumbnail_img_url: 'https://cdn.ozschool.kr/thumbnails/test_4.png',
-    question_count: 6,
-    questions: [
-      {
-        id: 101,
-        type: 'multiple_choice_single',
-        question: '리눅스 명령어 중 파일 삭제는?',
-        point: 5,
-        prompt: null,
-        options: ['rm', 'ls', 'mv', 'touch'],
-        answer: 'rm',
-        explanation: '파일을 삭제하는 명령어는 rm입니다.',
-      },
-      {
-        id: 102,
-        type: 'multiple_choice_multi',
-        question: '파이썬의 콜렉션 자료형을 모두 고르세요',
-        point: 5,
-        prompt: null,
-        options: ['list', 'dict', 'map', 'set'],
-        answer: ['list', 'dict', 'set'],
-        explanation: 'map은 내장 콜렉션이 아니고 함수입니다.',
-      },
-      {
-        id: 103,
-        type: 'ox',
-        question: '파이썬은 인터프리터 언어이다.',
-        point: 2,
-        prompt: null,
-        options: ['O', 'X'],
-        answer: 'O',
-        explanation: '파이썬은 컴파일이 아닌 인터프리트 방식입니다.',
-      },
-      {
-        id: 104,
-        type: 'ordering',
-        question: '아래 보기들을 버블 정렬의 순서대로 나열하세요',
-        point: 5,
-        prompt: null,
-        options: ['비교', '교환', '반복', '완료'],
-        answer: ['비교', '교환', '반복', '완료'],
-        explanation: '버블 정렬은 인접 요소를 비교하고 교환합니다.',
-      },
-      {
-        id: 105,
-        type: 'fill_in_blank',
-        question: '자료구조에서 큐는 ____ 구조입니다.',
-        point: 5,
-        prompt: '자료구조에서 큐는 ____ 구조입니다.',
-        options: [],
-        answer: ['FIFO'],
-        explanation: '큐는 선입선출(FIFO) 구조입니다.',
-      },
-      {
-        id: 106,
-        type: 'short_answer',
-        question: 'HTTP의 약어는 무엇인가요?',
-        point: 5,
-        prompt: '알파벳 4자로 입력하세요',
-        options: [],
-        answer: 'HyperText Transfer Protocol',
-        explanation: 'HTTP는 웹 통신에 사용되는 프로토콜입니다.',
-      },
-    ],
-    created_at: '2025-06-01T14:23:00',
-    updated_at: '2025-06-19T17:45:00',
+const MAX_QUIZ_COUNT = 10
+const MAX_QUIZ_SCORE_SUM = 100
+
+function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
+  const [quizData, setQuizData] = useState<QuizData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [visibleQuestions, setVisibleQuestions] = useState<Question[]>([])
+  const [isAddQuizModalOpen, setIsAddQuizModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [subjects, setSubjects] = useState<TableRowData[]>([])
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
+
+  const handleSubmit = async () => {
+    try {
+      await submitQuizData({
+        test_id: testId,
+        test_questions: visibleQuestions.map((question) => ({
+          prompt: question.prompt || null,
+          blank_count:
+            question.type === 'fill_in_blank' ? question.options.length : null,
+          options_json: question.options,
+          answer: Array.isArray(question.answer)
+            ? question.answer
+            : [question.answer],
+          question: question.question,
+          type: question.type,
+          point: question.point,
+          explanation: question.explanation,
+        })),
+      })
+    } catch (error) {
+      console.error('Failed to submit quiz data:', error)
+    }
   }
 
-  const [additionalQuestions] = useState<Question[]>([])
-  const visibleQuestions = [...quizData.questions, ...additionalQuestions]
+  useEffect(() => {
+    const fetchQuizData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await getQuizData(testId)
+        setQuizData(data)
+        setVisibleQuestions(data.questions || [])
+      } catch {
+        setError('퀴즈 데이터를 불러오는데 실패했습니다.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchQuizData()
+  }, [testId])
+
+  // 과목 데이터 로딩
+  useEffect(() => {
+    if (isEditModalOpen && subjects.length === 0) {
+      api
+        .get(ADMIN_API_PATH.SUBJECTS)
+        .then((res) => setSubjects(res.data.results))
+    }
+  }, [isEditModalOpen, subjects.length])
+
+  const handleEditClick = () => {
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    fetchQuizzes()
+    setIsEditModalOpen(false)
+  }
+
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    try {
+      setIsDeleting(true)
+      await deleteQuizData(testId)
+      setIsDeleteModalOpen(false)
+      // 삭제 성공 시 모달 닫기
+      if (onClose) {
+        onClose()
+      }
+    } catch (error) {
+      console.error('Failed to delete quiz:', error)
+      setError('퀴즈 삭제에 실패했습니다.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false)
+  }
+
+  const handleQuestionEdit = (question: Question) => {
+    setEditingQuestion(question)
+    setIsAddQuizModalOpen(true)
+  }
+
+  const handleQuestionEditSuccess = () => {
+    setEditingQuestion(null)
+    setIsAddQuizModalOpen(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-[26px] p-[28px]">
+        <div className="text-center">로딩 중...</div>
+      </div>
+    )
+  }
+
+  if (error || !quizData) {
+    return (
+      <div className="flex flex-col gap-[26px] p-[28px]">
+        <div className="text-center text-red-500">{error}</div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-[26px] p-[28px]">
@@ -94,10 +148,78 @@ function DetailModal({ testId }: DetailModalProps) {
           쪽지시험 상세조회
         </div>
         <div className="flex items-center justify-between gap-[6px]">
-          {/* TODO: 버튼 영역 */}
+          <Button variant="VARIANT10" onClick={handleEditClick}>
+            수정
+          </Button>
+          <Button variant="VARIANT4" onClick={handleDeleteClick}>
+            삭제
+          </Button>
         </div>
       </div>
-      <QuizzesWrapper quizData={quizData} questions={visibleQuestions} />
+      <QuizzesWrapper
+        quizData={quizData}
+        questions={visibleQuestions}
+        setIsAddQuizModalOpen={setIsAddQuizModalOpen}
+        setQuestions={setVisibleQuestions}
+        handleSubmit={handleSubmit}
+        onQuestionEdit={handleQuestionEdit}
+      />
+      <AddQuizModal
+        isOpen={isAddQuizModalOpen}
+        onClose={() => {
+          setIsAddQuizModalOpen(false)
+          setEditingQuestion(null)
+        }}
+        currentQuizCount={visibleQuestions.length}
+        maxQuizCount={MAX_QUIZ_COUNT}
+        currentQuizScoreSum={visibleQuestions.reduce(
+          (sum, question) => sum + question.point,
+          0
+        )}
+        maxQuizScoreSum={MAX_QUIZ_SCORE_SUM}
+        setQuizzes={setVisibleQuestions}
+        mode={editingQuestion ? 'edit' : 'add'}
+        editQuestion={editingQuestion || undefined}
+        onEditSuccess={handleQuestionEditSuccess}
+      />
+
+      {/* 수정 모달 */}
+      {quizData && (
+        <AddExamModal
+          isOpen={isEditModalOpen}
+          setIsOpen={setIsEditModalOpen}
+          subjects={subjects}
+          fetchData={handleEditSuccess}
+          mode="edit"
+          editData={{
+            testId: quizData.id,
+            title: quizData.title,
+            subjectId: quizData.subject.id,
+            thumbnailUrl: quizData.thumbnail_img_url,
+          }}
+        />
+      )}
+
+      {/* 삭제 확인 모달 */}
+      <PopUp
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        type="delete_confirm"
+      >
+        <PopUp.Title>해당 쪽지시험을 정말 삭제하시겠습니까?</PopUp.Title>
+        <PopUp.Description>
+          <div>쪽지시험 삭제 시 되돌릴 수 없으며,</div>
+          <div>시험에 포함된 문제 내역까지 모두 삭제됩니다.</div>
+        </PopUp.Description>
+        <PopUp.Buttons>
+          <Button onClick={handleDeleteCancel} disabled={isDeleting}>
+            취소
+          </Button>
+          <Button onClick={handleDeleteConfirm} disabled={isDeleting}>
+            {isDeleting ? '삭제 중...' : '삭제'}
+          </Button>
+        </PopUp.Buttons>
+      </PopUp>
     </div>
   )
 }

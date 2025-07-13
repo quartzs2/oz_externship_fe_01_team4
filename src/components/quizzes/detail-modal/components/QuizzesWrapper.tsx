@@ -1,19 +1,34 @@
-import { useState } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination } from 'swiper/modules'
 import SlideItem from '@components/quizzes/detail-modal/components/SlideItem'
 import type { Question, QuizData } from '@custom-types/quizzes/quizTypes'
+import ozRoundLogoUrl from '@assets/oz_round_logo.svg'
+import Button from '@components/common/Button'
+import NoQuestionSlideItem from '@components/quizzes/detail-modal/components/NoQuestionSlideItem'
+import { formatIsoToDotDateTime } from '@utils/formatDate'
 
 type QuizzesWrapperProps = {
   quizData: QuizData
   questions: Question[]
+  setIsAddQuizModalOpen: (isOpen: boolean) => void
+  setQuestions: Dispatch<SetStateAction<Question[]>>
+  handleSubmit: () => void
+  onQuestionEdit?: (question: Question) => void
 }
 
-const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
+const QuizzesWrapper = ({
+  quizData,
+  questions,
+  setIsAddQuizModalOpen,
+  setQuestions,
+  handleSubmit,
+  onQuestionEdit,
+}: QuizzesWrapperProps) => {
   const {
     title,
     subject,
-    thumbnail_img_url,
+    thumbnail_img_url: thumbnailImgUrl,
     created_at: createdAt,
     updated_at: updatedAt,
   } = quizData
@@ -27,12 +42,15 @@ const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
         <div className="flex items-center gap-[25px]">
           <div className="flex items-center gap-[11px]">
             <img
-              src={thumbnail_img_url}
+              src={thumbnailImgUrl}
               alt="thumbnail"
               className="h-[32px] w-[32px]"
-              onError={() => {
-                // TODO: 이미지 없을 때 처리 필요
-                console.log('이미지가 없습니다.')
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                // 무한 루프 방지
+                target.onerror = null
+                // OZ SVG 로고로 변경
+                target.src = ozRoundLogoUrl
               }}
             />
             <div className="text-[20px] font-semibold text-[#666666]">
@@ -47,9 +65,8 @@ const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
         </div>
 
         <div className="text-sm text-[#666666]">
-          {/* TODO: 시간 파싱 필요 */}
-          <p>등록일시 : {createdAt}</p>
-          <p>수정일시 : {updatedAt}</p>
+          <p>등록일시 : {formatIsoToDotDateTime(createdAt, true)}</p>
+          <p>수정일시 : {formatIsoToDotDateTime(updatedAt, true)}</p>
         </div>
       </div>
 
@@ -62,17 +79,37 @@ const QuizzesWrapper = ({ quizData, questions }: QuizzesWrapperProps) => {
         className="h-[600px] w-[1060px] rounded-[12px] border border-[#D9D9D9] bg-white"
         onSlideChange={(swiper) => setCurrentSlideIndex(swiper.activeIndex)}
       >
-        {questions.map((question, index) => (
-          <SwiperSlide key={question.id}>
-            <SlideItem question={question} index={index} />
+        {questions.length > 0 ? (
+          questions.map((question, index) => (
+            <SwiperSlide key={question.id}>
+              <SlideItem
+                question={question}
+                index={index}
+                setIsAddQuizModalOpen={setIsAddQuizModalOpen}
+                setQuestions={setQuestions}
+                onQuestionEdit={onQuestionEdit}
+              />
+            </SwiperSlide>
+          ))
+        ) : (
+          <SwiperSlide key={'no-question'}>
+            <NoQuestionSlideItem
+              setIsAddQuizModalOpen={setIsAddQuizModalOpen}
+            />
           </SwiperSlide>
-        ))}
+        )}
       </Swiper>
 
-      <div className="mt-[32px] w-full text-[16px] text-[#666666]">
-        {currentSlideIndex + 1}/{totalQuestions}
+      <div className="mt-[32px] flex w-full items-center justify-between gap-[10px] text-[16px] text-[#666666]">
+        <div>
+          {questions.length > 0
+            ? `${currentSlideIndex + 1}/${totalQuestions}`
+            : '0/0'}
+        </div>
+        <Button onClick={handleSubmit}>저장</Button>
       </div>
     </div>
   )
 }
+
 export default QuizzesWrapper

@@ -12,6 +12,7 @@ export const BUTTON_VARIANTS = {
   VARIANT8:
     'flex items-center justify-between bg-[#F3EEFF] text-[#522193] h-[36px] w-[135px] text-[14px] px-[12px]',
   VARIANT9: `${BASE_STYLE} bg-[#F6A818] text-[#FFFFFF]`,
+  VARIANT10: `${BASE_STYLE} bg-[#5EB669] text-[#FFFFFF]`,
 } as const
 
 export const DEFAULT_BUTTON_VARIANT = 'VARIANT1'

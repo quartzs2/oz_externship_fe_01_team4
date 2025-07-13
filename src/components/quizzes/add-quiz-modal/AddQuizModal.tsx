@@ -7,13 +7,15 @@ import SortByOrder from '@components/quizzes/add-quiz-modal/pages/SortByOrder'
 import SubjectiveShortAnswer from '@components/quizzes/add-quiz-modal/pages/SubjectiveShortAnswer'
 import TrueOrFalse from '@components/quizzes/add-quiz-modal/pages/TrueOrFalse'
 import { PADDING_SIZE } from '@constants/modal/modal'
-import { type FormHandle, type QuizFormTypes } from '@custom-types/quiz'
+import { type FormHandle } from '@custom-types/quizzes/quizFormTypes'
+import type { Question } from '@custom-types/quizzes/quizTypes'
 import {
   useRef,
   useState,
   type Dispatch,
   type JSX,
   type SetStateAction,
+  useEffect,
 } from 'react'
 
 export type ValidateFunctionProps = {
@@ -32,7 +34,10 @@ type AddQuizModalProps = {
   maxQuizCount: number
   currentQuizScoreSum: number
   maxQuizScoreSum: number
-  setQuizzes: Dispatch<SetStateAction<QuizFormTypes[]>>
+  setQuizzes: Dispatch<SetStateAction<Question[]>>
+  mode?: 'add' | 'edit'
+  editQuestion?: Question
+  onEditSuccess?: () => void
 }
 
 const AddQuizModal = ({
@@ -41,18 +46,36 @@ const AddQuizModal = ({
   currentQuizCount,
   maxQuizCount,
   currentQuizScoreSum,
-  maxQuizScoreSum = 100,
+  maxQuizScoreSum,
   setQuizzes,
+  mode = 'add',
+  editQuestion,
+  onEditSuccess,
 }: AddQuizModalProps) => {
   const [currentTab, setCurrentTab] = useState(0)
 
   const pageRefs = useRef<(FormHandle | null)[]>([])
 
+  // 수정 모드일 때 해당 문제 타입에 맞는 탭으로 설정
+  useEffect(() => {
+    if (mode === 'edit' && editQuestion) {
+      const questionTypeToTabIndex: Record<string, number> = {
+        multiple_choice: 0,
+        true_false: 1,
+        ordering: 2,
+        short_answer: 3,
+        fill_in_blank: 4,
+      }
+      const tabIndex = questionTypeToTabIndex[editQuestion.type] || 0
+      setCurrentTab(tabIndex)
+    }
+  }, [mode, editQuestion])
+
   const validateFunction = ({
     QuizScore,
   }: ValidateFunctionProps): ValidateFunctionReturn => {
-    // 문제 개수가 최대 개수 초과일 경우
-    if (currentQuizCount >= maxQuizCount) {
+    // 수정 모드에서는 문제 개수 제한을 체크하지 않음
+    if (mode === 'add' && currentQuizCount >= maxQuizCount) {
       const PopupTitle = () => {
         return (
           <div>
@@ -74,8 +97,15 @@ const AddQuizModal = ({
         PopupDetail: <PopupDetail />,
       }
     }
+
+    // 수정 모드에서는 기존 문제의 점수를 제외하고 계산
+    const currentScoreSum =
+      mode === 'edit' && editQuestion
+        ? currentQuizScoreSum - editQuestion.point
+        : currentQuizScoreSum
+
     // 기존 문제 배점 합계와 현재 문제 점수를 더했을 때 최대점수를 초과하는 경우
-    if (QuizScore + currentQuizScoreSum > maxQuizScoreSum) {
+    if (QuizScore + currentScoreSum > maxQuizScoreSum) {
       const PopupTitle = () => {
         return (
           <div>배점의 합계는 {maxQuizScoreSum}점을 초과할 수 없습니다.</div>
@@ -114,6 +144,10 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
+          mode={mode}
+          editQuestion={editQuestion}
+          onEditSuccess={onEditSuccess}
         />
       ),
     },
@@ -126,6 +160,10 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
+          mode={mode}
+          editQuestion={editQuestion}
+          onEditSuccess={onEditSuccess}
         />
       ),
     },
@@ -138,6 +176,10 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
+          mode={mode}
+          editQuestion={editQuestion}
+          onEditSuccess={onEditSuccess}
         />
       ),
     },
@@ -150,6 +192,10 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
+          mode={mode}
+          editQuestion={editQuestion}
+          onEditSuccess={onEditSuccess}
         />
       ),
     },
@@ -162,6 +208,10 @@ const AddQuizModal = ({
           }}
           validateFunction={validateFunction}
           setQuizzes={setQuizzes}
+          onClose={onClose}
+          mode={mode}
+          editQuestion={editQuestion}
+          onEditSuccess={onEditSuccess}
         />
       ),
     },
@@ -193,7 +243,9 @@ const AddQuizModal = ({
           {SIDEBAR_ITEMS[currentTab].page}
         </div>
         <div className="flex justify-end pr-[30px] pb-[30px]">
-          <Button onClick={handleAddQuiz}>추가</Button>
+          <Button onClick={handleAddQuiz}>
+            {mode === 'edit' ? '수정' : '추가'}
+          </Button>
         </div>
       </div>
     </Modal>

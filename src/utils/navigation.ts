@@ -13,3 +13,11 @@ export const navigateToLogin = () => {
     console.error('Navigator not set. Cannot navigate to login.')
   }
 }
+
+export const navigateTo = (path: string) => {
+  if (navigateFunction) {
+    navigateFunction(path)
+  } else {
+    console.error('Navigator not set. Cannot navigate to:', path)
+  }
+}

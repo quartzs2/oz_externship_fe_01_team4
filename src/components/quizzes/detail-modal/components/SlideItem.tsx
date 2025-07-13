@@ -1,3 +1,4 @@
+import Icon from '@components/common/Icon'
 import FillInBlank from '@components/quizzes/detail-modal/components/questions/FillInBlank'
 import MultipleChoiceMulti from '@components/quizzes/detail-modal/components/questions/MultipleChoiceMulti'
 import MultipleChoiceSingle from '@components/quizzes/detail-modal/components/questions/MultipleChoiceSingle'
@@ -6,13 +7,26 @@ import Ox from '@components/quizzes/detail-modal/components/questions/Ox'
 import ShortAnswer from '@components/quizzes/detail-modal/components/questions/ShortAnswer'
 import type { Question } from '@custom-types/quizzes/quizTypes'
 import { parseQuestionTypeToString } from '@utils/question/parseQuestionType'
+import AddQuestionIcon from '@assets/icons/quizzes/detail-modal/addQuestion.svg?react'
+import EditQuestionIcon from '@assets/icons/quizzes/detail-modal/editQuestion.svg?react'
+import DeleteQuestionIcon from '@assets/icons/quizzes/detail-modal/deleteQuestion.svg?react'
+import { type Dispatch, type SetStateAction } from 'react'
 
 interface SlideItemProps {
   question: Question
   index: number
+  setIsAddQuizModalOpen: (isOpen: boolean) => void
+  setQuestions: Dispatch<SetStateAction<Question[]>>
+  onQuestionEdit?: (question: Question) => void
 }
 
-const SlideItem = ({ question, index }: SlideItemProps) => {
+const SlideItem = ({
+  question,
+  index,
+  setIsAddQuizModalOpen,
+  setQuestions,
+  onQuestionEdit,
+}: SlideItemProps) => {
   const renderQuestionComponent = () => {
     switch (question.type) {
       case 'multiple_choice_single':
@@ -32,6 +46,18 @@ const SlideItem = ({ question, index }: SlideItemProps) => {
     }
   }
 
+  const handleDeleteQuestion = () => {
+    setQuestions((prevQuestions: Question[]) =>
+      prevQuestions.filter((_, i) => i !== index)
+    )
+  }
+
+  const handleEditQuestion = () => {
+    if (onQuestionEdit) {
+      onQuestionEdit(question)
+    }
+  }
+
   return (
     <div className="flex h-full w-full flex-col justify-between p-[30px]">
       <div>
@@ -39,7 +65,20 @@ const SlideItem = ({ question, index }: SlideItemProps) => {
           <div className="text-[14px] text-[#666666]">
             {parseQuestionTypeToString({ questionType: question.type })}
           </div>
-          <div>{/* TODO: 버튼 영역 */} 버튼 영역</div>
+          <div className="flex items-center gap-[10px]">
+            {/* 문제 추가 버튼 */}
+            <button onClick={() => setIsAddQuizModalOpen(true)}>
+              <Icon icon={AddQuestionIcon} size={24} />
+            </button>
+            {/* 문제 수정 버튼 */}
+            <button onClick={handleEditQuestion}>
+              <Icon icon={EditQuestionIcon} size={24} />
+            </button>
+            {/* 문제 삭제 버튼 */}
+            <button onClick={handleDeleteQuestion}>
+              <Icon icon={DeleteQuestionIcon} size={24} />
+            </button>
+          </div>
         </div>
         <div className="mt-[20px] text-[20px] font-semibold text-[#222222]">
           {index + 1}. {question.question}({question.point}점)

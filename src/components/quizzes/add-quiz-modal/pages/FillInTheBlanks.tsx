@@ -13,8 +13,8 @@ import { POP_UP_TYPE } from '@constants/popup/popUp'
 import type {
   FillInTheBlanksFormValues,
   FormHandle,
-  QuizFormTypes,
-} from '@custom-types/quiz'
+} from '@custom-types/quizzes/quizFormTypes'
+import type { Question } from '@custom-types/quizzes/quizTypes'
 import findFirstErrorMessage from '@utils/findFirstErrorMessage'
 import {
   type Dispatch,
@@ -23,6 +23,7 @@ import {
   type SetStateAction,
   useImperativeHandle,
   useState,
+  useEffect,
 } from 'react'
 import {
   FormProvider,
@@ -34,13 +35,21 @@ import {
 type FillInTheBlanksProps = {
   ref: Ref<FormHandle>
   validateFunction: (props: ValidateFunctionProps) => ValidateFunctionReturn
-  setQuizzes: Dispatch<SetStateAction<QuizFormTypes[]>>
+  setQuizzes: Dispatch<SetStateAction<Question[]>>
+  onClose: () => void
+  mode?: 'add' | 'edit'
+  editQuestion?: Question
+  onEditSuccess?: () => void
 }
 
 const FillInTheBlanks = ({
   ref,
   validateFunction,
   setQuizzes,
+  onClose,
+  mode = 'add',
+  editQuestion,
+  onEditSuccess,
 }: FillInTheBlanksProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [popupTitle, setPopupTitle] = useState<ReactNode>('')
@@ -57,6 +66,28 @@ const FillInTheBlanks = ({
     },
   })
 
+  // 수정 모드일 때 기존 데이터로 폼 초기화
+  useEffect(() => {
+    if (mode === 'edit' && editQuestion) {
+      const answers = Array.isArray(editQuestion.answer)
+        ? editQuestion.answer
+        : [editQuestion.answer]
+
+      const options = answers.map((answer, index) => ({
+        text: answer,
+        order: String.fromCharCode(65 + index), // A, B, C, ...
+      }))
+
+      methods.reset({
+        question: editQuestion.question,
+        passage: editQuestion.prompt || '',
+        options,
+        score: editQuestion.point.toString(),
+        solution: editQuestion.explanation || '',
+      })
+    }
+  }, [mode, editQuestion, methods])
+
   const onSubmit: SubmitHandler<Omit<FillInTheBlanksFormValues, 'type'>> = (
     data
   ) => {
@@ -71,12 +102,32 @@ const FillInTheBlanks = ({
       return
     }
 
-    const newQuiz: FillInTheBlanksFormValues = {
-      ...data,
-      type: 'fill-in-the-blanks',
+    // Question 타입에 맞게 변환
+    const newQuiz: Question = {
+      id: editQuestion?.id || Date.now(),
+      type: 'fill_in_blank',
+      question: data.question,
+      point: Number(data.score),
+      prompt: data.passage,
+      options: [],
+      answer: data.options.map((option) => option.text),
+      explanation: data.solution,
     }
 
-    setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    if (mode === 'edit') {
+      // 수정 모드: 기존 문제를 새 문제로 교체
+      setQuizzes((prevQuizzes) =>
+        prevQuizzes.map((quiz) =>
+          quiz.id === editQuestion?.id ? newQuiz : quiz
+        )
+      )
+      onEditSuccess?.()
+    } else {
+      // 추가 모드: 새 문제 추가
+      setQuizzes((prevQuizzes) => [...prevQuizzes, newQuiz])
+    }
+
+    onClose()
   }
 
   const onError = (errors: FieldErrors<FillInTheBlanksFormValues>) => {
