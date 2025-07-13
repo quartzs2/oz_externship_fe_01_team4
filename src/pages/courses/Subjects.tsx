@@ -1,6 +1,5 @@
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
-import AddGenerationsModal from '@components/subject/add-subject-modal/AddSubjectModal'
 import SubjectDetailModal from '@components/subject/detail-modal/SubjectDetailModal'
 import { type Subject } from '@custom-types/subjects'
 import { useSubjects } from '@hooks/queries/useSubjects'
@@ -8,6 +7,7 @@ import { renderStatus } from '@utils/renderStatus'
 import { useState, useEffect } from 'react'
 import { useServerPagination } from '@hooks/data-table/usePagination'
 import Button from '@components/common/Button'
+import AddSubjectsModal from '@components/subject/add-subject-modal/AddSubjectModal'
 
 // 페이지 상수
 const COUNT_LIMIT = 10
@@ -33,7 +33,7 @@ const Subjects = () => {
     })
 
   // React Query로 fetch
-  const { data, refetch, isLoading, isError, error } = useSubjects(
+  const { data, isLoading, isError, error } = useSubjects(
     currentPage,
     COUNT_LIMIT
   )
@@ -43,10 +43,6 @@ const Subjects = () => {
       setTotalCount(data.count)
     }
   }, [data?.count, setTotalCount])
-
-  const handleSubjectsRefresh: typeof refetch = (options) => {
-    return refetch(options)
-  }
 
   // 모달 상태
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null)
@@ -107,11 +103,7 @@ const Subjects = () => {
         </div>
       </div>
       {/* 과목을 추가할 때 사용하는 모달 */}
-      <AddGenerationsModal
-        isOpen={isModalOpen}
-        setIsOpen={setIsModalOpen}
-        fetchData={handleSubjectsRefresh}
-      />
+      <AddSubjectsModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
     </>
   )
 }

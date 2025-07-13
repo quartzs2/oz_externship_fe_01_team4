@@ -50,7 +50,7 @@ export default function DataTable({
               onToggle={(checked) => toggleItem(String(item.id), checked)}
               isTime={isTime}
               renderMap={renderMap}
-              onClick={onClick}
+              onClick={() => onClick && onClick(item)}
             />
           ))}
 

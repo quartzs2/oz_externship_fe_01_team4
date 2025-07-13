@@ -1,4 +1,3 @@
-import api from '@api/instance/axiosInstance'
 import FilterIcon from '@assets/icons/search.svg?react'
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
@@ -8,13 +7,20 @@ import Icon from '@components/common/Icon'
 import Label from '@components/common/Label'
 import Modal from '@components/common/Modal'
 import GenerationDetailModal from '@components/generations/GenerationDetailModal'
-import { ADMIN_API_PATH } from '@constants/urls'
+import AddGenerationModal from '@components/generations/add-generation-modal/AddGenerationModal'
 import type { TableRowData } from '@custom-types/table'
-import { useClientPagination } from '@hooks/data-table/usePagination'
-import { useEffect, useState } from 'react'
+import { useServerPagination } from '@hooks/data-table/usePagination'
+import { useEffect, useMemo, useState } from 'react'
+import { useGenerations } from '@hooks/queries/useGenerations'
+import { useGenerationDetail } from '@hooks/queries/useGenerationDetail'
+import { useCourses } from '@hooks/queries/useCourses'
+import type {
+  GenerationDetails,
+  Generation,
+} from '@custom-types/generations/generations'
 
 // 페이지 상수 추가
-const COUNT_LIMIT = 20
+const COUNT_LIMIT = 10
 
 const generationHeaders = [
   { text: 'ID', dataKey: 'id' },
@@ -26,135 +32,147 @@ const generationHeaders = [
   { text: '종료일', dataKey: 'end_date' },
 ]
 
-// api fetch
-const fetchGenerations = async () => {
-  const res = await api.get(ADMIN_API_PATH.GENERATIONS_LIST)
-  return res.data.results
-}
-
-const fetchGenerationDetail = async (generationId: number) => {
-  const res = await api.get(`generations/${generationId}/detail`)
-  return res.data
-}
-
-const fetchCourses = async () => {
-  const res = await api.get(ADMIN_API_PATH.COURSES)
-  return res.data.results
-}
-
 const Generations = () => {
-  const [generations, setGenerations] = useState<TableRowData[]>([])
-  const [courses, setCourses] = useState<TableRowData[]>([])
-  const [filteredData, setFilteredData] = useState<TableRowData[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  // 모달 상태
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
-
-  // 상세 조회용 선택된 기수 데이터
-  const [selectedGeneration, setSelectedGeneration] =
-    useState<TableRowData | null>(null)
-
-  // 기수 목록 fetch
-  useEffect(() => {
-    const loadGenerations = async () => {
-      try {
-        const generationsRes = await fetchGenerations()
-        const formattedGenerations = generationsRes.map(
-          (gen: TableRowData) => ({
-            ...gen,
-            number: `${gen.number}기`,
-            registered_students: `${gen.registered_students}명 / ${gen.max_student}명`,
-          })
-        )
-        setGenerations(formattedGenerations)
-        setFilteredData(formattedGenerations)
-      } catch (err) {
-        if (err instanceof Error) setError(err)
-        else console.error('알 수 없는 에러:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadGenerations()
-  }, [])
-
-  // 모달 열 때 과정 목록 fetch
-  useEffect(() => {
-    const loadCourses = async () => {
-      if (!isFilterModalOpen) return
-      if (courses.length > 0) return // 이미 가져온 경우 fetch 생략
-
-      try {
-        const courseRes = await fetchCourses()
-        setCourses(courseRes)
-      } catch (err) {
-        if (err instanceof Error) setError(err)
-        else console.error('알 수 없는 에러:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadCourses()
-  }, [isFilterModalOpen, courses.length])
-
-  // 드롭다운 옵션
-  const courseOptions = [
-    { label: '전체 보기', value: '' },
-    ...Array.from(
-      new Map(
-        courses.map((course) => [
-          course.name,
-          {
-            label: String(course.name),
-            value: String(course.id),
-          },
-        ])
-      ).values()
-    ),
-  ]
-
-  const [selectedCourseOption, setSelectedCourseOption] = useState(
-    courseOptions[0]
-  )
-
-  // 과정별 필터링
-  const handleFilterApply = () => {
-    const filtered = selectedCourseOption.value
-      ? generations.filter(
-          (item) => item.course_name === selectedCourseOption.label
-        )
-      : generations
-
-    setFilteredData(filtered)
-    setIsFilterModalOpen(false)
-  }
-
-  const { currentPage, totalPages, paginatedData, goToPage } =
-    useClientPagination({
-      item: filteredData,
-      count: COUNT_LIMIT,
+  // 페이지네이션
+  const { currentPage, totalPages, goToPage, setTotalCount } =
+    useServerPagination({
+      pageSize: COUNT_LIMIT,
     })
 
-  // 테이블 로우 클릭 시 기수 상세조회 fetch
-  const handleRowClick = async (rowData: TableRowData) => {
-    try {
-      const detailData = await fetchGenerationDetail(rowData.id)
-      setSelectedGeneration(detailData)
-      setIsDetailModalOpen(true)
-    } catch (err) {
-      if (err instanceof Error) setError(err)
-      else console.error('알 수 없는 에러:', err)
-    } finally {
-      setLoading(false)
+  const [selectedCourseId, setSelectedCourseId] = useState<number | undefined>(
+    undefined
+  )
+
+  // 기수 목록 React Query로 fetch (과정 필터 id 전달)
+  const {
+    data: generationsData,
+    isLoading: isGenerationsLoading,
+    isError: isGenerationsError,
+    error: generationsError,
+  } = useGenerations(currentPage, COUNT_LIMIT, selectedCourseId)
+
+  // 과정 목록 React Query로 fetch
+  const {
+    data: coursesData,
+    isLoading: isCoursesLoading,
+    isError: isCoursesError,
+    error: coursesError,
+  } = useCourses()
+
+  useEffect(() => {
+    if (generationsData?.count !== undefined) {
+      setTotalCount(generationsData.count)
     }
+  }, [generationsData?.count, setTotalCount])
+
+  // 모달 상태
+  const [selectedGenerationId, setSelectedGenerationId] = useState<
+    number | null
+  >(null)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+
+  // 상세 조회용 선택된 기수 데이터
+  const {
+    data: selectedGenerationDetail,
+    isError: isDetailError,
+    error: detailError,
+  } = useGenerationDetail(selectedGenerationId)
+
+  const isDetailModalOpen = selectedGenerationId !== null
+
+  const closeDetailModal = () => {
+    setSelectedGenerationId(null)
   }
 
-  if (loading)
+  const openAddModal = () => {
+    setIsAddModalOpen(true)
+  }
+
+  // 기수 데이터 가공
+  const formattedGenerations = useMemo((): Generation[] => {
+    return (generationsData?.results ?? []).map((gen) => ({
+      ...gen,
+      number: `${gen.number}기`,
+      registered_students: `${gen.registered_students}명 / ${gen.max_student}명`,
+      course_name: gen.course_name,
+      course_id: gen.course_id,
+    }))
+  }, [generationsData?.results])
+
+  // 드롭다운 옵션
+  const courseOptions = useMemo(() => {
+    const options = [{ label: '과정을 선택하세요', value: '' }]
+    if (coursesData) {
+      options.push(
+        ...Array.from(
+          new Map(
+            coursesData.map((course) => [
+              course.id,
+              {
+                label: String(course.name),
+                value: String(course.id),
+              },
+            ])
+          ).values()
+        )
+      )
+    }
+    return options
+  }, [coursesData])
+
+  // 드롭다운 선택값 (string 타입)
+  const [selectedCourseOption, setSelectedCourseOption] = useState<{
+    label: string
+    value: string
+  }>(courseOptions[0])
+
+  useEffect(() => {
+    if (courseOptions.length > 0 && selectedCourseOption.value === '') {
+      setSelectedCourseOption(courseOptions[0])
+    }
+  }, [courseOptions, selectedCourseOption.value])
+
+  // 필터 적용 함수: 선택된 과정 id 상태 업데이트 + 모달 닫기 + 페이지 1로 초기화
+  const handleFilterApply = () => {
+    const id =
+      selectedCourseOption.value === ''
+        ? undefined
+        : Number(selectedCourseOption.value)
+    setSelectedCourseId(id)
+    setIsFilterModalOpen(false)
+    goToPage(1)
+  }
+
+  // 로딩 및 에러 처리
+  if (isGenerationsLoading || isCoursesLoading) {
     return <div className="h-full text-center text-3xl">Loading...</div>
-  if (error) return <div>에러가 발생했습니다: {error.message}</div>
+  }
+  if (isGenerationsError) {
+    return (
+      <div>
+        기수 정보를 불러오는 중 에러가 발생했습니다: {generationsError?.message}
+      </div>
+    )
+  }
+  if (isCoursesError) {
+    return (
+      <div>
+        과정 정보를 불러오는 중 에러가 발생했습니다: {coursesError?.message}
+      </div>
+    )
+  }
+  if (isDetailError && selectedGenerationId !== null) {
+    return (
+      <div>
+        상세 정보를 불러오는 중 에러가 발생했습니다: {detailError?.message}
+      </div>
+    )
+  }
+
+  const handleRowClick = (rowData: TableRowData) => {
+    setSelectedGenerationId(rowData.id)
+  }
 
   return (
     <div className="w-[1600px] p-[30px]">
@@ -169,6 +187,7 @@ const Generations = () => {
           과정별 필터링
         </Button>
       </div>
+
       <Modal
         modalId="course-filter-modal"
         isOpen={isFilterModalOpen}
@@ -205,9 +224,10 @@ const Generations = () => {
           조회
         </Button>
       </Modal>
+
       <DataTable
         headerData={generationHeaders}
-        tableItem={paginatedData}
+        tableItem={formattedGenerations}
         isCheckBox={false}
         sortKeys={[]}
         sortKey={null}
@@ -216,11 +236,13 @@ const Generations = () => {
         isTime
         onClick={handleRowClick}
       />
+
       <GenerationDetailModal
         isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        selectedGeneration={selectedGeneration}
+        onClose={closeDetailModal}
+        selectedGeneration={selectedGenerationDetail as GenerationDetails}
       />
+
       <div className="mt-[82px] flex justify-center">
         <div className="flex flex-1 justify-center">
           <Pagination
@@ -229,9 +251,15 @@ const Generations = () => {
             goToPage={goToPage}
           />
         </div>
-        <Button>등록</Button>
+        <Button onClick={openAddModal}>등록</Button>
       </div>
+
+      <AddGenerationModal
+        isOpen={isAddModalOpen}
+        setIsOpen={setIsAddModalOpen}
+      />
     </div>
   )
 }
+
 export default Generations

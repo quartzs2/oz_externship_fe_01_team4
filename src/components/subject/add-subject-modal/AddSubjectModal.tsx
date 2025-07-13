@@ -8,22 +8,15 @@ import { ADMIN_API_PATH } from '@constants/urls'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { useState } from 'react'
 import Dropdown from '@components/common/Dropdown'
-import type { QueryObserverResult, RefetchOptions } from '@tanstack/react-query'
-import type { SubjectResponse } from '@custom-types/subjects'
+import { useQueryClient } from '@tanstack/react-query'
+import { useCourses } from '@hooks/queries/useCourses'
 
 type AddSubjectModalProps = {
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  fetchData: (
-    options?: RefetchOptions
-  ) => Promise<QueryObserverResult<SubjectResponse, Error>>
 }
 
-const AddSubjectsModal = ({
-  isOpen,
-  setIsOpen,
-  fetchData,
-}: AddSubjectModalProps) => {
+const AddSubjectsModal = ({ isOpen, setIsOpen }: AddSubjectModalProps) => {
   const [preview, setPreview] = useState<string | null>(null)
   const [subjectName, setSubjectName] = useState('')
   const [selectedCourseId, setSelectedCourseId] = useState<string>('')
@@ -40,15 +33,13 @@ const AddSubjectsModal = ({
     file: false,
   })
 
-  const courseOptions = [
-    { id: 1, name: '웹 개발 초급자 프론트엔드 부트캠프' },
-    { id: 2, name: 'AI 백엔드 심화과정' },
-  ]
+  const { data: courseOptionsData } = useCourses()
 
-  const mappedCourseOptions = courseOptions.map((course) => ({
-    label: course.name,
-    value: String(course.id),
-  }))
+  const courseOptions =
+    courseOptionsData?.map((course) => ({
+      label: String(course.name ?? ''),
+      value: String(course.id),
+    })) ?? []
 
   const statusOptions = [
     { value: 'true', label: '활성화' },
@@ -56,6 +47,7 @@ const AddSubjectsModal = ({
   ]
 
   const toast = useCustomToast()
+  const queryClient = useQueryClient()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -133,7 +125,7 @@ const AddSubjectsModal = ({
 
     try {
       await postSubject()
-      fetchData()
+      queryClient.invalidateQueries({ queryKey: ['subjects'] })
       setIsOpen(false)
       resetForm()
       toast.success('성공적으로 과목이 등록되었습니다.', {
@@ -205,7 +197,7 @@ const AddSubjectsModal = ({
                 setSelectedCourseId(selectedOption.value)
                 setErrors({ ...errors, courseId: false })
               }}
-              options={mappedCourseOptions}
+              options={courseOptions}
               placeholder="과정을 선택해주세요."
             />
             {errors.courseId && (

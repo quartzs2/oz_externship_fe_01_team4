@@ -36,7 +36,14 @@ export default function TableRow({
     SUBMITTED_AT: 'submittedAt',
     TYPE: 'type',
     ROLE: 'role',
+    STATUS: 'status',
   } as const
+
+  const GENERATION_STATUS = {
+    READY: 'Ready',
+    ONGOING: 'Ongoing',
+    FINISHED: 'Finished',
+  }
 
   const CATEGORY_TYPE = {
     LARGE: '대',
@@ -159,6 +166,17 @@ export default function TableRow({
                         Staff
                       </div>
                     )
+                  default:
+                    return value
+                }
+              case DATA_KEYS.STATUS:
+                switch (value) {
+                  case GENERATION_STATUS.READY:
+                    return <p>Ready</p>
+                  case GENERATION_STATUS.ONGOING:
+                    return <p>Started</p>
+                  case GENERATION_STATUS.FINISHED:
+                    return <p>Finished</p>
                   default:
                     return value
                 }
