@@ -1,4 +1,4 @@
-import { fetchSubjects } from '@api/subjects/subjectAPI'
+import { fetchSubjects } from '@api/subjects'
 import type { SubjectResponse } from '@custom-types/subjects'
 import { useQuery } from '@tanstack/react-query'
 

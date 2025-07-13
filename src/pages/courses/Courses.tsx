@@ -8,20 +8,14 @@ import Input from '@components/common/Input'
 import Modal from '@components/common/Modal'
 import { ADMIN_API_PATH } from '@constants/urls'
 import type { TableRowData } from '@custom-types/table'
-import { useClientPagination } from '@hooks/data-table/usePagination'
+import { useServerPagination } from '@hooks/data-table/usePagination'
 import { useCustomToast } from '@hooks/toast/useToast'
 import { cn } from '@utils/cn'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import CourseDetailModal from '@components/course/CourseDetailModal'
 
 // 페이지 상수 추가
-const COUNT_LIMIT = 20
-
-const fetchAPI = async () => {
-  const res = await api.get(ADMIN_API_PATH.COURSES)
-  console.log(res)
-  return res.data.results
-}
+const COUNT_LIMIT = 10
 
 const courseHeaders = [
   { text: 'ID', dataKey: 'id' },
@@ -50,11 +44,22 @@ const Courses = () => {
   const [file, setFile] = useState<File | null>(null)
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const { currentPage, totalPages, setTotalCount, goToPage } =
+    useServerPagination({
+      pageSize: COUNT_LIMIT,
+    })
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    setLoading(true)
     try {
-      const courses = await fetchAPI()
-      setCoursesData(courses)
+      const res = await api.get(ADMIN_API_PATH.COURSES, {
+        params: {
+          page: currentPage,
+          limit: COUNT_LIMIT,
+        },
+      })
+      setCoursesData(res.data.results)
+      setTotalCount(res.data.count)
     } catch (err) {
       if (err instanceof Error) {
         setError(err)
@@ -64,11 +69,11 @@ const Courses = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage, setTotalCount])
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   const postCourseRes = async () => {
     const formData = new FormData()
@@ -113,6 +118,9 @@ const Courses = () => {
   }
 
   const toast = useCustomToast()
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>에러가 발생했습니다: {error.message}</div>
 
   const handleSubmit = async () => {
     if (!validateForm()) return
@@ -161,12 +169,6 @@ const Courses = () => {
     }
   }
 
-  const { currentPage, totalPages, paginatedData, goToPage } =
-    useClientPagination({
-      item: coursesData,
-      count: COUNT_LIMIT,
-    })
-
   // 테이블 행 클릭 핸들러
   const handleRowClick = (rowData: TableRowData) => {
     console.log('클릭된 행 데이터:', rowData)
@@ -176,7 +178,7 @@ const Courses = () => {
 
   if (loading)
     return <div className="h-full text-center text-3xl">Loading...</div>
-  if (error) return <div>에러가 발생했습니다: {error.message}</div>
+  if (error) return <div>에러가 발생했습니다 </div>
 
   return (
     <>
@@ -184,7 +186,7 @@ const Courses = () => {
         <h2 className="mb-10 text-lg font-semibold">과정 조회</h2>
         <DataTable
           headerData={courseHeaders}
-          tableItem={paginatedData}
+          tableItem={coursesData}
           isCheckBox={false}
           sortKeys={[]}
           sortKey={null}
