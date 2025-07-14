@@ -32,7 +32,7 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
 
   const handleSubmit = async () => {
-    await submitQuizData({
+    const submitData = {
       test_id: testId,
       questions: visibleQuestions.map((question) => ({
         prompt: question.prompt || null,
@@ -45,9 +45,10 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
         question: question.question,
         type: question.type,
         point: question.point,
-        explanation: question.explanation,
+        explanation: question.explanation || '해설을 입력해주세요',
       })),
-    })
+    }
+    await submitQuizData(submitData)
   }
 
   useEffect(() => {
