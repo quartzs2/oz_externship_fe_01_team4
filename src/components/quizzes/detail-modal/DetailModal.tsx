@@ -17,7 +17,7 @@ type DetailModalProps = {
 }
 
 const MAX_QUIZ_COUNT = 10
-const MAX_QUIZ_SCORE_SUM = 100
+const MAX_QUIZ_SCORE_SUM = 5
 
 function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
   const [quizData, setQuizData] = useState<QuizData | null>(null)
@@ -101,12 +101,11 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
         onClose()
       }
     } catch (error) {
-      // 'error' 객체의 message 속성을 활용하여 구체적인 에러 메시지를 설정합니다.
       const errorMessage =
         error instanceof Error
           ? error.message
           : '알 수 없는 오류가 발생했습니다.'
-      setError(`퀴즈 삭제에 실패했습니다: ${errorMessage}`) // <-- 'error.message' 사용 예시
+      setError(`퀴즈 삭제에 실패했습니다: ${errorMessage}`)
     } finally {
       setIsDeleting(false)
     }
@@ -206,6 +205,7 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
         isOpen={isDeleteModalOpen}
         onClose={handleDeleteCancel}
         type="delete_confirm"
+        id="delete-confirm-modal-in-detail-modal"
       >
         <PopUp.Title>해당 쪽지시험을 정말 삭제하시겠습니까?</PopUp.Title>
         <PopUp.Description>
