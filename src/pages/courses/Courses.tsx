@@ -325,18 +325,17 @@ const Courses = () => {
               등록
             </Button>
           </div>
-
-          {/* 과정 상세 조회 모달 */}
-          <CourseDetailModal
-            courseId={selectedCourseId}
-            isOpen={isDetailModalOpen}
-            onClose={() => {
-              setIsDetailModalOpen(false)
-              setSelectedCourseId(null)
-            }}
-          />
         </div>
       </Modal>
+      {/* 과정 상세 조회 모달 */}
+      <CourseDetailModal
+        courseId={selectedCourseId}
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false)
+          setSelectedCourseId(null)
+        }}
+      />
     </>
   )
 }
