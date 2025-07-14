@@ -1,1 +1,78 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-primary-100: #f2effd;
+  --color-primary-200: #d7cbf7;
+  --color-primary-300: #b69cf1;
+  --color-primary-400: #986be9;
+  --color-primary-500: #7c35d9;
+  --color-primary-600: #522193;
+  --color-grey-100: #f7f7f7;
+  --color-grey-200: #f5f5f5;
+  --color-grey-300: #dddddd;
+  --color-grey-400: #a6a6a6;
+  --color-grey-500: #666666;
+  --color-grey-600: #222222;
+  --color-option-green: #5eb669;
+  --color-option-red: #cc0a0a;
+  --color-option-carousel-pink: #f9e2e2;
+  --color-option-goldenrod: #f6a818;
+  --color-option-pale-peach: #fdeece;
+}
+
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url('./assets/fonts/PretendardVariable.woff2') format('woff2-variations');
+}
+
+:root {
+  --tw-modal-shadow: 1px 1px 7px 0px rgba(0, 0, 0, 0.25);
+}
+
+body {
+  font-family:
+    'Pretendard Variable',
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    'Helvetica Neue',
+    'Segoe UI',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'Malgun Gothic',
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    sans-serif;
+}
+
+@layer base {
+  /* scrollbar 커스텀 */
+  .custom-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background-color: #e9eaeb;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 8px;
+  }
+
+  /* box-shadow 커스텀 */
+  .custom-shadow {
+    box-shadow:
+      0px 12px 16px -4px rgba(10, 13, 18, 0.08),
+      0px 4px 6px -2px rgba(10, 13, 18, 0.03);
+  }
+}
+
+@import 'swiper/css';
+@import 'swiper/css/navigation'; 
+@import 'swiper/css/pagination';
