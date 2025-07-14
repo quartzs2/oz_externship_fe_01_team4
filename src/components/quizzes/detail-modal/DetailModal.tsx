@@ -34,7 +34,7 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
   const handleSubmit = async () => {
     await submitQuizData({
       test_id: testId,
-      test_questions: visibleQuestions.map((question) => ({
+      questions: visibleQuestions.map((question) => ({
         prompt: question.prompt || null,
         blank_count:
           question.type === 'fill_in_blank' ? question.options.length : null,

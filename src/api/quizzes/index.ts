@@ -11,7 +11,7 @@ export const getQuizData = async (testId: number): Promise<QuizData> => {
 }
 
 export const submitQuizData = async (data: SubmitQuizData) => {
-  const response = await axiosInstance.post(`test-questions/`, data)
+  const response = await axiosInstance.post(`test-questions/bulk-update/`, data)
   return response.data
 }
 

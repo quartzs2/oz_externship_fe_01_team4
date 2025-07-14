@@ -78,14 +78,14 @@ const Quizzes = () => {
   const renderMap = {
     deploy: (_: unknown, rowData: TableRowData) => (
       <Button
-        variant="VARIANT5"
+        variant={rowData.deploy_status ? 'VARIANT11' : 'VARIANT5'}
         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.stopPropagation()
 
           handleDeployButtonClick(rowData)
         }}
       >
-        배포
+        {rowData.deploy_status ? '배포중' : '배포'}
       </Button>
     ),
   }
