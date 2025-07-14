@@ -1,13 +1,13 @@
+import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
 import Pagination from '@components/common/data-table/Pagination'
+import AddSubjectsModal from '@components/subject/add-subject-modal/AddSubjectModal'
 import SubjectDetailModal from '@components/subject/detail-modal/SubjectDetailModal'
 import { type Subject } from '@custom-types/subjects'
+import { useServerPagination } from '@hooks/data-table/usePagination'
 import { useSubjects } from '@hooks/queries/useSubjects'
 import { renderStatus } from '@utils/renderStatus'
-import { useState, useEffect } from 'react'
-import { useServerPagination } from '@hooks/data-table/usePagination'
-import Button from '@components/common/Button'
-import AddSubjectsModal from '@components/subject/add-subject-modal/AddSubjectModal'
+import { useEffect, useState } from 'react'
 
 // 페이지 상수
 const COUNT_LIMIT = 10
@@ -44,13 +44,11 @@ const Subjects = () => {
     }
   }, [data?.count, setTotalCount])
 
-  // 모달 상태
+  // 상세조회 모달
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const openModal = () => {
-    setIsModalOpen(true)
-  }
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  // 등록 모달
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
   if (isLoading)
     return <div className="h-full text-center text-3xl">Loading...</div>
@@ -66,7 +64,7 @@ const Subjects = () => {
           tableItem={data?.results ?? []}
           onClick={(subject) => {
             setSelectedSubject(subject as Subject)
-            setIsModalOpen(true)
+            setIsDetailModalOpen(true)
           }}
           renderMap={{
             status: renderStatus,
@@ -81,9 +79,9 @@ const Subjects = () => {
         {/* 모달 */}
         <SubjectDetailModal
           subject={selectedSubject as Subject}
-          isOpen={isModalOpen}
+          isOpen={isDetailModalOpen}
           onClose={() => {
-            setIsModalOpen(false)
+            setIsDetailModalOpen(false)
             setSelectedSubject(null)
           }}
         />
@@ -97,11 +95,11 @@ const Subjects = () => {
               goToPage={goToPage}
             />
           </div>
-          <Button onClick={openModal}>등록</Button>
+          <Button onClick={() => setIsAddModalOpen(true)}>등록</Button>
         </div>
       </div>
       {/* 과목을 추가할 때 사용하는 모달 */}
-      <AddSubjectsModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+      <AddSubjectsModal isOpen={isAddModalOpen} setIsOpen={setIsAddModalOpen} />
     </>
   )
 }
