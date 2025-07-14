@@ -32,7 +32,7 @@ export default function TableRow({
     DEPLOY_SWITCH: 'deploySwitch',
     CREATED_AT: 'created_at',
     UPDATED_AT: 'updated_at',
-    STARTED_AT: 'startedAt',
+    STARTED_AT: 'started_at',
     SUBMITTED_AT: 'submittedAt',
     TYPE: 'type',
     ROLE: 'role',
