@@ -12,7 +12,6 @@
       "@assets/*": ["./src/assets/*"],
       "@components/*": ["./src/components/*"],
       "@hooks/*": ["./src/hooks/*"],
-      "@lib/*": ["./src/lib/*"],
       "@pages/*": ["./src/pages/*"],
       "@custom-types/*": ["./src/types/*"],
       "@utils/*": ["./src/utils/*"],

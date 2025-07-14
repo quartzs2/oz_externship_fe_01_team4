@@ -18,8 +18,6 @@ export const fetchGenerations = async (
     params.course_id = courseId
   }
 
-  
-
   const res = await api.get(ADMIN_API_PATH.GENERATIONS_LIST, { params })
 
   return res.data
@@ -28,6 +26,13 @@ export const fetchGenerations = async (
 export const fetchGenerationDetail = async (generationId: number) => {
   const res = await api.get(
     `${ADMIN_API_PATH.GENERATIONS}${generationId}/detail`
+  )
+  return res.data
+}
+
+export const fetchGenerationsDropdown = async (courseId: number) => {
+  const res = await api.get(
+    `${ADMIN_API_PATH.GENERATIONS}${courseId}/dropdown-list/`
   )
   return res.data
 }
