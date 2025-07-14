@@ -135,9 +135,7 @@ const Quizzes = () => {
   useEffect(() => {
     // 모달이 열려 있고, 아직 course 데이터가 없을 때만 API 호출
     if (isFilterModalOpen && course.length === 0) {
-      api
-        .get(ADMIN_API_PATH.COURSES_DROPDOWN)
-        .then((res) => setCourse(res.data))
+      api.get(ADMIN_API_PATH.DROPDOWN).then((res) => setCourse(res.data))
     }
   }, [isFilterModalOpen, course.length])
 

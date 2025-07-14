@@ -30,9 +30,9 @@ export const fetchGenerationDetail = async (generationId: number) => {
   return res.data
 }
 
-export const fetchGenerationsDropdown = async (courseId: number) => {
+export const fetchGenerationDropdown = async (generationId: number) => {
   const res = await api.get(
-    `${ADMIN_API_PATH.GENERATIONS}${courseId}/dropdown-list/`
+    `${ADMIN_API_PATH.GENERATIONS}${generationId}${ADMIN_API_PATH.DROPDOWN}`
   )
   return res.data
 }
