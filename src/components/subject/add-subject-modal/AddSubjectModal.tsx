@@ -58,7 +58,6 @@ const AddSubjectsModal = ({ isOpen, setIsOpen }: AddSubjectModalProps) => {
       setPreview(imageUrl)
     }
   }
-  console.log(courseOptions)
 
   const validateForm = () => {
     const newErrors = {
