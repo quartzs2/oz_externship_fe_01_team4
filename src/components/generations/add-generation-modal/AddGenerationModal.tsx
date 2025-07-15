@@ -8,7 +8,8 @@ import { useCustomToast } from '@hooks/toast/useToast'
 import api from '@api/instance/axiosInstance'
 import React, { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCourses } from '@hooks/queries/useCourses'
+import { useCoursesDropdown } from '@hooks/queries/useCoursesDropdown'
+import type { CoursesDropdown } from '@custom-types/courses'
 
 interface AddGenerationModalProps {
   isOpen: boolean
@@ -35,10 +36,10 @@ const AddGenerationModal = ({ isOpen, setIsOpen }: AddGenerationModalProps) => {
     dateOrder: false,
   })
 
-  const { data: courseOptionsData } = useCourses()
+  const { data: courseOptionsData } = useCoursesDropdown()
 
   const courseOptions =
-    courseOptionsData?.map((course) => ({
+    courseOptionsData?.map((course: CoursesDropdown) => ({
       label: String(course.name ?? ''),
       value: String(course.id),
     })) ?? []

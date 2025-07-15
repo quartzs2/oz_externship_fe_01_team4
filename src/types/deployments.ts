@@ -1,39 +1,41 @@
 export type Deployment = {
-  id: number
-  testTitle: string
-  subjectTitle: string
-  courseGeneration: string
-  totalParticipants: number
-  averageScore: number
+  deployment_id: number
+  test_title: string
+  subject_title: string
+  course_generation: string
+  total_participants: number
+  average_score: number
   status: 'Activated' | 'Deactivated'
-  createdAt: string
+  created_at: string
 }
 
 export type DeploymentResponse = {
   count: number
   next: string | null
   previous: string | null
-  results: {
-    deployment_id: number
-    test_title: string
-    subject_title: string
-    course_generation: string
-    total_participants: number
-    average_score: number
-    status: 'Activated' | 'Deactivated'
-    created_at: string
-  }[]
+  results: Deployment[]
 }
 
-export const mapDeployment = (
-  d: DeploymentResponse['results'][number]
-): Deployment => ({
-  id: d.deployment_id,
-  testTitle: d.test_title,
-  subjectTitle: d.subject_title,
-  courseGeneration: d.course_generation,
-  totalParticipants: d.total_participants,
-  averageScore: d.average_score,
-  status: d.status,
-  createdAt: d.created_at,
-})
+export type DeploymentRow = {
+  id: number
+  test_title: string
+  subject_title: string
+  course_generation: string
+  total_participants: number
+  average_score: number
+  status: 'Activated' | 'Deactivated'
+  created_at: string
+}
+
+export const mapDeployment = (data: Deployment[]): DeploymentRow[] => {
+  return data.map((item) => ({
+    id: item.deployment_id,
+    test_title: item.test_title,
+    subject_title: item.subject_title,
+    course_generation: item.course_generation,
+    total_participants: item.total_participants,
+    average_score: item.average_score,
+    status: item.status,
+    created_at: item.created_at,
+  }))
+}

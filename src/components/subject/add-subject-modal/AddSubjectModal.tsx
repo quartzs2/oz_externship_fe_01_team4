@@ -9,7 +9,8 @@ import { useCustomToast } from '@hooks/toast/useToast'
 import { useState } from 'react'
 import Dropdown from '@components/common/Dropdown'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCourses } from '@hooks/queries/useCourses'
+import { useCoursesDropdown } from '@hooks/queries/useCoursesDropdown'
+import type { CoursesDropdown } from '@custom-types/courses'
 
 type AddSubjectModalProps = {
   isOpen: boolean
@@ -33,10 +34,10 @@ const AddSubjectsModal = ({ isOpen, setIsOpen }: AddSubjectModalProps) => {
     file: false,
   })
 
-  const { data: courseOptionsData } = useCourses()
+  const { data: courseOptionsData } = useCoursesDropdown()
 
   const courseOptions =
-    courseOptionsData?.map((course) => ({
+    courseOptionsData?.map((course: CoursesDropdown) => ({
       label: String(course.name ?? ''),
       value: String(course.id),
     })) ?? []

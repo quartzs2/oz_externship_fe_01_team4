@@ -104,7 +104,7 @@ export type SubmitQuestion = {
 // 제출용 퀴즈 데이터 타입
 export type SubmitQuizData = {
   test_id: number
-  test_questions: SubmitQuestion[]
+  questions: SubmitQuestion[]
 }
 
 export type UpdateQuizData = {

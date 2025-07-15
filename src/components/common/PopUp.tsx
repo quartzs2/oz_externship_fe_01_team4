@@ -38,6 +38,7 @@ type PopUpProps = {
   onClose: () => void
   type: PopUpType
   children: ReactNode
+  id?: string
 }
 
 const POP_UP_CONFIG = {
@@ -55,7 +56,7 @@ const POP_UP_CONFIG = {
   },
 }
 
-const PopUp = ({ isOpen, onClose, type, children }: PopUpProps) => {
+const PopUp = ({ isOpen, onClose, type, children, id }: PopUpProps) => {
   const config = POP_UP_CONFIG[type]
 
   if (!config) {
@@ -64,7 +65,7 @@ const PopUp = ({ isOpen, onClose, type, children }: PopUpProps) => {
 
   return (
     <Modal
-      modalId={`popup-${type}`}
+      modalId={id || `popup-${type}`}
       isOpen={isOpen}
       onClose={onClose}
       closeButtonOffset={13}

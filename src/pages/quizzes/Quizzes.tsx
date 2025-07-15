@@ -78,14 +78,14 @@ const Quizzes = () => {
   const renderMap = {
     deploy: (_: unknown, rowData: TableRowData) => (
       <Button
-        variant="VARIANT5"
+        variant={rowData.deploy_status ? 'VARIANT11' : 'VARIANT5'}
         onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.stopPropagation()
 
           handleDeployButtonClick(rowData)
         }}
       >
-        배포
+        {rowData.deploy_status ? '배포중' : '배포'}
       </Button>
     ),
   }
@@ -135,9 +135,7 @@ const Quizzes = () => {
   useEffect(() => {
     // 모달이 열려 있고, 아직 course 데이터가 없을 때만 API 호출
     if (isFilterModalOpen && course.length === 0) {
-      api
-        .get(ADMIN_API_PATH.COURSES_DROPDOWN)
-        .then((res) => setCourse(res.data))
+      api.get(ADMIN_API_PATH.DROPDOWN).then((res) => setCourse(res.data))
     }
   }, [isFilterModalOpen, course.length])
 

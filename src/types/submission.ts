@@ -1,51 +1,52 @@
-export type Submission = {
-  id: number
-  name: string
-  nickname: string
-  generation: string
-  title: string
-  subject: string
-  score: number
-  cheatingCount: number
-  startedAt: string
-  submittedAt: string
-}
+import type { TableRowData } from '@custom-types/table'
 
 // 단일 항목
-export type SubmissionResult = {
-  submission_id: number
+export type Submission = {
+  id: number
+  deployment: {
+    test: {
+      subject: {
+        title: string
+      }
+      title: string
+    }
+    generation: {
+      course: {
+        name: string
+      }
+      number: number
+    }
+  }
   student: {
-    nickname: string
-    name: string
-    generation: string
+    user: {
+      name: string
+      nickname: string
+    }
   }
-  test: {
-    title: string
-    subject_title: string
-  }
-  score: number
   cheating_count: number
+  score: number
   started_at: string
-  submitted_at: string
+  created_at: string
 }
 
 // API 응답 타입
 export type SubmissionResponse = {
-  count: number
-  next: string | null
-  previous: string | null
-  results: SubmissionResult[]
+  message: string
+  data: Submission[]
 }
 
-export const mapSubmission = (s: SubmissionResult): Submission => ({
-  id: s.submission_id,
-  name: s.student.name,
-  nickname: s.student.nickname,
-  generation: s.student.generation,
-  title: s.test.title,
-  subject: s.test.subject_title,
-  score: s.score,
-  cheatingCount: s.cheating_count,
-  startedAt: s.started_at,
-  submittedAt: s.submitted_at,
-})
+export const mapSubmission = (data: Submission[]): TableRowData[] => {
+  return data.map((item) => ({
+    id: item.id,
+    title: item.deployment.test.title,
+    subject: item.deployment.test.subject.title,
+    nickname: item.student.user.nickname,
+    name: item.student.user.name,
+    course: item.deployment.generation.course.name,
+    generation: item.deployment.generation.number,
+    cheating_count: item.cheating_count,
+    score: item.score,
+    started_at: item.started_at,
+    created_at: item.created_at,
+  }))
+}
