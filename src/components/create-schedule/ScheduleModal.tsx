@@ -60,9 +60,6 @@ const ScheduleModal = ({
         style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
       })
     }
-    toast.error(SCHEDULE_API.ERROR_MESSAGE, {
-      style: TOAST_CONSTANTS.STYLE.WHITE_LEFT_BORDER,
-    })
   }
 
   return (
