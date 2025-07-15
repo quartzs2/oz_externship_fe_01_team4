@@ -1,4 +1,3 @@
-import api from '@api/instance/axiosInstance'
 import SearchIcon from '@assets/icons/search.svg?react'
 import Button from '@components/common/Button'
 import DataTable from '@components/common/data-table/DataTable'
@@ -7,14 +6,10 @@ import DropdownField from '@components/common/DropdownField'
 import Icon from '@components/common/Icon'
 import Modal from '@components/common/Modal'
 import SearchBar from '@components/common/SearchBar'
-import { ADMIN_API_PATH } from '@constants/urls'
-import {
-  mapDeployment,
-  type Deployment,
-  type DeploymentResponse,
-} from '@custom-types/deployments'
+import { mapDeployment, type DeploymentRow } from '@custom-types/deployments'
 import { useClientPagination } from '@hooks/data-table/usePagination'
 import { useSort } from '@hooks/data-table/useSort'
+import { useDeployments } from '@hooks/queries/useDeployments'
 import { filterOption } from '@utils/filterOption'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -24,20 +19,14 @@ const COUNT_LIMIT = 20
 // 테이블 헤더
 const deploymentHeaders = [
   { text: 'ID', dataKey: 'id' },
-  { text: '제목', dataKey: 'testTitle' },
-  { text: '과목명', dataKey: 'subjectTitle' },
-  { text: '과정 | 기수', dataKey: 'courseGeneration' },
-  { text: '응시자 수', dataKey: 'totalParticipants' },
-  { text: '평균 점수', dataKey: 'averageScore' },
-  { text: '생성 일시', dataKey: 'createdAt' },
+  { text: '제목', dataKey: 'test_title' },
+  { text: '과목명', dataKey: 'subject_title' },
+  { text: '과정 | 기수', dataKey: 'course_generation' },
+  { text: '응시자 수', dataKey: 'total_participants' },
+  { text: '평균 점수', dataKey: 'average_score' },
+  { text: '생성 일시', dataKey: 'created_at' },
   { text: '배포 상태', dataKey: 'deploySwitch' },
 ]
-
-// fetch 함수
-const fetchAPI = async () => {
-  const res = await api.get<DeploymentResponse>(ADMIN_API_PATH.TEST_DEPLOYMENTS)
-  return res.data.results.map(mapDeployment)
-}
 
 const Deployments = () => {
   // 모달 상태
@@ -48,43 +37,44 @@ const Deployments = () => {
   // 검색 상태
   const [searchKeyword, setSearchKeyword] = useState('')
 
-  const [fetchData, setFetchData] = useState<Deployment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  // API 호출 (임시)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const deployments = await fetchAPI()
-        setFetchData(deployments)
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
+  // React Query로 fetch
+  const { data, isLoading, error } = useDeployments()
 
   // 테이블에 들어갈 데이터
-  const tableData: Deployment[] = useMemo(() => fetchData, [fetchData])
+  const tableData = useMemo(() => {
+    if (!data?.results) return []
+    return mapDeployment(data.results)
+  }, [data])
+
+  // '기수'를 분리하는 함수
+  const splitCourseGeneration = (value: string) => {
+    const trimmed = value.trim()
+    const lastSpaceIndex = trimmed.lastIndexOf(' ')
+    if (lastSpaceIndex === -1) return { course: trimmed, generation: '' }
+    return {
+      course: trimmed.slice(0, lastSpaceIndex),
+      generation: trimmed.slice(lastSpaceIndex + 1),
+    }
+  }
 
   // 드롭다운 옵션
   const courseOptions = filterOption(
-    tableData.map((d) => ({ course: d.courseGeneration?.split(' ')[0] })),
+    tableData.map((d) => ({
+      course: splitCourseGeneration(d.course_generation).course,
+    })),
     'course',
-    (val) => `${val} 부트캠프`
+    (val) => val
   )
+
   const generationOptions = filterOption(
-    tableData.map((d) => ({ generation: d.courseGeneration?.split(' ')[1] })),
+    tableData.map((d) => ({
+      generation: splitCourseGeneration(d.course_generation).generation,
+    })),
     'generation'
   )
 
   // 필터링 데이터 저장
-  const [filteredData, setFilteredData] = useState<Deployment[]>([])
+  const [filteredData, setFilteredData] = useState<DeploymentRow[]>([])
 
   // 정렬
   const { sortedData, sortKey, sortOrder, sortByKey } = useSort(filteredData)
@@ -97,30 +87,34 @@ const Deployments = () => {
     })
 
   // 필터링 기능
-  const filterHandler = () => {
+  const filterHandler = (keyword = searchKeyword) => {
     if (!tableData.length) return
+
     const result = tableData.filter((item) => {
-      const [course, generation] = item.courseGeneration.split(' ')
+      const { course, generation } = splitCourseGeneration(
+        item.course_generation
+      )
       const isCourseMatch = selectedCourse ? course === selectedCourse : true
       const isGenMatch = selectedGeneration
         ? generation === selectedGeneration
         : true
-      const isKeywordMatch = searchKeyword
-        ? item.subjectTitle.includes(searchKeyword)
+      const isKeywordMatch = keyword
+        ? item.subject_title.includes(keyword)
         : true
       return isCourseMatch && isGenMatch && isKeywordMatch
     })
+
     setFilteredData(result)
   }
 
   // 초기 호출
   useEffect(() => {
-    if (fetchData.length > 0) {
-      setFilteredData(fetchData)
+    if (tableData.length > 0) {
+      setFilteredData(tableData)
     }
-  }, [fetchData])
+  }, [tableData])
 
-  if (loading)
+  if (isLoading)
     return <div className="h-full text-center text-3xl">Loading...</div>
   if (error) return <div>에러가 발생했습니다: {error.message}</div>
 
@@ -131,7 +125,7 @@ const Deployments = () => {
         <SearchBar
           onSearch={(keyword) => {
             setSearchKeyword(keyword)
-            filterHandler()
+            filterHandler(keyword)
           }}
           placeholder="검색어를 입력하세요."
         ></SearchBar>
@@ -193,6 +187,7 @@ const Deployments = () => {
         sortKey={sortKey}
         sortOrder={sortOrder}
         sortByKey={sortByKey}
+        isDeployStatus
         isTime
       />
       {/* 페이지네이션 */}
