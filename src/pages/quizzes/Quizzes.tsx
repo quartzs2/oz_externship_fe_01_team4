@@ -18,6 +18,7 @@ import { scheduleAPI } from '@api/schedule'
 import { useScheduleStore } from '@store/create-schedule/scheduleStore'
 import { useCallback, useEffect, useState } from 'react'
 import { useCourses } from '@hooks/queries/useCourses'
+import { useNavigate, useLocation } from 'react-router'
 
 // 표제목 상수화
 const TableHeaderItem = [
@@ -35,6 +36,9 @@ const SortItem = ['title', 'created_at'] // 정렬할 데이터 지정
 
 // 쪽지시험 관리
 const Quizzes = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [quizzes, setQuizzes] = useState<TableRowData[]>([])
   const [subjects, setSubjects] = useState<TableRowData[]>([])
   const [course, setCourse] = useState<TableRowData[]>([])
@@ -42,8 +46,9 @@ const Quizzes = () => {
   const [error, setError] = useState<Error | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
-  const [selectedTestId, setSelectedTestId] = useState<number | null>(null)
+
+  const isDetailModalOpen = location.state?.detailModalOpen
+  const selectedTestId = location.state?.testId
 
   const { isModalOpen, selectedQuiz, openScheduleModal, closeScheduleModal } =
     useScheduleStore()
@@ -63,8 +68,9 @@ const Quizzes = () => {
   ]
 
   const handleTableClick = (quizData: TableRowData) => {
-    setSelectedTestId(Number(quizData.id))
-    setIsDetailModalOpen(true)
+    navigate(location.pathname, {
+      state: { detailModalOpen: true, testId: Number(quizData.id) },
+    })
   }
 
   const handleDeployButtonClick = (quizData: TableRowData) => {
@@ -178,13 +184,13 @@ const Quizzes = () => {
   if (loading) return <div>Loading...</div>
   if (error) return <div>에러가 발생했습니다: {error.message}</div>
 
-  if (isDetailModalOpen && selectedTestId !== null) {
+  if (isDetailModalOpen && selectedTestId) {
     // 시험 상세정보 조회/수정/삭제 모달
     return (
       <DetailModal
         testId={selectedTestId}
         onClose={() => {
-          setIsDetailModalOpen(false)
+          navigate(-1)
           fetchQuizzes()
         }}
         fetchQuizzes={fetchQuizzes}
