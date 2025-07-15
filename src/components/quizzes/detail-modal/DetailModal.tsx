@@ -9,6 +9,7 @@ import PopUp from '@components/common/PopUp'
 import api from '@api/instance/axiosInstance'
 import type { TableRowData } from '@custom-types/table'
 import { ADMIN_API_PATH } from '@constants/urls'
+import { useCustomToast } from '@hooks/toast/useToast'
 
 type DetailModalProps = {
   testId: number
@@ -30,6 +31,7 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [subjects, setSubjects] = useState<TableRowData[]>([])
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
+  const toast = useCustomToast()
 
   const handleSubmit = async () => {
     const submitData = {
@@ -48,7 +50,12 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
         explanation: question.explanation || '해설을 입력해주세요',
       })),
     }
-    await submitQuizData(submitData)
+    try {
+      await submitQuizData(submitData)
+      toast.success('퀴즈 제출이 완료되었습니다.')
+    } catch {
+      toast.error('퀴즈 제출에 실패했습니다.')
+    }
   }
 
   useEffect(() => {
