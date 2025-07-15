@@ -10,11 +10,15 @@
 ## :link: 배포 링크
 
 > ### [LMS 어드민 페이지 바로가기](https://oz-externship-fe-01-team4.vercel.app)
+> 본 페이지는 어드민 전용으로, 아래 계정으로 로그인하시면 모든 기능을 이용하실 수 있습니다.    
+> - ID: admin@example.com    
+> - PW: password1234  
 
 ---
 
 ## 🧰 기술 스택
-  
+  <div>
+    
   #### 프레임워크 / 라이브러리
 
   <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=React&logoColor=61DAFB">
@@ -60,7 +64,8 @@
   <img src="https://img.shields.io/badge/react--hot--toast-FF4154?style=for-the-badge">
   <img src="https://img.shields.io/badge/TipTap-000000?style=for-the-badge">
   <img src="https://img.shields.io/badge/SVGR-FFB13B?style=for-the-badge">
-
+    
+  </div>  
 
 ---
 
