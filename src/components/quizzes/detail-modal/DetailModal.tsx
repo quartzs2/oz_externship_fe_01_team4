@@ -17,7 +17,7 @@ type DetailModalProps = {
 }
 
 const MAX_QUIZ_COUNT = 10
-const MAX_QUIZ_SCORE_SUM = 5
+const MAX_QUIZ_SCORE_SUM = 100
 
 function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
   const [quizData, setQuizData] = useState<QuizData | null>(null)
