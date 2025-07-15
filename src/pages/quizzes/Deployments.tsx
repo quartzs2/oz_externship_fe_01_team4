@@ -87,8 +87,9 @@ const Deployments = () => {
     })
 
   // 필터링 기능
-  const filterHandler = () => {
+  const filterHandler = (keyword = searchKeyword) => {
     if (!tableData.length) return
+
     const result = tableData.filter((item) => {
       const { course, generation } = splitCourseGeneration(
         item.course_generation
@@ -97,11 +98,12 @@ const Deployments = () => {
       const isGenMatch = selectedGeneration
         ? generation === selectedGeneration
         : true
-      const isKeywordMatch = searchKeyword
-        ? item.subject_title.includes(searchKeyword)
+      const isKeywordMatch = keyword
+        ? item.subject_title.includes(keyword)
         : true
       return isCourseMatch && isGenMatch && isKeywordMatch
     })
+
     setFilteredData(result)
   }
 
@@ -123,7 +125,7 @@ const Deployments = () => {
         <SearchBar
           onSearch={(keyword) => {
             setSearchKeyword(keyword)
-            filterHandler()
+            filterHandler(keyword)
           }}
           placeholder="검색어를 입력하세요."
         ></SearchBar>
