@@ -10,7 +10,8 @@ const MultipleChoiceSingle = ({ question }: MultipleChoiceSingleProps) => {
   return (
     <div className="flex flex-col gap-[38px]">
       {question.options.map((option, index) => {
-        const isCorrectAnswer = question.answer === option
+        const isCorrectAnswer =
+          question.answer === option || question.answer[0] === option
 
         return (
           <div key={index} className="flex items-center gap-[23px]">

@@ -39,7 +39,7 @@ function DetailModal({ testId, onClose, fetchQuizzes }: DetailModalProps) {
       questions: visibleQuestions.map((question) => ({
         prompt: question.prompt || null,
         blank_count:
-          question.type === 'fill_in_blank' ? question.options.length : null,
+          question.type === 'fill_in_blank' ? question.answer.length : null,
         options_json: question.options,
         answer: Array.isArray(question.answer)
           ? question.answer
