@@ -1,0 +1,53 @@
+name: Sync Fork with Upstream except workflows
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 자정(UTC 기준) 자동 실행
+  workflow_dispatch: # 필요하면 수동 실행도 가능
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # fetch-depth: 0으로 설정하여 모든 커밋 히스토리를 가져옵니다.
+          fetch-depth: 0
+          # Personal Access Token(PAT)을 사용하여 checkout 해야 push가 가능합니다.
+          token: ${{ secrets.PAT }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Add upstream remote if not exists
+        run: |
+          git remote get-url upstream || git remote add upstream https://github.com/OZ-Coding-School/oz_externship_fe_01_team4
+
+      - name: Fetch upstream changes
+        run: git fetch upstream
+
+      - name: Reset main branch to upstream/main, keeping workflows
+        run: |
+          git checkout main
+          
+          # 현재 .github/workflows 디렉토리를 임시 위치로 이동
+          mv .github/workflows /tmp/workflows
+          
+          # upstream/main 브랜치의 상태로 로컬 main을 강제로 덮어씁니다.
+          git reset --hard upstream/main
+          
+          # 임시 위치에 저장했던 .github/workflows 디렉토리를 다시 가져옵니다.
+          # 기존에 workflows 폴더가 있을 경우를 대비해 -T 옵션을 사용합니다.
+          cp -rT /tmp/workflows .github/workflows
+          
+          # 변경된 내역을 스테이징합니다.
+          git add .github/workflows
+          
+          # 커밋 메시지를 작성합니다.
+          git commit -m "chore: Sync with upstream, keeping workflows"
+          
+          # 변경된 내역을 강제 푸시합니다.
+          git push --force origin main
